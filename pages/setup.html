@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nimo - Account setup</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/custom-boostrap.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../components/lib/sanMoji/css/emojis.css"> 
+    <link rel="stylesheet" href="../css/animation/animation.css">
+    <link rel="shortcut icon" href="../src/logo/nimo-primary.svg" type="image/x-icon">
+    <link rel="stylesheet" href="../css/color/color.css">
+    <link rel="stylesheet" href="../css/cropper/croppie.css">
+</head>
+<body>
+    <div class="_auth _sec" id="root">
+        <div class="wrapper">
+            <div class="cred-cont phase-2 _setup">
+                <div class="wrapper">
+                    <div class="banner">
+                        <div class="banner-layer _banner_"></div>
+                        <span class="banner-picker _color-picker_" id="banner-picker">
+                            <img src="../src/icons/picker.svg" alt="">
+                        </span>
+                    </div>
+                    <div class="profile-cont">
+                        <div class="pfp-cont">
+                            <span class="pfp _pfp_">
+                                <span class="progress hide" id="_prog"></span>
+                            </span>
+                            <label for="_pfp-file_" class="pfp-picker _pfp-picker_" id="pfp-picker" >
+                                <img src="../src/icons/editor.svg" alt="">
+                            </label>
+                            <input type="file" accept="image/*" name="" id="_pfp-file_" hidden>
+                        </div>
+                        <div class="username-cont">
+                            <input type="text" name="usrname" id="set-user-name" autofocus placeholder="Username" required="">
+                            <span class="usrid" id="_id_">#000</span>
+                        </div>
+                    </div>
+                    <span class="hr"></span>
+                    <div class="about-cont">
+                        <span class="title">Bio <small style="opacity: .4;">(Optional)</small></span>
+                        <textarea name="about" id="_set-about" cols="30" rows="10" placeholder="Enter your bio"></textarea>
+                        <span class="tl">0/200</span>
+                    </div>
+                    <div class="layer hide"></div>
+                </div>
+                <span class="error-msg hide _set-Err">
+                    <span class="msg err-msg">
+                    </span>
+                </span>
+
+                <div class="bottom-btn">
+                    <div class="btn-cont">
+                        <button class="btn setup-skin-btn" type="submit" id="setup-skin-btn">
+                            <span>Skip setup</span>
+                        </button>
+                        <button class="btn" type="submit" id="setup-fin-btn">
+                            <span>Finish</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="cropper" id="cropper" data-cropper>
+            <div class="wrapper">
+                <div class="header">Crop profile picture</div>
+                <div class="cropper-wrapper" data-c-wrapper>
+                </div>
+                <div class="save-btn-cont">
+                    <span class="crop-close-btn" data-cropper-close-btn>Close</span>
+                    <span class="crop-save-btn" data-cropper-save-btn>Save</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="spinnerx" class="show" >
+        <div class="wrapper">
+            <div class="preloader-logo">
+                <img src="../src/logo/nimo-primary.svg" alt="NIMO">
+            </div>
+            <div class="preloader-progress" id="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" ></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://unpkg.com/vanilla-picker@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js" integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="../scripts/setup.js" type="module"></script>
+</body>
+</html>

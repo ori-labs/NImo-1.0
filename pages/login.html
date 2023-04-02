@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nimo - Login</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/custom-boostrap.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../components/lib/sanMoji/css/emojis.css"> 
+    <link rel="stylesheet" href="../css/animation/animation.css">
+    <link rel="shortcut icon" href="../src/logo/nimo-primary.svg" type="image/x-icon">
+    <link rel="stylesheet" href="../css/color/color.css">
+</head>
+<body>
+    <div class="_auth _sec" id="root">
+        <div class="wrapper">
+            <div class="logo-wrapper">
+                <span class="logo">
+                    <img src="../src/logo/nimo.svg" alt="NIMO" srcset="">
+                </span>
+                <span class="welcome">HI there, welcome back!</span>
+                
+            </div>
+
+            <div class="cred-cont _lg-view _login">
+                <div class="wrapper">
+                    <div class="inputs">
+                        <input type="email" name="email" id="_lg-email" placeholder="Email" required="">
+                        <input type="password" name="pwd" id="_lg-pwd" placeholder="Password" required="">
+                    </div>
+                    <button class="btn" type="submit" id="_lg-btn">login</button>
+                    <span class="forgot-password-btn" id="pass-reset-btn">Forgot your password?</span>
+                    <span class="hr"></span>
+                    <div class="login-provider-cont">
+                        <button class="btn google google-auth">
+                            <img src="../src/icons/google.svg" alt="">
+                            <span>Google</span>
+                        </button>
+                        <button class="btn github github-auth">
+                            <img src="../src/icons/github.svg" alt="">
+                            <span>Github</span>
+                        </button>
+                    </div>
+                    <span class="error-msg _lgErr hide" id="_lg-err">
+                        <span class="msg ph1-err-msg">
+                        </span>
+                    </span>
+                </div>
+                <span class="switch-action signup-switch">
+                    Don't have an account? <u class="_create-account">create one</u>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div id="spinnerx" class="show" >
+        <div class="wrapper">
+            <div class="preloader-logo">
+                <img src="../src/logo/nimo-primary.svg" alt="NIMO">
+            </div>
+            <div class="preloader-progress" id="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" ></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script defer src="../scripts/login.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,806 @@
+<div class="_auth _sec" id="_opSec">
+    <div class="wrapper">
+        <div class="logo-wrapper">
+            <span class="logo">
+                <img src="src/logo/nimo.svg" alt="NIMO" srcset="">
+            </span>
+            <span class="welcome" hidden></span>
+        </div>
+        <div class="cred-cont _lg-view _login">
+            <div class="wrapper">
+                <div class="inputs">
+                    <input type="email" name="email" id="_lg-email" placeholder="Email" required="">
+                    <input type="password" name="pwd" id="_lg-pwd" placeholder="Password" required="">
+                </div>
+                <button class="btn" type="submit" id="_lg-btn">login</button>
+                <span class="hr"></span>
+                <div class="anon-login-cont hide">
+                    <button class="anoni-login-btn">
+                        <img src="src/icons/anon.svg" alt="">
+                        <span>anonymous login</span>
+                    </button>
+                    <span class="info">
+                        <img src="src/icons/info.svg" alt="">
+                    </span>
+                    <div class="info-cont hide">
+                        <span class="title">How it works?</span>
+                        <span class="body">With anonymous account, you can login with your
+                            identity hidden and private. However, anonymous
+                            users can not access the following features such as
+                            adding friends and create guilds but will still join
+                             guilds and interract with members.</span>
+                        <span class="footer">Last updated on 21/09/2022</span>
+                    </div>
+                </div>
+                <span class="error-msg _lgErr hide" id="_lg-err">
+                    <span class="msg ph1-err-msg">
+                    </span>
+                </span>
+            </div>
+            <span class="switch-action signup-switch">
+                Don’t have an account? <u class="_create-account">create one</u>
+            </span>
+        </div>
+        <div class="cred-cont _sn-view phase-1 _create_account">
+            <div class="wrapper">
+                <div class="inputs">
+                    <input type="email" class="" name="email" id="sn-email" autofocus placeholder="Email" required="">
+               
+                    <span class="hr"></span>
+                    <input type="password" name="pwd" id="sn-pwd" autofocus placeholder="Enter password" required="">
+                    <input type="password" name="c-pwd" id="sn-c-pwd" autofocus placeholder="Confirm" required="">
+                    <span class="error-msg _phs1-err hide">
+                        <span class="msg ph1-err-msg">
+                        </span>
+                    </span>
+                </div>
+                <button class="btn" type="submit" id="phs-1-btn">
+                    <span>next</span>
+                    <img src="src/icons/arrow-right.svg" alt="">
+                </button>
+            </div>
+            <span class="switch-action login-switch">
+                Have an account? <u class="_login-btn">login</u>
+            </span>
+        </div>
+        <div class="cred-cont phase-2 _setup">
+            <div class="wrapper">
+                <div class="banner">
+                    <div class="banner-layer _banner_"></div>
+                    <span class="banner-picker _color-picker_" id="banner-picker">
+                        <img src="src/icons/picker.svg" alt="">
+                    </span>
+                </div>
+                <div class="profile-cont">
+                    <div class="pfp-cont">
+                        <span class="pfp _pfp_">
+                            <span class="progress hide" id="_prog"></span>
+                        </span>
+                        <label for="_pfp-file_" class="pfp-picker _pfp-picker_" id="pfp-picker">
+                            <img src="src/icons/editor.svg" alt="">
+                        </label>
+                        <input type="file" accept="image/*" name="" id="_pfp-file_" hidden>
+                    </div>
+                    <div class="username-cont">
+                        <input type="text" name="usrname" id="set-user-name" autofocus placeholder="Username" required="">
+                        <span class="usrid" id="_id_">#404</span>
+                    </div>
+                </div>
+                <span class="hr"></span>
+                <div class="about-cont">
+                    <span class="title">About</span>
+                    <textarea name="about" id="_set-about" cols="30" rows="10" placeholder="Optional"></textarea>
+                    <span class="tl">0/120</span>
+                </div>
+                <div class="layer hide"></div>
+            </div>
+            <span class="error-msg hide _set-Err">
+                <span class="msg err-msg">
+                </span>
+            </span>
+
+            <div class="bottom-btn">
+                <div class="btn-cont">
+                    <button class="btn setup-bc-btn" type="submit" id="setup-bc-btn">
+                        <span>Cancel</span>
+                    </button>
+                    <button class="btn" type="submit" id="setup-fin-btn">
+                        <span>Finish</span>
+                        <!-- <span class="preload">
+                            <img src="src/assets/spinner-2.svg" alt="">
+                        </span> -->
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="root _rt" id="_rt">
+    <div class="head">
+        <div class="left-cont">
+            <div class="h-prof">
+                <span class="h-prof-img r-100" style="background-image: url('src/imgs/avatar.svg');">
+                </span>
+                <span class="h-usr-name"><b class="id h-uid"></b></span>
+            </div>
+            <div class="h-top-btn">
+                <div class="btn-cont">
+                    <span>
+                        <img src="src/icons/settings.svg" alt="">
+                    </span>
+                </div>
+                <div class="btn-cont">
+                    <span>
+                        <img src="src/icons/noti.svg" alt="">
+                    </span>
+                </div>
+                <div class="btn-cont">
+                    <span>
+                        <img src="src/icons/friends.svg" alt="">
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="mark">
+            <img src="src/logo/nimo.svg" alt="">
+        </div>
+    </div>
+    <div class="content">
+        <div class="left-tab r-1">
+            <div class="content-wrapper">
+                <div class="chat-cordion">
+                    <div class="cordion-btn chbtn">
+                        <span>
+                            <img src="src/icons/chats.svg" alt="">
+                            <b>Chats<span class="chat-count">0</span></b>
+                        </span>
+                        <span class="fcicon">
+                            <img class="arrow" src="src/icons/arrow.svg" alt="">
+                        </span>
+                    </div>
+                    <div class="chats" id="chat-wrapper">
+                    </div>
+                </div>
+                <div class="channel-cordion">
+                    <div class="cordion-btn cnbtn">
+                        <span>
+                            <img src="src/icons/channels.svg" alt="">
+                            <b>Channels <span>124</span></b>
+                        </span>
+                        <span class="fcnicon">
+                            <img class="arrow" src="src/icons/arrow.svg" alt="">
+                        </span>
+                    </div>
+                    <div class="channels">
+                        <div class="channels-prof-cont">
+                            <span class="channels-pfp" style="background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.APx5PcE51XsWGy-2iZtLbwHaEo%26pid%3DApi&f=1');">
+                            </span>
+                            <span class="user-name">XMangaGangsX</span>
+                            <span class="count-bagde">50</span>
+                        </div>
+                        <div class="channels-prof-cont">
+                            <span class="channels-pfp" style="background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%3Fid%3DOIP.tey6YyK9MwShi7XXBB5V6QAAAA%26pid%3DApi&f=1');">
+                            </span>
+                            <span class="user-name">Sevenseas Chill</span>
+                            <span class="count-bagde">42</span>
+                        </div>
+                        <div class="channels-prof-cont">
+                            <span class="channels-pfp" style="background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.K4IwqgV-_1uiG-MbIQmFgwHaIN%26pid%3DApi&f=1');">
+                            </span>
+                            <span class="user-name">Minecraft Haters101</span>
+                            <span class="count-bagde">10</span>
+                        </div>
+                        <div class="channels-prof-cont">
+                            <span class="channels-pfp" style="background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.00FXsEXp_BZf4kk3jLfOCAHaE7%26pid%3DApi&f=1');">
+                            </span>
+                            <span class="user-name">My landscape</span>
+                            <span class="count-bagde">20</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-btn-cont">
+                <div class="btn">
+                    <span>
+                        <img src="src/icons/discover.svg" alt="">
+                    </span>
+                    <span class="label">Discover</span>
+                </div>
+                <div class="btn">
+                    <span>
+                        <img src="src/icons/addfriend.svg" alt="">
+                    </span>
+                    <span class="label">Add friend</span>
+                </div>
+            </div>
+        </div>
+        <div class="middle-tab r-1">
+            <div class="placeholder-graphic-cont" id="mtab-graphic-cont">
+                <span class="graphic">
+                    <img src="src/assets/hpgraphic.svg" alt="Not active chats">
+                </span>
+                <b>It's quiet for now!</b>
+            </div>
+            <div class="content_wrapper" id="mtab-content-wrapper">
+                <div class="header">
+                    <div class="chat-head c-header">
+                    </div>
+                </div>
+                <div class="msg-wrapper" id="msg-wrapper">
+                </div>
+                <div class="input-wrapper">
+                    <div class="input-cont">
+                        <input type="text" name="" id="msg-input" placeholder="Enter your message here..">
+                        <div class="btn-cont">
+                            <span class="emoji-btn _btn" >
+                                <img src="src/icons/emoji.svg" alt="">
+                            </span>
+                            <span class="emoji-btn _btn" >
+                                <img src="src/icons/image.svg" alt="">
+                            </span>
+                            <!-- <span class="emoji-btn">file</span> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-tab r-1" >
+            <div class="header">
+                <span class="participants">Participants <b class="time partici-counter">- 0</b></span>
+            </div>
+            <div class="participants-cont" id="participant-cont">
+                <div class="graphic-ph" id="rtab-graphic">
+                    <span class="icon">
+                        <img src="src/assets/graphic-ph.svg" alt="">
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="snippet-wrapper" id="right-prof-snipper">
+        <div class="pfp-snippet">
+            <span class="banner sn-banner"></span>
+            <div class="profile-cont">
+                <div class="pfp-cont">
+                    <span class="pfp sn-pfp"
+                        style="background-image: url('src/imgs/avatar.svg');"
+                    ></span>
+                    <div class="name-cont">
+                        <span class="usrname sn-uname"><b class="id sn-id">id</b></span>
+                    </div>
+                </div>
+                <div class="bio sn-bout"></div>
+                <div class="add sn-btn">
+                    <button>
+                        <img src="src/icons/add.svg" alt="">
+                        <span>Add</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sanmoji-snippet moji-cont" id="san-moji-snippet">
+        <div class="moji-spinner spinner" style="display: none;">
+            <svg class="spinner" viewbox="0 0 50 50">
+            <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+        </div>
+    </div>
+</div>
+<div class="cap-sec">
+    <div class="wrapper">
+        <div class="cred-cont middle-ware" id="middle-ware">
+            <div class="wrapper">
+                <div class="title-con">
+                    <span class="title">Hold up!</span>
+                    <span class="hr"></span>
+                    <span class="text">Let verify whether you are not robot, this won’t take long.</span>
+                </div>
+                <div class="captcha-cont">
+                    <div class="cap-wrapper">
+                        <div class="captcha"><s class="cap-h"></s></div>
+                        <span class="refresh cap-rf">
+                            <img src="src/icons/refresh.svg" alt="">
+                        </span>
+                    </div>
+                    <input type="text"  autofocus name="captchainput" id="cap-input" class="cap-input cap-in" required="" placeholder="Enter the captcha">
+                </div>
+                <span class="error-msg hide cap-err-msg">
+                    <span class="msg err-msg cap-err-msg-h" id="msg">
+                    </span>
+                </span>
+                <button class="button verify-btn cap-v-btn">Verify</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="_preloader_ _preload_sec show" id="_preloader_">
+    <div class="wrapper">
+        <div class="preloader-logo">
+            <img src="/src/logo/nimo-primary.svg" alt="NIMO">
+        </div>
+        <div class="msg-cont">
+            <span class="msg-title _preload-t">
+                <!-- Title here -->
+            </span>
+            <div class="msg-body _preload-b">
+                <!-- <span class="_preload-msg">Do you know that you can navigate easily with the help of  <b class="key">ESC</b> key! </span> -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="_preloader_2 _preload_sec" id="_preloader_2">
+    <div class="wrapper">
+        <div class="preloader-logo">
+            <img src="/src/logo/nimo-primary.svg" alt="NIMO">
+        </div>
+        <div class="msg-cont hide">
+            <span class="msg-title _preload-t-2">
+                <!-- Title here -->
+            </span>
+            <div class="msg-body _preload-b-2">
+                <!-- <span class="_preload-msg">Do you know that you can navigate easily with the help of  <b class="key">ESC</b> key! </span> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- home contents -->
+<div class="h-content">
+    <div class="h-content-wraper">
+        <div class="top-cont">
+            <button class="explore-rooms">
+                <img src="/src/icons/explore.svg" />
+                <span>Explore rooms</span>
+            </button>
+            <button class="create-room">
+                <img src="/src/icons/add-icon.svg" />
+                <span>Create room</span>
+            </button>
+        </div>
+        <div class="content-wrapper">
+            <div class="friend-cont">
+                <div class="title-cont">
+                    <img src="/src/icons/chats.svg">
+                    <span>Friends</span>
+                </div>
+                <div class="list-cont">
+                    <!-- <div class="friend-card">
+                        <div class="friend-pfp-cont">
+                            <span class="f-pfp" style="background-image: url('/src/imgs/avatar.svg')"></span>
+                            <span class="bagde">9+</span>
+                        </div>
+                        <span class="f-uname">Blee</span>
+                    </div> -->
+                    <div class="NOF">
+                            <img src="/src/assets/nof.svg" />
+                            <span class="nof-title">It’s quiet for now!</span>
+                            <span class="hr"></span>
+                            <span class="nof-sub">Add your friend to start chatting now!</span>
+                            <button class="nof-btn">Add friend</button>
+                    </div>
+                </div>
+            </div>
+            <div class="rooms-cont">
+                <div class="title-cont">
+                    <img src="/src/icons/rooms.svg">
+                    <span>Rooms</span>
+                </div>
+                <div class="list-cont">
+                    <!--<div class="room-card">
+                        <div class="room-pfp-cont">
+                            <span class="r-pfp" style="background-image: url('/src/imgs/avatar.svg')"></span>
+                        </div>
+                        <span class="r-name">City Worriors 
+                        [escape reality] </span>
+                    </div> -->
+                    <div class="NOR">
+                            <img src="/src/assets/nor.svg" />
+                            <span class="nof-title">You have not joined any rooms yet!</span>
+                            <span class="hr"></span>
+                            <button class="nof-btn">Join room</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="h-content-wraper">
+    <div class="top-cont">
+        <button class="explore-rooms">
+            <img src="/src/icons/explore.svg" />
+            <span>Explore rooms</span>
+        </button>
+        <button class="create-room">
+            <img src="/src/icons/add-icon.svg" />
+            <span>Create room</span>
+        </button>
+    </div>
+    <div class="content-wrapper">
+        <div class="friend-cont">
+            <div class="title-cont">
+                <img src="/src/icons/chats.svg">
+                <span>Friends</span>
+            </div>
+            <div class="list-cont" id="f_list">
+                <span class="spn">
+                    <img src="/src/assets/spinner-1.svg" />
+                </span>
+                <!-- <div class="friend-card">
+                    <div class="friend-pfp-cont">
+                        <span class="f-pfp" style="background-image: url('/src/imgs/avatar.svg')"></span>
+                        <span class="bagde">9+</span>
+                    </div>
+                    <span class="f-uname">Blee</span>
+                </div>
+                <div class="NOF">
+                        <img src="/src/assets/nof.svg" />
+                        <span class="nof-title">It’s quiet for now!</span>
+                        <span class="hr"></span>
+                        <span class="nof-sub">Add your friend to start chatting now!</span>
+                        <button class="nof-btn">Add friend</button>
+                </div> -->
+            </div>
+        </div>
+        <div class="rooms-cont">
+            <div class="title-cont">
+                <img src="/src/icons/rooms.svg">
+                <span>Rooms</span>
+            </div>
+            <div class="list-cont">
+                <span class="spn">
+                    <img src="/src/assets/spinner-r.svg" />
+                </span>
+                <!--<div class="room-card">
+                    <div class="room-pfp-cont">
+                        <span class="r-pfp" style="background-image: url('/src/imgs/avatar.svg')"></span>
+                    </div>
+                    <span class="r-name">City Worriors 
+                    [escape reality] </span>
+                </div>
+                <div class="NOR">
+                        <img src="/src/assets/nor.svg" />
+                        <span class="nof-title">You have not joined any rooms yet!</span>
+                        <span class="hr"></span>
+                        <button class="nof-btn">Join room</button>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- home contents -->
+
+<!-- Chat wrapper -->
+<div class="chat-wrapper">
+    <div class="chat-container">
+        <div class="wrapper">
+            <div class="header">
+                <button class="back-btn">
+                    <img src="/src/icons/back-arrow.svg" alt="<" />
+                </button>
+                <div class="f-pf-cont">
+                    <span class="f-name">Blee</span>
+                    <span class="status offline">
+                        <span class="tag-lock"></span>
+                        <span>Offline</span>
+                    </span>
+                </div>
+            </div>
+            <div class="msg-container">
+                <div class="msg-card">
+                    <div class="message-btn-cont">
+                        <span class="btn share">
+                            <img src="/src/icons/share.svg" /> 
+                        </span>
+                        <span class="btn copy">
+                            <img src="/src/icons/copy.svg" /> 
+                        </span>
+                        <!--<span class="hr-vertical"></span>
+                        <span class="btn delete">
+                            <img src="/src/icons/delete.svg" /> 
+                        </span> -->
+                    </div>
+                    <div class="msg-pf">
+                        <span class="pfp" style="background-image: url('/src/imgs/avatar.svg');"></span>
+                        <span class="name">Blee</span>
+                        <span class="time-stamp time">-&nbsp;&nbsp;20 mins ago</span>
+                    </div>
+                    <div class="msg">heloooo</div>  
+                </div>
+                <div class="msg-card">
+                    <div class="message-btn-cont">
+                        <span class="btn share">
+                            <img src="/src/icons/share.svg" /> 
+                        </span>
+                        <span class="btn copy">
+                            <img src="/src/icons/copy.svg" /> 
+                        </span>
+                        <!--<span class="hr-vertical"></span>
+                        <span class="btn delete">
+                            <img src="/src/icons/delete.svg" /> 
+                        </span> -->
+                    </div>
+                    <div class="reply-container">
+                        <div class="reply-wrapper">
+                            <span class="replyee-pfp" style="background-image: url('/src/imgs/avatar.svg');"></span>
+                            <span class="replyee-uname">@Blee</span>
+                            <span class="replyee-msg-trim">hi bestiee</span>
+                        </div>
+                        <span class="link-node"></span>
+                    </div>
+                    <div class="msg-pf">
+                        <span class="pfp" style="background-image: url('/src/imgs/avatar.svg');"></span>
+                        <span class="name">Blee</span>
+                        <span class="time-stamp time">-&nbsp;&nbsp;20 mins ago</span>
+                    </div>
+                    <div class="msg">heloooo</div>  
+                </div>
+                <div class="msg-card">
+                    <div class="message-btn-cont">
+                        <span class="btn share">
+                            <img src="/src/icons/share.svg" /> 
+                        </span>
+                        <span class="btn copy">
+                            <img src="/src/icons/copy.svg" /> 
+                        </span>
+                        <!--<span class="hr-vertical"></span>
+                        <span class="btn delete">
+                            <img src="/src/icons/delete.svg" /> 
+                        </span> -->
+                    </div>
+                    <div class="msg-pf">
+                        <span class="pfp" style="background-image: url('/src/imgs/avatar.svg');"></span>
+                        <span class="name">Blee</span>
+                        <span class="time-stamp time">-&nbsp;&nbsp;20 mins ago</span>
+                    </div>
+                    <div class="msg">
+                        <span class="message-content">dont mention it 😄</span>
+                        <span class="attachment" style="background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.974d-xVBADIOhUczG3FCjwHaHa%26pid%3DApi&f=1&ipt=2b83e2f6ee6bc199be509b334637af748d79940738da8803d930996a31e38687&ipo=images');">
+                        </span>
+                    </div>  
+                </div>
+            </div>
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input type="text" placeholder="Chat with @Blee" />
+                </div>
+                <div class="input-btn-container">
+                    <span class="input-btn">
+                        <img src="/src/icons/moji.svg" alt="😄" />
+                    </span>
+                    <span class="input-btn">
+                        <img src="/src/icons/image.svg" alt="🏞️" />
+                    </span>
+                </div>
+            </div>
+        </div>
+        <span class="spike"></span> 
+        <div class="participant-container">
+            <div class="header">
+                <span class="title">Participants</span>
+            </div>
+            <span class="hr-spike"></span>
+            <div class="participant_list_container">
+                <div class="participants-prof-cont"  id="">
+                    <span class="participants-pfp" style="background-image: url('/src/imgs/avatar.svg');">
+                    </span>
+                    <span class="participants-name">Blee<span class="id">#434</span></span>
+                </div>
+                <div class="participants-prof-cont"  id="">
+                    <span class="participants-pfp" style="background-image: url('/src/imgs/avatar.svg');">
+                    </span>
+                    <span class="participants-name">Konisa<span class="id">#228</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Chat wrapper -->
+<div class="chat-wrapper">
+    <div class="chat-container">
+        <div class="wrapper">
+            <div class="header" id="fc_header">
+                <button class="back-btn">
+                    <img src="/src/icons/back-arrow.svg" alt="<" />
+                </button>
+                <!-- <div class="f-pf-cont">
+                    <span class="f-name">Blee</span>
+                    <span class="status offline">
+                        <span class="tag-lock"></span>
+                        <span>Offline</span>
+                    </span>
+                </div> -->
+            </div>
+            <div class="msg-container" id="msg-container">
+                <!-- <div class="msg-card">
+                    <div class="message-btn-cont">
+                        <span class="btn share">
+                            <img src="/src/icons/|share.svg" /> 
+                        </span>
+                        <span class="btn copy">
+                            <img src="/src/icons/copy.svg" /> 
+                        </span>
+                        <span class="hr-vertical"></span>
+                        <span class="btn delete">
+                            <img src="/src/icons/delete.svg" /> 
+                        </span>
+                    </div>
+                    <div class="msg-pf">
+                        <span class="pfp" style="background-image: url('/src/imgs/avatar.svg');"></span>
+                        <span class="name">Blee</span>
+                        <span class="time-stamp time">-&nbsp;&nbsp;20 mins ago</span>
+                    </div>
+                    <div class="msg">
+                        <span class="message-content">hi bestiee, hru?</span>
+                        <span class="attachment hide" style="display:none;background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.974d-xVBADIOhUczG3FCjwHaHa%26pid%3DApi&f=1&ipt=2b83e2f6ee6bc199be509b334637af748d79940738da8803d930996a31e38687&ipo=images');">
+                        </span>
+                    </div>  
+                </div>
+                <div class="msg-card">
+                    <div class="message-btn-cont">
+                        <span class="btn share">
+                            <img src="/src/icons/share.svg" /> 
+                        </span>
+                        <span class="btn copy">
+                            <img src="/src/icons/copy.svg" /> 
+                        </span>
+                        <span class="hr-vertical"></span>
+                        <span class="btn delete">
+                            <img src="/src/icons/delete.svg" /> 
+                        </span>
+                    </div>
+                    <div class="reply-container">
+                        <div class="reply-wrapper">
+                            <span class="replyee-pfp" style="background-image: url('/src/imgs/avatar.svg');"></span>
+                            <span class="replyee-uname">@Blee</span>
+                            <span class="replyee-msg-trim">hi bestiee</span>
+                        </div>
+                        <span class="link-node"></span>
+                    </div>
+                    <div class="msg-pf">
+                        <span class="pfp" style="background-image: url('/src/imgs/avatar.svg');"></span>
+                        <span class="name">Blee</span>
+                        <span class="time-stamp time">-&nbsp;&nbsp;20 mins ago</span>
+                    </div>
+                    <div class="msg">
+                        <span class="message-content">um gimme a sec ima find the pick lol</span>
+                        <span class="attachment hide" style="display:none;background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.974d-xVBADIOhUczG3FCjwHaHa%26pid%3DApi&f=1&ipt=2b83e2f6ee6bc199be509b334637af748d79940738da8803d930996a31e38687&ipo=images');">
+                        </span>
+                    </div>  
+                </div>
+                <div class="msg-card">
+                    <div class="message-btn-cont">
+                        <span class="btn share">
+                            <img src="/src/icons/share.svg" /> 
+                        </span>
+                        <span class="btn copy">
+                            <img src="/src/icons/copy.svg" /> 
+                        </span>
+                        <span class="hr-vertical"></span>
+                        <span class="btn delete">
+                            <img src="/src/icons/delete.svg" /> 
+                        </span>
+                    </div>
+                    <div class="msg-pf">
+                        <span class="pfp" style="background-image: url('/src/imgs/avatar.svg');"></span>
+                        <span class="name">Blee</span>
+                        <span class="time-stamp time">-&nbsp;&nbsp;20 mins ago</span>
+                    </div>
+                    <div class="msg">
+                        <span class="message-content">dont mention it 😄</span>
+                        <span class="attachment" style="background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.974d-xVBADIOhUczG3FCjwHaHa%26pid%3DApi&f=1&ipt=2b83e2f6ee6bc199be509b334637af748d79940738da8803d930996a31e38687&ipo=images');">
+                        </span>
+                    </div>  
+                </div>
+                <div class="msg-card mention">
+                    <div class="message-btn-cont">
+                        <span class="btn share">
+                            <img src="/src/icons/share.svg" /> 
+                        </span>
+                        <span class="btn copy">
+                            <img src="/src/icons/copy.svg" /> 
+                        </span>
+                        <span class="hr-vertical"></span>
+                        <span class="btn delete">
+                            <img src="/src/icons/delete.svg" /> 
+                        </span>
+                    </div>
+                    <div class="reply-container">
+                        <div class="reply-wrapper">
+                            <span class="replyee-pfp" style="background-image: url('/src/imgs/avatar.svg');"></span>
+                            <span class="replyee-uname">@Blee</span>
+                            <span class="replyee-msg-trim">hi bestiee</span>
+                        </div>
+                        <span class="link-node"></span>
+                    </div>
+                    <div class="msg-pf">
+                        <span class="pfp" style="background-image: url('/src/imgs/avatar.svg');"></span>
+                        <span class="name">Blee</span>
+                        <span class="time-stamp time">-&nbsp;&nbsp;20 mins ago</span>
+                    </div>
+                    <div class="msg">
+                        <span class="message-content">omagad <b class="name-mention">@Hara</b> check this one out, its so cuteee</span>
+                        <span class="attachment hide" style="display:block;background-image: url('https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2F2.bp.blogspot.com%2F-ULQyq3CeToI%2FU5LIx5RPO3I%2FAAAAAAAADPQ%2FqKRFBdoFsY4%2Fs1600%2Fmost%2Bbeautiful%2Bteddy%2Bbears%2Bphoto%2B2014%2B(6).jpg&f=1&nofb=1&ipt=115b6142842b36aa4e3aafa84bce5753ec8af7734fde5c11c4d2052a33ab3c6a&ipo=images');">
+                        </span>
+                    </div>  
+                </div> -->
+            </div>
+            <div class="reply-handle" style="display:none" id="reply-handle">
+            </div>
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input type="text" id="msg_input" autofocus="true" placeholder="Message @" />
+                </div>
+                <div class="input-btn-container">
+                    <span class="input-btn">
+                        <img src="/src/icons/moji.svg" alt="😄" />
+                    </span>
+                    <span class="input-btn" id="img-toggle">
+                        <img src="/src/icons/image.svg" alt="🏞️" />
+                    </span>                                    
+                </div>
+            </div>
+        </div>
+        <span class="spike"></span> 
+        <div class="participant-container">
+            <div class="header">
+                <span class="title">Members</span>
+            </div>
+            <span class="hr-spike"></span>
+            <div class="participant_list_container" id="participant_list_container">
+                <!--<div class="participants-prof-cont"  id="">
+                    <span class="participants-pfp" style="background-image: url('/src/imgs/avatar.svg');">
+                    </span>
+                    <span class="participants-name">Blee<span class="id">#434</span></span>
+                </div>
+                <div class="participants-prof-cont"  id="">
+                    <span class="participants-pfp" style="background-image: url('/src/imgs/avatar.svg');">
+                    </span>
+                    <span class="participants-name">Konisa<span class="id">#228</span></span>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <div class="image-input-wrapper" id="image-picker-cont">
+        <div class="image-picker" id="img-picker">
+            <div class="picker-wrapper">
+                <div class="picker-cont">
+                    <label for="image-file" class="picker">
+                        <img src="/src/icons/upload.svg" />
+                    </label>
+                    <input type="file" id="image-file" hidden accept="image/png, image/jpeg"/>
+                </div>
+                <span>Upload or Drag & Drop </span>
+            </div>
+        </div>
+        <div class="image-displayer" id="img-displayer">
+            <div class="displayer" id="displayer" style="background-image:url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.KvgBcaaAFQGRpQivDROUdQHaE7%26pid%3DApi&f=1&ipt=1936762ebdbd41e8cb28f931b534faa599ee38e9225259a1aadeb6f27987d09d&ipo=images')">
+                <span class="display-layer-prog" id="_prog-layer"></span>
+            </div>
+            <textarea class="descr" id="file-desc" placeholder="  Enter description">Image name goes here.png</textarea>
+            <div class="prog-cont">
+                <span class="prog-bg">
+                    <span class="prog-bar" id="_prog-bar"></span>
+                </span>
+            </div>
+            <span class="cancel-btn" id="cancel-btn">
+                <img src="/src/icons/cancel.svg" />
+            </span>
+        </div>
+        <div class="image-picker-error" id="img-picker-error">
+            <div class="picker-wrapper">
+                <div class="picker-cont">
+                    <label for="image-file" class="picker">
+                        <img src="/src/icons/retry.svg" />
+                    </label>
+                    <input type="file" id="image-file" hidden accept="image/png, image/jpeg"/>
+                </div>
+                <span>Something went wrong!</span>
+            </div>
+        </div>
+        <span class="spinn" id="spin">
+            <img src="/src/assets/spinner-1.svg" />
+        </span>
+    </div>
+</div>
