@@ -104,7 +104,7 @@ const utilities = {
     alert: (msg, type, ac) => {
         let alertview = `
             <div class="alert-cont" id="alert">
-                <div class="wrapper" id="alert-wrapper">
+                <div class="wrapper scale-up-center" id="alert-wrapper">
                     <div class="content-cont">
                         <span class="icon">
                             <img src="${type == 'info' ? '../src/icons/info.svg' : type ==  'warning' ? '../src/icons/warning.svg' : '../src/icons/warning.svg'}" id="alert-icon">
@@ -123,7 +123,9 @@ const utilities = {
         document.getElementById('root').insertAdjacentHTML('beforeend', alertview);
 
         let confirmbtn = document.getElementById('alert-confirm'),
-            cancelbtn = document.getElementById('alert-cancel');
+            cancelbtn = document.getElementById('alert-cancel'),
+            alertElement = document.getElementById("alert"),
+            alertWrapper = document.getElementById("alert-wrapper");
 
         if(confirmbtn != null){
             confirmbtn.addEventListener('click', () => {
@@ -131,22 +133,36 @@ const utilities = {
                 confirmbtn.innerHTML = `<span class="preload">
                     <img src="src/assets/spinner-2.svg" alt="">
                 </span>`
+                cancelbtn.disabled = true;
+                confirmbtn.disabled = true;
                 setTimeout(() =>{
-                    if(document.getElementById('alert') != null){
-                        document.getElementById('alert').remove();
+                    if(alertElement != null){
+                        alertWrapper.classList.add('scale-out-center');
+                        setTimeout(() => {
+                            alertWrapper.classList.remove('scale-out-center');
+                            alertElement.remove();
+                            cancelbtn.disabled = false;
+                            confirmbtn.disabled = false;
+                        }, 100);
                     }
-                }, 300)
+                }, 100)
             });
         }
         if(cancelbtn != null){
             cancelbtn.addEventListener('click', ()=> {
-                if(document.getElementById('alert') != null){
-                    document.getElementById('alert').remove();
-                }
+                setTimeout(() => {
+                    if(alertElement != null){
+                        alertWrapper.classList.add('scale-out-center');
+                        setTimeout(() => {
+                            alertWrapper.classList.remove('scale-out-center');
+                            alertElement.remove();
+                        }, 100);
+                    }
+                }, 200)
             });
-        }
+        };
 
-        (function(){
+        (function() {
             document.onkeydown = function(evt) {
                 evt = evt || window.event;
                 let isEscape = false;
@@ -156,23 +172,27 @@ const utilities = {
                     isEscape = (evt.keyCode === 27);
                 }
                 if (isEscape) {
-                    if(document.getElementById('alert') != null){
-                        document.getElementById('alert').remove();
+                    if(alertElement != null){
+                        alertWrapper.classList.add('scale-out-center');
+                        setTimeout(() => {
+                            alertWrapper.classList.remove('scale-out-center');
+                            alertElement.remove();
+                        }, 100);
                     }
                 }
             };
             document.addEventListener("mouseup", function(event) {
-                let obj = document.getElementById('alert-wrapper');
-                
-                if(obj != null){
-                    if (!obj.contains(event.target)) {
-                        if(document.getElementById('alert') != null){
-                            document.getElementById('alert').remove();
-                        }
-                    }
+              if (alertWrapper != null && !alertWrapper.contains(event.target)) {
+                if (alertElement != null) {
+                    alertWrapper.classList.add('scale-out-center');
+                    setTimeout(() => {
+                        alertWrapper.classList.remove('scale-out-center');
+                        alertElement.remove();
+                    }, 100);
                 }
+              }
             });
-        }())
+        })();
     },
     genColor: ()=> {
         var letters = '0123456789ABCDEF';
@@ -247,6 +267,20 @@ const utilities = {
             if (cc > 0)
                 setTimeout(function() { count(--cc); }, 10);
         })(400);
+    },
+    formatDate: (date) => {
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const monthsOfYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        const dayOfWeek = daysOfWeek[date.getDay()];
+        const dayOfMonth = date.getDate();
+        const monthOfYear = monthsOfYear[date.getMonth()];
+        const hour = date.getHours();
+        const minute = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+
+        const formattedDate = `${dayOfWeek} ${dayOfMonth} ${monthOfYear} @ ${hour % 12}:${minute}${hour >= 12 ? 'pm' : 'am'}`;
+
+        return formattedDate;
     }
 }
 

@@ -92,7 +92,7 @@ $backdrop: rgba($color: #000000, $alpha: .6);
     }
 }
 .hide{
-    display: none;
+    display: none !important;
 }
 .show-pre{
     display: flex;

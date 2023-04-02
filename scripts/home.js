@@ -18,7 +18,7 @@ import Router from "../components/services/router/router.js";
     let  lsDB = localStorage;
 
     let auth = firebase.auth(),
-        _fsDb = firebase.firestore();
+        fsDB = firebase.firestore();
 
     let root = document.getElementById('root');
 
@@ -35,7 +35,7 @@ import Router from "../components/services/router/router.js";
             let vault_btn = document.getElementById('vault-btn'),
                 notification_btn = document.getElementById('notification-btn');
 
-            _fsDb.collection('/client').doc('meta').collection(uid).doc('meta_data').get()
+            fsDB.collection('/client').doc('meta').collection(uid).doc('meta_data').get()
             .then((sn) => {
                 $('#spinnerx').removeClass('load');
                 if($('#spinnerx').length > 0){
@@ -76,13 +76,13 @@ import Router from "../components/services/router/router.js";
                     vault_btn.innerHTML = `<span>
                                             <img class="frnd" src="../src/icons/friends.svg" alt="">
                                         </span>`
-                    _fsDb.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming').onSnapshot(function(sn){
+                    fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming').onSnapshot(function(sn){
                         sn.docChanges().forEach(function(ch){
+                            lsDB.setItem('vault_inbox_count', sn.size);
                             let bagde_card = `
                                 <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
                             `;
                             vault_btn.insertAdjacentHTML('beforeend', bagde_card);
-                            let vault_bagde = document.getElementById('vault-bagde');
 
                             if(sn.size <= 0){
                                 vault_btn.innerHTML = `<span>
@@ -130,7 +130,7 @@ import Router from "../components/services/router/router.js";
 
                 function  renderFnd(fID, cID){
                     fListCont.innerHTML = '';
-                    _fsDb.collection('/client').doc(fID).collection(fID)
+                    fsDB.collection('/client').doc(fID).collection(fID)
                     .doc('udata').get().then((sn) => {
                         const _dval = sn.data();
                         let fCard = `
@@ -196,7 +196,7 @@ import Router from "../components/services/router/router.js";
         async function getMeta(_usr_) {
             let _state_ = [];
 
-            await _fsDb
+            await fsDB
                 .collection("client")
                 .doc("meta_index")
                 .collection(_usr_)
@@ -205,7 +205,7 @@ import Router from "../components/services/router/router.js";
                 .then(async (_doc_) => {
                     if (_doc_.exists) {
                         const id = _doc_.data().id;
-                        await _fsDb
+                        await fsDB
                             .collection("client")
                             .doc("meta")
                             .collection(id)
@@ -273,7 +273,7 @@ import Router from "../components/services/router/router.js";
 
     const evenListener = {
         listen: {
-            esc: (el) => {
+            esc: (el, el2) => {
                 if(el != null){
                     log('can go back');
                     document.onkeydown = function(evt) {
@@ -285,7 +285,11 @@ import Router from "../components/services/router/router.js";
                             isEscape = (evt.keyCode === 27);
                         }
                         if (isEscape) {
-                            history.back();
+                            el2.classList.add('scale-out-center');
+                            setTimeout(() => {
+                                el2.classList.remove('scale-out-center');
+                                history.back();
+                            }, 100);
                         }
                     };
                 }else{
@@ -298,7 +302,11 @@ import Router from "../components/services/router/router.js";
                     let obj = document.getElementById(id);
                     if(obj != null){
                         if (!obj.contains(event.target)) {
-                            history.back();
+                            obj.classList.add('scale-out-center');
+                            setTimeout(() => {
+                                obj.classList.remove('scale-out-center');
+                                history.back();
+                            }, 100);
                         }
                     }else{
                         return;
@@ -356,6 +364,7 @@ import Router from "../components/services/router/router.js";
         root.insertAdjacentHTML('beforeend', view);
 
         let container = document.getElementById('addfriend-cont'),
+            container_wrapper = document.getElementById('container-wrappper'),
             close_btn = document.getElementById('adf-close-btn'),
             send_btn = document.getElementById('send_btn'),
             input = document.getElementById('input-fr');
@@ -381,9 +390,13 @@ import Router from "../components/services/router/router.js";
         })
         close_btn.addEventListener('click', function(e){
             e.preventDefault();
-            history.back();
+            container_wrapper.classList.add('scale-out-center');
+            setTimeout(() => {
+                container_wrapper.classList.remove('scale-out-center');
+                history.back();
+            }, 100);
         })
-        evenListener.listen.esc(container);
+        evenListener.listen.esc(container, container_wrapper);
         evenListener.listen.outClick('container-wrappper');
         
         function validate_request(){
@@ -423,7 +436,7 @@ import Router from "../components/services/router/router.js";
                             send_btn.disabled = true;
                             input.disabled = true;
 
-                            _fsDb.collection("client")
+                            fsDB.collection("client")
                             .doc("meta")
                             .collection(user_id)
                             .limit(1)
@@ -440,15 +453,18 @@ import Router from "../components/services/router/router.js";
                                     );
                                     reset();
                                 }else{
-                                    _fsDb.collection('client').doc('meta').collection(user_id).doc('requests')
-                                    .collection('incoming').doc(user_id)
+                                    let date = new Date();
+                                    fsDB.collection('client').doc('meta').collection(user_id).doc('requests')
+                                    .collection('incoming').doc(uid)
                                     .set({
-                                        id: uid
+                                        id: uid,
+                                        date: date
                                     }).then(() => {
-                                        _fsDb.collection('client').doc('meta').collection(uid).doc('requests')
+                                        fsDB.collection('client').doc('meta').collection(uid).doc('requests')
                                         .collection('outgoing').doc(user_id)
                                         .set({
-                                            id: user_id
+                                            id: user_id,
+                                            date: date
                                         }).then(() => {
                                             log('request sent to'+user_id);
                                             msgbox.alert(
@@ -516,117 +532,366 @@ import Router from "../components/services/router/router.js";
         (function(uid){
             console.log('vault');
             let view = `
-            <div class="vault" id="vault">
-                <div class="wrapper scale-up-center" id="vault-container">
-                    <div class="content-wrapper">
-                        <div class="header">
-                            <div class="btn-cont">
-                                <div class="btn-wrapper">
-                                    <span class="btn">Friends</span>
+                <div class="vault" id="vault">
+                    <div class="wrapper scale-up-center" id="vault-container">
+                        <div class="content-wrapper">
+                            <div class="header">
+                                <div class="btn-cont">
+                                    <div class="btn-wrapper active" id="vault-friends-btn">
+                                        <span class="btn">Friends</span>
+                                    </div>
+                                    <div class="btn-wrapper" id="vault-requests-btn">
+                                        <span class="btn">Requests</span>
+                                        <span class="bagde" style="display: none" id="request-badge"></span>
+                                    </div>
                                 </div>
-                                <div class="btn-wrapper active">
-                                    <span class="btn">Requests</span>
-                                    <span class="bagde">9+</span>
+                                <div class="close-btn-cont" id="vault-close-btn">
+                                    <img src="/src/icons/close-white.svg" alt="">
                                 </div>
                             </div>
-                            <div class="close-btn-cont">
-                                <img src="/src/icons/close-white.svg" alt="">
-                            </div>
-                        </div>
-                        <div class="container-wrapper friends hide">
-                            <div class="friend-card">
-                                <div class="card-wrapper">
-                                    <div class="avatar-comp-cont">
-                                        <div class="pfp-cont">
-                                            <div class="pfp" style="background-image: url(https://i.ytimg.com/vi/A7IQPSPviNI/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLDJ_iM-rLgO7yuflacC4ys33r_jPg);">
+                            <div class="container-wrapper friends" id="vault-friends-cont">
+                                <div class="friend-card">
+                                    <div class="card-wrapper">
+                                        <div class="avatar-comp-cont">
+                                            <div class="pfp-cont">
+                                                <div class="pfp" style="background-image: url(https://i.ytimg.com/vi/A7IQPSPviNI/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLDJ_iM-rLgO7yuflacC4ys33r_jPg);">
+                                                </div>
+                                            </div>
+                                            <div class="user-info-cont">
+                                                <span class="username">Vanny</span>
+                                                <span class="id">@000000000</span>
                                             </div>
                                         </div>
-                                        <div class="user-info-cont">
-                                            <span class="username">Vanny</span>
-                                            <span class="id">@000000000</span>
+                                        <div class="btn-comp-cont">
+                                            <span class="btn-item">
+                                                <img src="/src/icons/msg.svg" alt="">
+                                            </span>
+                                            <span class="hr"></span>
+                                            <span class="btn-item">
+                                                <img src="/src/icons/remove-friend.svg" alt="">
+                                            </span>
+                                            
                                         </div>
-                                    </div>
-                                    <div class="btn-comp-cont">
-                                        <span class="btn-item">
-                                            <img src="/src/icons/msg.svg" alt="">
-                                        </span>
-                                        <span class="hr"></span>
-                                        <span class="btn-item">
-                                            <img src="/src/icons/remove-friend.svg" alt="">
-                                        </span>
-                                        
                                     </div>
                                 </div>
                             </div>
+                            <div class="container-wrapper requests hide" id="vault-requests-cont">
+                                <div class="request-cat-cont">
+                                    <div class="cat-wrapper">
+                                        <div class="cat-item incoming-req active" id="incoming-req-btn">
+                                            <span class="cat">Incoming</span>
+                                            <span class="bagde" style="display: none" id="request-cat-badge"></span>
+                                        </div>
+                                        <div class="cat-item pending" id="pending-req-btn">
+                                            <span class="cat">Pending</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="request-item-cont incoming-requests" id="incoming-req-cont">
+                                </div>
+                                <div class="request-item-cont pending-requests hide" id="pending-req-cont">
+                                </div>
+                            </div>
                         </div>
-                        <div class="container-wrapper requests">
-                            <div class="friend-card incoming">
+                    </div>
+                </div>`;
+            root.insertAdjacentHTML('beforeend', view);
+            
+            let vault_container = document.getElementById('vault'),
+                vault_wrapper = document.getElementById('vault-container'),
+                vault_freinds_btn = document.getElementById('vault-friends-btn'),
+                vault_requests_btn = document.getElementById('vault-requests-btn'),
+                vault_friends_cont = document.getElementById('vault-friends-cont'),
+                vault_requests_cont = document.getElementById('vault-requests-cont'),
+                vault_close_btn = document.getElementById('vault-close-btn');
+            
+            let vault_incoming_req_btn = document.getElementById('incoming-req-btn'),
+                vault_pending_req_btn = document.getElementById('pending-req-btn'),
+                vault_incoming_req_cont = document.getElementById('incoming-req-cont'),
+                vault_pending_req_cont = document.getElementById('pending-req-cont');
+
+            let request_badge = document.getElementById('request-badge'),
+                request_cat_bagde = document.getElementById('request-cat-badge');
+            
+            vault_freinds_btn.addEventListener('click', () => {
+                if(!vault_freinds_btn.classList.contains('active')){
+                    vault_freinds_btn.classList.add('active');
+                    vault_requests_btn.classList.remove('active');
+
+                    switch_tab(vault_requests_cont, vault_friends_cont);
+                }
+            });
+            vault_requests_btn.addEventListener('click', () => {
+                if(!vault_requests_btn.classList.contains('active')){
+                    vault_requests_btn.classList.add('active');
+                    vault_freinds_btn.classList.remove('active');
+                    
+                    switch_tab(vault_friends_cont, vault_requests_cont);
+                }
+            });
+            vault_close_btn.addEventListener('click', () => {
+                vault_wrapper.classList.add('scale-out-center');
+                setTimeout(() => {
+                    history.back();
+                    vault_wrapper.classList.remove('scale-out-center');
+                }, 100);
+            });
+
+            vault_incoming_req_btn.addEventListener('click', () => {
+                if(!vault_incoming_req_btn.classList.contains('active')){
+                    vault_incoming_req_btn.classList.add('active');
+                    vault_pending_req_btn.classList.remove('active');
+
+                    switch_tab(vault_pending_req_cont, vault_incoming_req_cont);
+                }
+            });
+            vault_pending_req_btn.addEventListener('click', () => {
+                if(!vault_pending_req_btn.classList.contains('active')){
+                    vault_pending_req_btn.classList.add('active');
+                    vault_incoming_req_btn.classList.remove('active');
+
+                    switch_tab(vault_incoming_req_cont, vault_pending_req_cont);
+                }
+            });
+
+            (function(){
+                vault_incoming_req_cont.innerHTML =  `<div class="empty-friend-list">
+                <div class="empty-list-wrapper">
+                        <span class="icon-cont">
+                        <img src="../src/assets/empty.svg" />
+                        </span>
+                        <span class="label">No incoming request.</span>
+                    </div>
+                </div>`;
+                fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
+                .onSnapshot(function(sn){
+                    sn.docChanges().forEach(function(req){
+                        vault_incoming_req_cont.innerHTML = '';
+                        log(req.doc.data());
+                        let req_id = req.doc.data().id,
+                            req_date = req.doc.data().date.toDate();
+                        fsDB.collection('client').doc('meta').collection(req_id).doc('meta_data')
+                        .get().then(data => {
+                            let user_data = data.data();
+                            let card = `
+                            <div class="friend-card incoming" id="incoming-card-${req_id}">
                                 <div class="identifier-cont">
                                     <span class="identifier">
                                         <img src="src/icons/incoming.svg" alt="">
                                         <span class="label">Incoming request</span>
                                     </span>
+                                    <span class="new-badge"></span>
                                 </div>
                                 <div class="card-wrapper">
                                     <div class="avatar-comp-cont">
                                         <div class="pfp-cont">
-                                            <div class="pfp" style="background-image: url(https://i.ytimg.com/vi/A7IQPSPviNI/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLDJ_iM-rLgO7yuflacC4ys33r_jPg);">
+                                            <div class="pfp" style="background-image: url(${user_data.userProfileAvatar == 'default' ? '../src/imgs/default-avatar.pbg' : user_data.userProfileAvatar});">
                                             </div>
                                         </div>
                                         <div class="user-info-cont">
-                                            <span class="username">Vanny</span>
-                                            <span class="id">Sunday 4 2023 @ 11:20pm</span>
+                                            <span class="username">${user_data.user}</span>
+                                            <span class="id">${utilities.formatDate(req_date)}</span>
                                         </div>
                                     </div>
                                     <div class="btn-comp-cont">
-                                        <span class="btn-item btn btn-danger-normal">
+                                        <span class="btn-item btn btn-danger-normal" id="req-decline-btn-${req_id}">
                                             Decline
                                         </span>
                                         <span class="hr"></span>
-                                        <span class="btn-item btn btn-primary">
+                                        <span class="btn-item btn btn-primary" id="req-accept-btn-${req_id}">
                                             Accept
                                         </span>
                                         
                                     </div>
                                 </div>
-                            </div>
-                            <div class="friend-card incoming">
-                                <div class="identifier-cont">
-                                    <span class="identifier">
-                                        <img src="src/icons/outgoing.svg" alt="">
-                                        <span class="label">Outgoing request</span>
+                            </div>`;
+
+                            vault_incoming_req_cont.insertAdjacentHTML('beforeend', card);
+
+                            let req_accept_btn = document.getElementById(`req-accept-btn-${req_id}`),
+                                req_decline_btn = document.getElementById(`req-decline-btn-${req_id}`);
+
+                            let incoming_card = document.getElementById(`incoming-card-${req_id}`);
+
+                            try {
+                                req_accept_btn.addEventListener('click', () => {
+                                    req_accept_btn.innerHTML = `<span class="preload">
+                                            <img src="../src/assets/spinner-2.svg" alt="">
+                                        </span>`;
+                                    req_accept_btn.disabled = true;
+                                    req_decline_btn.disabled = true;
+
+                                    let link_id = utilities.rayId(),
+                                        remote_id = utilities.rayId(),
+                                        date = new Date();
+                                    log(remote_id);
+                                    
+                                    fsDB.collection('client').doc('meta').collection(uid).doc('links').collection(link_id)
+                                    .doc(remote_id).set({
+                                        link_id: link_id,
+                                        remote_id: remote_id,
+                                        friend_id: req_id,
+                                        date: date
+                                    }).then(() => {
+                                        fsDB.collection('client').doc('meta').collection(req_id).doc('links').collection(link_id)
+                                        .doc(remote_id).set({
+                                            link_id: link_id,
+                                            remote_id: remote_id,
+                                            friend_id: uid,
+                                            date: date
+                                        }).then(() => {
+                                            //send them notification of an accepted f-request --> //TODO
+                                            fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
+                                            .doc(req_id).delete().then(() => {
+                                                log('cache cleared from personal inbox!');
+                                                fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('outgoing')
+                                                .doc(uid).delete().then(() => {
+                                                    if(incoming_card != null){
+                                                        incoming_card.remove();
+                                                    }
+                                                    log('cache deleted from requester')
+                                                }).catch(err => {
+                                                    log(err);
+                                                })
+                                            }).catch(err => {
+                                                log(err);
+                                            })
+                                            log('friend added successful')
+                                        }).catch(error => {
+                                            log(error);
+                                        });
+                                    }).catch(error => {
+                                        log(error);
+                                    });
+                                });
+                                req_decline_btn.addEventListener('click', () => {
+                                    log(req_id);
+                                    utilities.alert('Are you sure you want to decline this request?', 'alert', action);
+    
+                                    function action(){
+                                        log('okii declining request')
+                                    }
+                                })
+                            } catch (error) {
+                                log('nothing to catch ignored!')
+                            }
+                        });
+                        if(sn.size <= 0){
+                            vault_incoming_req_cont.innerHTML =  `<div class="empty-friend-list">
+                            <div class="empty-list-wrapper">
+                                    <span class="icon-cont">
+                                    <img src="../src/assets/empty.svg" />
                                     </span>
+                                    <span class="label">No incoming request.</span>
                                 </div>
-                                <div class="card-wrapper">
-                                    <div class="avatar-comp-cont">
-                                        <div class="pfp-cont">
-                                            <div class="pfp" style="background-image: url(https://i.ytimg.com/vi/A7IQPSPviNI/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLDJ_iM-rLgO7yuflacC4ys33r_jPg);">
-                                            </div>
-                                        </div>
-                                        <div class="user-info-cont">
-                                            <span class="username">Vanny</span>
-                                            <span class="id">Sunday 4 2023 @ 11:20pm</span>
-                                        </div>
-                                    </div>
-                                    <div class="btn-comp-cont">
-                                        <span class="btn-item btn btn-danger-normal">
-                                            Cancel
+                            </div>`;
+                        };
+
+                        request_badge.innerText = `${sn.size}`;
+                        request_cat_bagde.innerText = `${sn.size}`;
+                        request_badge.style.display = sn.size <= 0 ? 'none' : 'flex';
+                        request_cat_bagde.style.display = sn.size <= 0 ? 'none' : 'flex';
+                    });
+                });
+
+                fsDB.collection('client').doc('meta').collection(uid)
+                .doc('requests').collection('outgoing')
+                .get().then((sn) => {
+                    if(sn.size <= 0){
+                        vault_pending_req_cont.innerHTML = `<div class="empty-friend-list">
+                        <div class="empty-list-wrapper">
+                                <span class="icon-cont">
+                                    <img src="../src/assets/empty.svg" />
+                                </span>
+                                <span class="label">No pending request.</span>
+                            </div>
+                        </div>`;
+                    };
+                    sn.forEach(req => {
+                        let req_id = req.data().id,
+                            req_date = req.data().date.toDate();
+                        
+                        console.log(utilities.formatDate(req_date));
+
+                        fsDB.collection('client').doc('meta').collection(req_id).doc('meta_data')
+                        .get().then(data => {
+                            let user_data = data.data();
+                            let card = `
+                                <div class="friend-card outgoing" id="outgoing-card-${req_id}">
+                                    <div class="identifier-cont">
+                                        <span class="identifier">
+                                            <img src="src/icons/outgoing.svg" alt="">
+                                            <span class="label">Outgoing request</span>
                                         </span>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            `;
-            root.insertAdjacentHTML('beforeend', view);
-            
-            let vault_container = document.getElementById('vault');
+                                    <div class="card-wrapper">
+                                        <div class="avatar-comp-cont">
+                                            <div class="pfp-cont">
+                                                <div class="pfp" style="background-image: url(${user_data.userProfileAvatar == 'default' ? '../src/imgs/default-avatar.pbg' : user_data.userProfileAvatar});">
+                                                </div>
+                                            </div>
+                                            <div class="user-info-cont">
+                                                <span class="username">${user_data.user}</span>
+                                                <span class="id">${utilities.formatDate(req_date)}</span>
+                                            </div>
+                                        </div>
+                                        <div class="btn-comp-cont">
+                                            <span class="btn-item btn btn-danger-normal" id="outgoing-cancel-btn-${req_id}">
+                                                Cancel
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>`;
 
-            evenListener.listen.esc(vault_container);
-            evenListener.listen.outClick('vault-container');
-        }(lsDB.getItem('id')))
+                            vault_pending_req_cont.insertAdjacentHTML('beforeend', card);
+
+                            let outgoing_cancel_btn = document.getElementById(`outgoing-cancel-btn-${req_id}`),
+                                outgoing_card = document.getElementById(`outgoing-card-${req_id}`);
+
+                            outgoing_cancel_btn.addEventListener('click', () => {
+                                log(req_id);
+                                utilities.alert('Do you want to cancel this request?', 'alert', action);
+
+                                function action(){ //delete my outgoing request --> go to friends incoming and check for my request id -> delete;
+                                    fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('incoming')
+                                    .doc(uid).delete().then(() => {
+                                        log('deleted!');
+                                        log(req_id);
+                                        fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('outgoing')
+                                        .doc(req_id).delete().then(() => {
+                                            log('outbox cleared');
+                                            if(outgoing_card != null){
+                                                outgoing_card.remove();
+                                            }
+                                        }).catch(err => {
+                                            log(err);
+                                        })
+                                    }).catch(err => {
+                                        log(err)
+                                    });
+                                }
+                            })
+                        }).catch(error => {
+                            log(error);
+                        });
+                    });
+                }).catch(error => {
+                    log(error);
+                });
+            }());
+            (function(){
+                log('getting friend lists');
+                fsDB.collection('client').doc('meta').collection(uid).doc('links')
+                .get().then((link_data) => {
+                    
+                })
+            }());
+        }(lsDB.getItem('id')));
+
+        function switch_tab(tab_1, tab_2){
+            tab_1.classList.add('hide');
+            tab_2.classList.remove('hide');
+        };
     }
     function initLag(){
         setTimeout(() => {

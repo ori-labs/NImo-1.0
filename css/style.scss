@@ -46,7 +46,7 @@ body{
     user-select: none;
     position: relative;
     background-color: $bgColor;
-    background-image: url('../src/imgs/vector.png');
+    // background-image: url('../src/imgs/vector.png');
     background-repeat: no-repeat;
     background-position: bottom;
     background-size: contain;
@@ -2927,7 +2927,7 @@ body{
                     display: flex;
                     flex-direction: row;
                     justify-content: space-between;
-                    border-bottom: 2px $borderColor solid;
+                    border-bottom: 1px $borderColor solid;
 
                     .title{
                         color: $lightColor;
@@ -2943,26 +2943,49 @@ body{
                         }
                     }
                     .close-btn{
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 100px;
+                        background-color: $compColor-2;
+                        border: 1px $inputBgColor solid;
                         display: flex;
-                        justify-items: center;
+                        justify-content: center;
                         align-items: center;
                         cursor: pointer;
-                        transition: transform .2s ease-in;
+                        transition: .2s ease-in;
+
                         img{
+                            opacity: .9;
                             width: 20px;
+                            transition: transform .2s ease-in;
                         }
 
-                        &:active{
-                            opacity: .8;
-                            transform: scale(.6);
+                        &:hover{
+                            background-color: $inputBgColor;
                         }
+                        &:active > img{
+                            transform: scale(.8);
+                        }
+                        // display: flex;
+                        // justify-items: center;
+                        // align-items: center;
+                        // cursor: pointer;
+                        // transition: transform .2s ease-in;
+                        // img{
+                        //     width: 20px;
+                        // }
+
+                        // &:active{
+                        //     opacity: .8;
+                        //     transform: scale(.6);
+                        // }
                     }
                 }
                 .contents{
-                    padding: 10px;
+                    padding: 15px;
                     display: flex;
                     flex-direction: column;
-                    row-gap: 15px;
+                    row-gap: 20px;
                     height: 100px;
                     min-width: 400px;
                     justify-content: center;
@@ -3115,7 +3138,6 @@ body{
                             }
                         }
                         .close-btn-cont{
-                            background-color: orange;
                             width: 32px;
                             height: 32px;
                             border-radius: 100px;
@@ -3144,8 +3166,8 @@ body{
                     .container-wrapper{
                         background-color: $compColor-2;
                         border-radius: 5px;
-                        min-height: 350px;
-                        max-height: 350px;
+                        min-height: 400px;
+                        max-height: 400px;
                         overflow: hidden;
                         overflow-y: auto;
                         // display: flex;
@@ -3263,45 +3285,176 @@ body{
                     }
                     .requests{
                         padding-top: 2px !important;
-                        .friend-card{
-                            background-color: $moodDark;
-                            flex-direction: column;
-                            row-gap: 1px !important;
-                            // padding: 2px;
-                            margin-top: 5px;
+                        flex-direction: column;
+                        overflow: hidden;
 
-                            .identifier-cont{
-                                width: 100%;
-                                // background-color: orange;
-                                border-bottom: 1px rgba($color: $borderColor, $alpha: .4) solid;
-                                padding: 5px;
+                        .request-cat-cont{
+                            width: 100%;
+                            // background-color: orange;
+                            display: flex;
+                            align-items: center;
+                            flex-direction: column;
+                            padding-top: 4px;
+                            .cat-wrapper{
+                                // background-color: green;
                                 display: flex;
-                                flex-direction: row;
+                                background-color: $moodDark;
+                                border-radius: 5px;
+                                padding: 5px;
                                 column-gap: 10px;
+                                flex-direction: row;
+                                justify-content: center;
                                 align-items: center;
 
-                                .identifier{
+                                .cat-item{
+                                    border-radius: 4px;
+                                    padding: 4px 8px 4px 8px;
                                     display: flex;
                                     flex-direction: row;
-                                    align-items: center;
-                                    column-gap: 5px;
+                                    column-gap: 10px;
+                                    cursor: pointer;
+                                    transition: background .2s ease-in;
 
-                                    img{
-                                        width: 18px;
-                                    }
                                     span{
-                                        // font-weight: lighter;
-                                        font-size: 14px;
-                                        color: $idColor
+                                        color: $lightColor;
+                                        font-size: 13px;
+                                        font-weight: lighter;
+                                        font-family: inherit;
+                                        transition: transform .2s ease-in;
+                                    }
+                                    .bagde{
+                                        background-color: $primaryColor;
+                                        padding: 3px;
+                                        // border: 1px $moodDark solid;
+                                        width: 14px;
+                                        height: 14px;
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        border-radius: 100px;
+                                        font-size: 13px;
+                                    }
+
+                                    &:active{
+                                        background-color: $compColor-1;
+                                    }
+                                    &:active > span{
+                                        transform: scale(.8);
                                     }
                                 }
-                                .id{
-                                    font-weight: lighter !important;
-                                    font-size: 13px !important;
+                                .active{
+                                    background-color: $compColor-1 !important;
                                 }
                             }
-                            .card-wrapper{
-                                padding: 8px;
+                        }
+                        .request-item-cont{
+                            height: 350px;
+                            width: 100%;
+                            overflow: hidden;
+                            overflow-y: scroll;
+                            padding: 0px 5px 5px 2px;
+                            // background-color: orange;
+
+                            .empty-friend-list{
+                                width: 100%;
+                                height: 100%;
+                                display: flex;
+                                // background-color: orange;
+                                justify-content: center;
+                                align-items: center;
+
+                                .empty-list-wrapper{
+                                    display: flex;
+                                    // background-color: orange;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    // justify-content: center;
+                                    width: 100%;
+                                    // height: 100%;
+                                    row-gap: 10px;
+                                    .icon-cont{
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+
+                                        img{
+                                            width: 5rem;
+                                        }
+                                    }
+                                    .label{
+                                        color: $lightColor;
+                                        font-family: inherit;
+                                        font-size: 14px;
+                                        columns: $idColor;
+                                        font-weight: normal;
+                                        opacity: .5;
+                                    }
+                                }
+                            }
+                            .friend-card{
+                                background-color: $moodDark;
+                                flex-direction: column;
+                                row-gap: 1px !important;
+                                // padding: 2px;
+                                margin-top: 5px;
+    
+                                .identifier-cont{
+                                    width: 100%;
+                                    // background-color: orange;
+                                    border-bottom: 1px rgba($color: $borderColor, $alpha: .4) solid;
+                                    padding: 5px;
+                                    display: flex;
+                                    flex-direction: row;
+                                    column-gap: 10px;
+                                    align-items: center;
+                                    justify-content: space-between;
+                                    .identifier{
+                                        display: flex;
+                                        flex-direction: row;
+                                        align-items: center;
+                                        column-gap: 5px;
+    
+                                        img{
+                                            width: 18px;
+                                        }
+                                        span{
+                                            // font-weight: lighter;
+                                            font-size: 14px;
+                                            color: $idColor
+                                        }
+                                    }
+                                    .id{
+                                        font-weight: lighter !important;
+                                        font-size: 13px !important;
+                                    }
+                                    .new-badge{
+                                        font-size: 12px;
+                                        width: 10px;
+                                        height: 10px;
+                                        background-color: $dangerRed;
+                                        margin-right: 15px;
+                                        border-radius: 100px;
+                                        text-align: center;
+                                        color: $lightColor;
+                                    }
+                                }
+                                .card-wrapper{
+                                    padding: 8px;
+
+                                    .btn-item{
+                                        display: flex;
+                                        justify-content: center;
+
+                                        .preload{
+                                            width: 100%;
+                                            height: 100%;
+                                            display: flex;
+                                            img{
+                                                width: 16px;
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -3983,7 +4136,7 @@ body{
     }
 
     .alert-cont{
-        background-color: rgba($color: $lureDark, $alpha: .9);
+        background-color: $backdrop;
         z-index: 99;
         top: 0%;
         position: absolute;
@@ -3998,20 +4151,20 @@ body{
             background-color: $compColor-1;
             display: flex;
             flex-direction: column;
-            row-gap: 12px;
+            // row-gap: 12px;
             border-radius: 5px;
             overflow: hidden;
 
 
             .content-cont{
                 // background-color: green;
-                padding: 10px 10px 18px 10px;
+                padding: 10px 10px 10px 10px;
                 display: flex;
                 flex-direction: column;
                 row-gap: 10px;
                 align-items: center;
                 justify-content: center;
-                border-bottom: 1px rgba($color: $borderColor, $alpha: .8) solid;
+                // border-bottom: 1px rgba($color: $borderColor, $alpha: .8) solid;
 
                 .icon{
                     width: 50px;
@@ -4030,8 +4183,9 @@ body{
                     color: $lightColor;
                     text-align: center;
                     font-family: inherit;
-                    font-weight: 400;
-                    opacity: .7;
+                    font-weight: normal;
+                    // opacity: .7;
+                    font-size: 15px;
                 }
             }
             .btn-cont{
@@ -4039,12 +4193,10 @@ body{
                 // background-color: orange;
                 display: flex !important;
                 flex-direction: row !important;
-                justify-content: center;
+                justify-content: space-around !important;
                 align-items: center !important;
-                column-gap: 40px;
-                // justify-content: center !important;
                 padding: 5px 10px 15px 10px;
-                // padding: 10px;
+
                 button{
                     outline: none;
                     border: none;
@@ -4052,20 +4204,23 @@ body{
                     border-radius: 4px;
                     cursor: pointer;
                     width: 100px;
-                    padding: 6px 10px 6px 10px;
-                    font-size: 15px;
+                    padding: 6px 15px 6px 15px !important;
+                    font-size: 14px;
+                    font-family: inherit;
+                    transition: .2s ease-in;
                     &:hover{
-                        opacity: .6;
+                        opacity: .8;
                     }
                     &:active{
-                        opacity: .9;
+                        transform: scale(.9);
                     }
                 }
                 .cancel{
-                    background-color: $btnColor;
+                    background-color: transparent;
+                    border: 1px $borderColor solid;
                 }
                 .confirm{
-                    background-color: $dangerRed;
+                    background-color: $googleRed;
                     display: flex;
                     justify-content: center;
                     align-items: center;

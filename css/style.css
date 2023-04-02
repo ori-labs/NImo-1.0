@@ -11,7 +11,6 @@ body {
   user-select: none;
   position: relative;
   background-color: #202024;
-  background-image: url("../src/imgs/vector.png");
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: contain;
@@ -2629,7 +2628,7 @@ body .root .addfriend-cont .wrapper .header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  border-bottom: 2px #4e4e53 solid;
+  border-bottom: 1px #4e4e53 solid;
 }
 body .root .addfriend-cont .wrapper .header .title {
   color: #F7F7F8;
@@ -2646,24 +2645,33 @@ body .root .addfriend-cont .wrapper .header .title img {
   width: 20px;
 }
 body .root .addfriend-cont .wrapper .header .close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 100px;
+  background-color: #35353D;
+  border: 1px #2F2F37 solid;
   display: flex;
-  justify-items: center;
+  justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: transform 0.2s ease-in;
+  transition: 0.2s ease-in;
 }
 body .root .addfriend-cont .wrapper .header .close-btn img {
+  opacity: 0.9;
   width: 20px;
+  transition: transform 0.2s ease-in;
 }
-body .root .addfriend-cont .wrapper .header .close-btn:active {
-  opacity: 0.8;
-  transform: scale(0.6);
+body .root .addfriend-cont .wrapper .header .close-btn:hover {
+  background-color: #2F2F37;
+}
+body .root .addfriend-cont .wrapper .header .close-btn:active > img {
+  transform: scale(0.8);
 }
 body .root .addfriend-cont .wrapper .contents {
-  padding: 10px;
+  padding: 15px;
   display: flex;
   flex-direction: column;
-  row-gap: 15px;
+  row-gap: 20px;
   height: 100px;
   min-width: 400px;
   justify-content: center;
@@ -2808,7 +2816,6 @@ body .root .vault .wrapper .content-wrapper .header .btn-cont .active {
   background-color: #3E3E45;
 }
 body .root .vault .wrapper .content-wrapper .header .close-btn-cont {
-  background-color: orange;
   width: 32px;
   height: 32px;
   border-radius: 100px;
@@ -2834,8 +2841,8 @@ body .root .vault .wrapper .content-wrapper .header .close-btn-cont:active > img
 body .root .vault .wrapper .content-wrapper .container-wrapper {
   background-color: #35353D;
   border-radius: 5px;
-  min-height: 350px;
-  max-height: 350px;
+  min-height: 400px;
+  max-height: 400px;
   overflow: hidden;
   overflow-y: auto;
   gap: 4px;
@@ -2942,14 +2949,109 @@ body .root .vault .wrapper .content-wrapper .container-wrapper .friend-card:hove
 }
 body .root .vault .wrapper .content-wrapper .requests {
   padding-top: 2px !important;
+  flex-direction: column;
+  overflow: hidden;
 }
-body .root .vault .wrapper .content-wrapper .requests .friend-card {
+body .root .vault .wrapper .content-wrapper .requests .request-cat-cont {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 4px;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-cat-cont .cat-wrapper {
+  display: flex;
+  background-color: #2E2E32;
+  border-radius: 5px;
+  padding: 5px;
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-cat-cont .cat-wrapper .cat-item {
+  border-radius: 4px;
+  padding: 4px 8px 4px 8px;
+  display: flex;
+  flex-direction: row;
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease-in;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-cat-cont .cat-wrapper .cat-item span {
+  color: #F7F7F8;
+  font-size: 13px;
+  font-weight: lighter;
+  font-family: inherit;
+  transition: transform 0.2s ease-in;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-cat-cont .cat-wrapper .cat-item .bagde {
+  background-color: #9568A6;
+  padding: 3px;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100px;
+  font-size: 13px;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-cat-cont .cat-wrapper .cat-item:active {
+  background-color: #3E3E45;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-cat-cont .cat-wrapper .cat-item:active > span {
+  transform: scale(0.8);
+}
+body .root .vault .wrapper .content-wrapper .requests .request-cat-cont .cat-wrapper .active {
+  background-color: #3E3E45 !important;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont {
+  height: 350px;
+  width: 100%;
+  overflow: hidden;
+  overflow-y: scroll;
+  padding: 0px 5px 5px 2px;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .empty-friend-list {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .empty-friend-list .empty-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  row-gap: 10px;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .empty-friend-list .empty-list-wrapper .icon-cont {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .empty-friend-list .empty-list-wrapper .icon-cont img {
+  width: 5rem;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .empty-friend-list .empty-list-wrapper .label {
+  color: #F7F7F8;
+  font-family: inherit;
+  font-size: 14px;
+  -moz-columns: #8A8B96;
+       columns: #8A8B96;
+  font-weight: normal;
+  opacity: 0.5;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .friend-card {
   background-color: #2E2E32;
   flex-direction: column;
   row-gap: 1px !important;
   margin-top: 5px;
 }
-body .root .vault .wrapper .content-wrapper .requests .friend-card .identifier-cont {
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .friend-card .identifier-cont {
   width: 100%;
   border-bottom: 1px rgba(78, 78, 83, 0.4) solid;
   padding: 5px;
@@ -2958,27 +3060,50 @@ body .root .vault .wrapper .content-wrapper .requests .friend-card .identifier-c
   -moz-column-gap: 10px;
        column-gap: 10px;
   align-items: center;
+  justify-content: space-between;
 }
-body .root .vault .wrapper .content-wrapper .requests .friend-card .identifier-cont .identifier {
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .friend-card .identifier-cont .identifier {
   display: flex;
   flex-direction: row;
   align-items: center;
   -moz-column-gap: 5px;
        column-gap: 5px;
 }
-body .root .vault .wrapper .content-wrapper .requests .friend-card .identifier-cont .identifier img {
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .friend-card .identifier-cont .identifier img {
   width: 18px;
 }
-body .root .vault .wrapper .content-wrapper .requests .friend-card .identifier-cont .identifier span {
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .friend-card .identifier-cont .identifier span {
   font-size: 14px;
   color: #8A8B96;
 }
-body .root .vault .wrapper .content-wrapper .requests .friend-card .identifier-cont .id {
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .friend-card .identifier-cont .id {
   font-weight: lighter !important;
   font-size: 13px !important;
 }
-body .root .vault .wrapper .content-wrapper .requests .friend-card .card-wrapper {
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .friend-card .identifier-cont .new-badge {
+  font-size: 12px;
+  width: 10px;
+  height: 10px;
+  background-color: #A72A48;
+  margin-right: 15px;
+  border-radius: 100px;
+  text-align: center;
+  color: #F7F7F8;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .friend-card .card-wrapper {
   padding: 8px;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .friend-card .card-wrapper .btn-item {
+  display: flex;
+  justify-content: center;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .friend-card .card-wrapper .btn-item .preload {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+body .root .vault .wrapper .content-wrapper .requests .request-item-cont .friend-card .card-wrapper .btn-item .preload img {
+  width: 16px;
 }
 body .root .snippet-wrapper {
   background-color: #202024;
@@ -3562,7 +3687,7 @@ body .cray {
   height: 30px;
 }
 body .alert-cont {
-  background-color: rgba(32, 32, 36, 0.9);
+  background-color: rgba(0, 0, 0, 0.6);
   z-index: 99;
   top: 0%;
   position: absolute;
@@ -3577,18 +3702,16 @@ body .alert-cont .wrapper {
   background-color: #3E3E45;
   display: flex;
   flex-direction: column;
-  row-gap: 12px;
   border-radius: 5px;
   overflow: hidden;
 }
 body .alert-cont .wrapper .content-cont {
-  padding: 10px 10px 18px 10px;
+  padding: 10px 10px 10px 10px;
   display: flex;
   flex-direction: column;
   row-gap: 10px;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px rgba(78, 78, 83, 0.8) solid;
 }
 body .alert-cont .wrapper .content-cont .icon {
   width: 50px;
@@ -3606,16 +3729,14 @@ body .alert-cont .wrapper .content-cont .alert-message {
   color: #F7F7F8;
   text-align: center;
   font-family: inherit;
-  font-weight: 400;
-  opacity: 0.7;
+  font-weight: normal;
+  font-size: 15px;
 }
 body .alert-cont .wrapper .btn-cont {
   display: flex !important;
   flex-direction: row !important;
-  justify-content: center;
+  justify-content: space-around !important;
   align-items: center !important;
-  -moz-column-gap: 40px;
-       column-gap: 40px;
   padding: 5px 10px 15px 10px;
 }
 body .alert-cont .wrapper .btn-cont button {
@@ -3625,20 +3746,23 @@ body .alert-cont .wrapper .btn-cont button {
   border-radius: 4px;
   cursor: pointer;
   width: 100px;
-  padding: 6px 10px 6px 10px;
-  font-size: 15px;
+  padding: 6px 15px 6px 15px !important;
+  font-size: 14px;
+  font-family: inherit;
+  transition: 0.2s ease-in;
 }
 body .alert-cont .wrapper .btn-cont button:hover {
-  opacity: 0.6;
+  opacity: 0.8;
 }
 body .alert-cont .wrapper .btn-cont button:active {
-  opacity: 0.9;
+  transform: scale(0.9);
 }
 body .alert-cont .wrapper .btn-cont .cancel {
-  background-color: #5B5C63;
+  background-color: transparent;
+  border: 1px #4e4e53 solid;
 }
 body .alert-cont .wrapper .btn-cont .confirm {
-  background-color: #A72A48;
+  background-color: #D95644;
   display: flex;
   justify-content: center;
   align-items: center;
