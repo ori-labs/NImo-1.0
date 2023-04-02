@@ -1198,6 +1198,7 @@ body{
     
                                     span{
                                         color: $lightColor;
+                                        text-align: center;
                                     }
                                     .hr{
                                         max-width: 40px;
@@ -1226,12 +1227,21 @@ body{
                                         color: $lightColor;
                                         font-size: 15px;
                                         cursor: pointer;
-    
+                                        transition: .2s ease-in;
+                                        display: flex;
+                                        align-items: center;
+                                        flex-direction: row;
+                                        column-gap: 5px;
+
+                                        img{
+                                            width: 15px;
+                                        }
                                         &:hover{
                                             opacity: .7;
                                         }
                                         &:active{
                                             opacity: .9;
+                                            transform: scale(.8);
                                         }
                                     }
     
@@ -3282,6 +3292,90 @@ body{
                                 background-color: $moodDark;
                             }
                         }
+                        .empty-friend-list{
+                            width: 100%;
+                            height: 300px;
+                            display: flex;
+                            // background-color: orange;
+                            justify-content: center;
+                            align-items: center;
+
+                            .empty-list-wrapper{
+                                display: flex;
+                                // background-color: orange;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                width: 100%;
+                                height: 100%;
+                                row-gap: 10px;
+                                .icon-cont{
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+
+                                    img{
+                                        width: 5rem;
+                                    }
+                                }
+                                .label{
+                                    color: $lightColor;
+                                    font-family: inherit;
+                                    font-size: 14px;
+                                    columns: $idColor;
+                                    font-weight: normal;
+                                    opacity: .5;
+                                    text-align: center;
+                                }
+                                span{
+                                    color: $lightColor;
+                                }
+                                .hr{
+                                    max-width: 40px;
+                                }
+
+                                img{
+                                    width: 55px;
+                                    opacity: .7;
+                                }
+                                .nof-title{
+                                    font-size: 15px;
+                                    opacity: .7;
+                                }
+                                .nof-sub{
+                                    font-size: 13px;
+                                    opacity: .5;
+                                }
+                                button{
+                                    margin-top: 4px;
+                                    padding: 5px 8px 5px 8px;
+                                    background-color: $primaryColor;
+                                    border-radius: 3px;
+                                    border: none;
+                                    font-family: inherit;
+                                    outline: none;
+                                    color: $lightColor;
+                                    font-size: 15px;
+                                    cursor: pointer;
+                                    transition: .2s ease-in;
+                                    display: flex;
+                                    align-items: center;
+                                    flex-direction: row;
+                                    column-gap: 5px;
+
+                                    img{
+                                        width: 15px;
+                                    }
+                                    &:hover{
+                                        opacity: .7;
+                                    }
+                                    &:active{
+                                        opacity: .9;
+                                        transform: scale(.8);
+                                    }
+                                }
+                            }
+                        }
                     }
                     .requests{
                         padding-top: 2px !important;
@@ -4185,7 +4279,8 @@ body{
                     font-family: inherit;
                     font-weight: normal;
                     // opacity: .7;
-                    font-size: 15px;
+                    font-size: 14px;
+                    font-weight: lighter;
                 }
             }
             .btn-cont{

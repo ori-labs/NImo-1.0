@@ -102,7 +102,10 @@ import Router from "../components/services/router/router.js";
                         <span class="nof-title">It's quiet for now!</span>
                         <span class="hr"></span>
                         <span class="nof-sub">Add friends to start chatting!</span>
-                        <button class="nof-btn" id="add-friend">Add friend</button>
+                        <button class="nof-btn" id="add-friend"> 
+                            <img src="../src/icons/add-freind.svg" />
+                            <span>Add friend </span>
+                        </button>
                     </div>`;
                 let friend_list_cont = document.getElementById('f_list'),
                     spmc = 0;
@@ -468,7 +471,7 @@ import Router from "../components/services/router/router.js";
                                         }).then(() => {
                                             log('request sent to'+user_id);
                                             msgbox.alert(
-                                                `Request was send successfully!`,
+                                                `Request was sent successfully!`,
                                                 msgbox_icoonEl,
                                                 msgbox_msgEl,
                                                 msgbox_parent,
@@ -550,30 +553,6 @@ import Router from "../components/services/router/router.js";
                                 </div>
                             </div>
                             <div class="container-wrapper friends" id="vault-friends-cont">
-                                <div class="friend-card">
-                                    <div class="card-wrapper">
-                                        <div class="avatar-comp-cont">
-                                            <div class="pfp-cont">
-                                                <div class="pfp" style="background-image: url(https://i.ytimg.com/vi/A7IQPSPviNI/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLDJ_iM-rLgO7yuflacC4ys33r_jPg);">
-                                                </div>
-                                            </div>
-                                            <div class="user-info-cont">
-                                                <span class="username">Vanny</span>
-                                                <span class="id">@000000000</span>
-                                            </div>
-                                        </div>
-                                        <div class="btn-comp-cont">
-                                            <span class="btn-item">
-                                                <img src="/src/icons/msg.svg" alt="">
-                                            </span>
-                                            <span class="hr"></span>
-                                            <span class="btn-item">
-                                                <img src="/src/icons/remove-friend.svg" alt="">
-                                            </span>
-                                            
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                             <div class="container-wrapper requests hide" id="vault-requests-cont">
                                 <div class="request-cat-cont">
@@ -619,6 +598,7 @@ import Router from "../components/services/router/router.js";
                     vault_requests_btn.classList.remove('active');
 
                     switch_tab(vault_requests_cont, vault_friends_cont);
+                    render_friends_list();
                 }
             });
             vault_requests_btn.addEventListener('click', () => {
@@ -656,136 +636,145 @@ import Router from "../components/services/router/router.js";
 
             (function(){
                 vault_incoming_req_cont.innerHTML =  `<div class="empty-friend-list">
-                <div class="empty-list-wrapper">
-                        <span class="icon-cont">
-                        <img src="../src/assets/empty.svg" />
-                        </span>
-                        <span class="label">No incoming request.</span>
-                    </div>
-                </div>`;
+                    <div class="empty-list-wrapper">
+                            <span class="icon-cont">
+                            <img src="../src/assets/empty.svg" />
+                            </span>
+                            <span class="label">No incoming request.</span>
+                        </div>
+                    </div>`;
                 fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
                 .onSnapshot(function(sn){
                     sn.docChanges().forEach(function(req){
-                        vault_incoming_req_cont.innerHTML = '';
                         log(req.doc.data());
                         let req_id = req.doc.data().id,
                             req_date = req.doc.data().date.toDate();
-                        fsDB.collection('client').doc('meta').collection(req_id).doc('meta_data')
-                        .get().then(data => {
-                            let user_data = data.data();
-                            let card = `
-                            <div class="friend-card incoming" id="incoming-card-${req_id}">
-                                <div class="identifier-cont">
-                                    <span class="identifier">
-                                        <img src="src/icons/incoming.svg" alt="">
-                                        <span class="label">Incoming request</span>
-                                    </span>
-                                    <span class="new-badge"></span>
-                                </div>
-                                <div class="card-wrapper">
-                                    <div class="avatar-comp-cont">
-                                        <div class="pfp-cont">
-                                            <div class="pfp" style="background-image: url(${user_data.userProfileAvatar == 'default' ? '../src/imgs/default-avatar.pbg' : user_data.userProfileAvatar});">
+                        
+                        if(sn.size <= 0){
+                            vault_incoming_req_cont.innerHTML =  `<div class="empty-friend-list">
+                                <div class="empty-list-wrapper">
+                                        <span class="icon-cont">
+                                        <img src="../src/assets/empty.svg" />
+                                        </span>
+                                        <span class="label">No incoming request.</span>
+                                    </div>
+                                </div>`;
+                        }else{
+                            vault_incoming_req_cont.innerHTML = '';
+                            fsDB.collection('client').doc('meta').collection(req_id).doc('meta_data')
+                            .get().then(data => {
+                                let user_data = data.data();
+                                let card = `
+                                <div class="friend-card incoming" id="incoming-card-${req_id}">
+                                    <div class="identifier-cont">
+                                        <span class="identifier">
+                                            <img src="src/icons/incoming.svg" alt="">
+                                            <span class="label">Incoming request</span>
+                                        </span>
+                                        <span class="new-badge"></span>
+                                    </div>
+                                    <div class="card-wrapper">
+                                        <div class="avatar-comp-cont">
+                                            <div class="pfp-cont">
+                                                <div class="pfp" style="background-image: url(${user_data.userProfileAvatar == 'default' ? '../src/imgs/default-avatar.pbg' : user_data.userProfileAvatar});">
+                                                </div>
+                                            </div>
+                                            <div class="user-info-cont">
+                                                <span class="username">${user_data.user}</span>
+                                                <span class="id">${utilities.formatDate(req_date)}</span>
                                             </div>
                                         </div>
-                                        <div class="user-info-cont">
-                                            <span class="username">${user_data.user}</span>
-                                            <span class="id">${utilities.formatDate(req_date)}</span>
+                                        <div class="btn-comp-cont">
+                                            <span class="btn-item btn btn-danger-normal" id="req-decline-btn-${req_id}">
+                                                Decline
+                                            </span>
+                                            <span class="hr"></span>
+                                            <span class="btn-item btn btn-primary" id="req-accept-btn-${req_id}">
+                                                Accept
+                                            </span>
+                                            
                                         </div>
                                     </div>
-                                    <div class="btn-comp-cont">
-                                        <span class="btn-item btn btn-danger-normal" id="req-decline-btn-${req_id}">
-                                            Decline
-                                        </span>
-                                        <span class="hr"></span>
-                                        <span class="btn-item btn btn-primary" id="req-accept-btn-${req_id}">
-                                            Accept
-                                        </span>
+                                </div>`;
+    
+                                vault_incoming_req_cont.insertAdjacentHTML('beforeend', card);
+    
+                                let req_accept_btn = document.getElementById(`req-accept-btn-${req_id}`),
+                                    req_decline_btn = document.getElementById(`req-decline-btn-${req_id}`);
+    
+                                let incoming_card = document.getElementById(`incoming-card-${req_id}`);
+    
+                                try {
+                                    req_accept_btn.addEventListener('click', () => {
+                                        req_accept_btn.innerHTML = `<span class="preload">
+                                                <img src="../src/assets/spinner-2.svg" alt="">
+                                            </span>`;
+                                        req_accept_btn.disabled = true;
+                                        req_decline_btn.disabled = true;
+    
+                                        let link_id = utilities.rayId(),
+                                            remote_id = utilities.rayId(),
+                                            date = new Date();
+                                        log(remote_id);
                                         
-                                    </div>
-                                </div>
-                            </div>`;
-
-                            vault_incoming_req_cont.insertAdjacentHTML('beforeend', card);
-
-                            let req_accept_btn = document.getElementById(`req-accept-btn-${req_id}`),
-                                req_decline_btn = document.getElementById(`req-decline-btn-${req_id}`);
-
-                            let incoming_card = document.getElementById(`incoming-card-${req_id}`);
-
-                            try {
-                                req_accept_btn.addEventListener('click', () => {
-                                    req_accept_btn.innerHTML = `<span class="preload">
-                                            <img src="../src/assets/spinner-2.svg" alt="">
-                                        </span>`;
-                                    req_accept_btn.disabled = true;
-                                    req_decline_btn.disabled = true;
-
-                                    let link_id = utilities.rayId(),
-                                        remote_id = utilities.rayId(),
-                                        date = new Date();
-                                    log(remote_id);
-                                    
-                                    fsDB.collection('client').doc('meta').collection(uid).doc('links').collection(link_id)
-                                    .doc(remote_id).set({
-                                        link_id: link_id,
-                                        remote_id: remote_id,
-                                        friend_id: req_id,
-                                        date: date
-                                    }).then(() => {
-                                        fsDB.collection('client').doc('meta').collection(req_id).doc('links').collection(link_id)
+                                        fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
                                         .doc(remote_id).set({
                                             link_id: link_id,
                                             remote_id: remote_id,
-                                            friend_id: uid,
+                                            friend_id: req_id,
                                             date: date
                                         }).then(() => {
-                                            //send them notification of an accepted f-request --> //TODO
-                                            fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
-                                            .doc(req_id).delete().then(() => {
-                                                log('cache cleared from personal inbox!');
-                                                fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('outgoing')
-                                                .doc(uid).delete().then(() => {
-                                                    if(incoming_card != null){
-                                                        incoming_card.remove();
-                                                    }
-                                                    log('cache deleted from requester')
+                                            fsDB.collection('client').doc('meta').collection(req_id).doc('links').collection('remotes')
+                                            .doc(remote_id).set({
+                                                link_id: link_id,
+                                                remote_id: remote_id,
+                                                friend_id: uid,
+                                                date: date
+                                            }).then(() => {
+                                                //send them notification of an accepted f-request --> //TODO
+                                                fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
+                                                .doc(req_id).delete().then(() => {
+                                                    log('cache cleared from personal inbox!');
+                                                    fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('outgoing')
+                                                    .doc(uid).delete().then(() => {
+                                                        if(incoming_card != null){
+                                                            incoming_card.remove();
+                                                        }
+                                                        log('cache deleted from requester')
+                                                    }).catch(err => {
+                                                        log(err);
+                                                    })
                                                 }).catch(err => {
                                                     log(err);
                                                 })
-                                            }).catch(err => {
-                                                log(err);
-                                            })
-                                            log('friend added successful')
+                                                log('friend added successful')
+                                            }).catch(error => {
+                                                log(error);
+                                            });
                                         }).catch(error => {
                                             log(error);
                                         });
-                                    }).catch(error => {
-                                        log(error);
                                     });
-                                });
-                                req_decline_btn.addEventListener('click', () => {
-                                    log(req_id);
-                                    utilities.alert('Are you sure you want to decline this request?', 'alert', action);
-    
-                                    function action(){
-                                        log('okii declining request')
-                                    }
-                                })
-                            } catch (error) {
-                                log('nothing to catch ignored!')
-                            }
-                        });
-                        if(sn.size <= 0){
-                            vault_incoming_req_cont.innerHTML =  `<div class="empty-friend-list">
-                            <div class="empty-list-wrapper">
-                                    <span class="icon-cont">
-                                    <img src="../src/assets/empty.svg" />
-                                    </span>
-                                    <span class="label">No incoming request.</span>
-                                </div>
-                            </div>`;
-                        };
+                                    req_decline_btn.addEventListener('click', () => {
+                                        log(req_id);
+                                        utilities.alert('Are you sure you want to decline this request?', 'alert', action);
+        
+                                        function action(){
+                                            log('okii declining request');
+                                            fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
+                                            .doc(req_id).delete().then(() =>{
+                                                fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('outgoing')
+                                                .doc(uid).delete().then(() => {
+                                                    log('declined friend requests');
+                                                })
+                                            })
+                                        }
+                                    })
+                                } catch (error) {
+                                    log('nothing to catch ignored!')
+                                }
+                            });
+                        }
 
                         request_badge.innerText = `${sn.size}`;
                         request_cat_bagde.innerText = `${sn.size}`;
@@ -793,7 +782,10 @@ import Router from "../components/services/router/router.js";
                         request_cat_bagde.style.display = sn.size <= 0 ? 'none' : 'flex';
                     });
                 });
+            }());
+            render_outgoing_list();
 
+            function render_outgoing_list(){
                 fsDB.collection('client').doc('meta').collection(uid)
                 .doc('requests').collection('outgoing')
                 .get().then((sn) => {
@@ -855,14 +847,9 @@ import Router from "../components/services/router/router.js";
                                 function action(){ //delete my outgoing request --> go to friends incoming and check for my request id -> delete;
                                     fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('incoming')
                                     .doc(uid).delete().then(() => {
-                                        log('deleted!');
-                                        log(req_id);
-                                        fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('outgoing')
+                                         fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('outgoing')
                                         .doc(req_id).delete().then(() => {
-                                            log('outbox cleared');
-                                            if(outgoing_card != null){
-                                                outgoing_card.remove();
-                                            }
+                                            render_outgoing_list();
                                         }).catch(err => {
                                             log(err);
                                         })
@@ -878,14 +865,107 @@ import Router from "../components/services/router/router.js";
                 }).catch(error => {
                     log(error);
                 });
-            }());
+            }
             (function(){
-                log('getting friend lists');
-                fsDB.collection('client').doc('meta').collection(uid).doc('links')
-                .get().then((link_data) => {
-                    
-                })
+                render_friends_list();
             }());
+
+            function render_friends_list(){
+                log('getting friend lists');
+                let empty_friend_list_holder = `
+                    <div class="empty-friend-list">
+                        <div class="empty-list-wrapper">
+                            <span class="icon-cont">
+                                <img src="../src/assets/no-friends.svg" />
+                            </span>
+                            <span class="label">Looks like there's no one in your <br> friends list yet!</span>
+                            <span class="hr"></span>
+                            <span class="nof-sub">Quickly add your friends to connect and start chatting!</span>
+                            <button class="nof-btn" id="vault-add-friend-btn"> 
+                                <img src="../src/icons/add-freind.svg" />
+                                <span>Add friend </span>
+                            </button>
+                        </div>
+                    </div>`;
+
+                fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
+                .get().then((link_data) => {
+                    vault_friends_cont.innerHTML = '';
+
+                    link_data.forEach(data => {
+                        let friend_id = data.data().friend_id,
+                            remote_id = data.data().remote_id;
+
+                        fsDB.collection('client').doc('meta').collection(friend_id).doc('meta_data')
+                        .get().then((friend_data) => {
+                            let fdata = friend_data.data();
+                            let card = `
+                                <div class="friend-card">
+                                    <div class="card-wrapper">
+                                        <div class="avatar-comp-cont">
+                                            <div class="pfp-cont">
+                                                <div class="pfp" style="background-image: url(${fdata.userProfileAvatar == 'default' ? '../src/imgs/default-avatar.png' : fdata.userProfileAvatar});">
+                                                </div>
+                                            </div>
+                                            <div class="user-info-cont">
+                                                <span class="username">${fdata.user}</span>
+                                                <span class="id">@${fdata.id}</span>
+                                            </div>
+                                        </div>
+                                        <div class="btn-comp-cont">
+                                            <span class="btn-item" id="friend-chat-btn-${remote_id}">
+                                                <img src="/src/icons/msg.svg" alt="">
+                                            </span>
+                                            <span class="hr"></span>
+                                            <span class="btn-item" id="friend-remove-btn-${friend_id}">
+                                                <img src="/src/icons/remove-friend.svg" alt="">
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            vault_friends_cont.insertAdjacentHTML('beforeend', card);
+
+                            let vault_friend_chat_btn = document.getElementById(`friend-chat-btn-${remote_id}`),
+                                vault_friend_remove_btn = document.getElementById(`friend-remove-btn-${friend_id}`);
+                            
+                            vault_friend_chat_btn.addEventListener('click', () => {
+                                setTimeout(() => {
+                                    location.href = `../pages/chat.html?rid=${remote_id}`;
+                                }, 100)
+                            });
+                            vault_friend_remove_btn.addEventListener('click', ()=> {
+                                utilities.alert(`Are you sure you want to remove <b>${fdata.user}</b> from your friend list?`,alert, action);
+
+                                function action(){
+                                    fsDB.collection('client').doc('meta').collection(uid).doc('links')
+                                    .collection('remotes').doc(remote_id).delete().then(() => {
+                                        fsDB.collection('client').doc('meta').collection(friend_id).doc('links')
+                                        .collection('remotes').doc(remote_id).delete().then(() => {
+                                            render_friends_list();
+                                        }).catch(error => log(error));
+                                    }).catch(error => log(error));
+                                }
+                            });
+                        }).catch(error => log(error));
+                    });
+
+                    if(link_data.size <= 0){
+                        vault_friends_cont.innerHTML = empty_friend_list_holder;
+                    };
+
+                    let vault_add_friend_btn = document.getElementById('vault-add-friend-btn');
+                    if(vault_add_friend_btn != null){
+                        vault_add_friend_btn.addEventListener('click', ()=> {
+                            setTimeout(() => {
+                                history.back();
+                                setTimeout(() => {
+                                    location.hash = '#?addfriend';
+                                }, 50);
+                            }, 100)
+                        })
+                    }
+                }).catch(error => log(error));
+            }
         }(lsDB.getItem('id')));
 
         function switch_tab(tab_1, tab_2){
