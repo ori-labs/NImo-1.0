@@ -65,12 +65,17 @@ import Router from "../components/services/router/router.js";
                     console.error('%cNode error', 'color: #1299dc');
                 });
             });
+
             vault_btn.addEventListener('click', ()=> {
                 location.hash = '#?vault'
+            });
+            notification_btn.addEventListener('click', ()=> {
+                location.hash = '#?notifications';
             });
 
             (function(){
                 listen_to_request();
+                listen_to_notification();
 
                 function listen_to_request(){
                     vault_btn.innerHTML = `<span>
@@ -91,7 +96,27 @@ import Router from "../components/services/router/router.js";
                             }
                         })
                     })
-                }
+                };
+                function listen_to_notification(){
+                    notification_btn.innerHTML = `<span>
+                                            <img class="frnd" src="../src/icons/notification.svg" alt="">
+                                        </span>`
+                    fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('inboxes').onSnapshot(function(sn){
+                        sn.docChanges().forEach(function(ch){
+                            lsDB.setItem('inbox size', sn.size);
+                            let bagde_card = `
+                                <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
+                            `;
+                            notification_btn.insertAdjacentHTML('beforeend', bagde_card);
+
+                            if(sn.size <= 0){
+                                notification_btn.innerHTML = `<span>
+                                    <img class="frnd" src="../src/icons/friends.svg" alt="">
+                                </span>`
+                            }
+                        });
+                    })
+                };
             }());
         }(lsDB.getItem('id')));
         (function(uid){
@@ -261,7 +286,7 @@ import Router from "../components/services/router/router.js";
                 }
             }else{
                 render_add_friend();
-            }
+            };
             if(main_hash != 'vault'){
                 let vault_container = document.getElementById('vault');
                 if(vault_container != null){
@@ -270,6 +295,11 @@ import Router from "../components/services/router/router.js";
                 console.log('not vault')
             }else{
                 render_vault();
+            };
+            if(main_hash != 'notifications'){
+                let notification_container = document.getElementById('notifications');
+            }else{
+                render_notifications();
             }
         })
     }());
@@ -317,7 +347,7 @@ import Router from "../components/services/router/router.js";
                 });
             }
         },
-    }
+    };
     const msgbox = {
         alert: (msg, iconEl, msgEl, parent, type) =>{
             msgEl.innerHTML = msg;
@@ -336,34 +366,34 @@ import Router from "../components/services/router/router.js";
                 parent.style.display = 'none';
             }, 3000)
         }
-    }
+    };
 
     function render_add_friend(){
         let view = `
-        <div class="addfriend-cont" id="addfriend-cont">
-            <div class="wrapper scale-up-center" id="container-wrappper">
-                <div class="header">
-                    <span class="title">
-                        <img src="/src/icons/add-freind.svg" alt="">
-                        <span>Add friend</span>    
-                    </span>
-                    <span class="close-btn" id="adf-close-btn">
-                        <img src="/src/icons/close-white.svg" alt="">
-                    </span>
-                </div>
-                <div class="contents">
-                    <span class="label">Add friends easily by entering their user id. <br> eg. sadie@123456789.</span>
-                    <div class="input-cont">
-                        <input type="text" name="id" id="input-fr" placeholder="sadie@123456789">
-                        <span class="add-btn" id="send_btn">Send</span>
+            <div class="addfriend-cont" id="addfriend-cont">
+                <div class="wrapper scale-up-center" id="container-wrappper">
+                    <div class="header">
+                        <span class="title">
+                            <img src="/src/icons/add-freind.svg" alt="">
+                            <span>Add friend</span>    
+                        </span>
+                        <span class="close-btn" id="adf-close-btn">
+                            <img src="/src/icons/close-white.svg" alt="">
+                        </span>
+                    </div>
+                    <div class="contents">
+                        <span class="label">Add friends easily by entering their user id. <br> eg. sadie@123456789.</span>
+                        <div class="input-cont">
+                            <input type="text" name="id" id="input-fr" placeholder="sadie@123456789">
+                            <span class="add-btn" id="send_btn">Send</span>
+                        </div>
+                    </div>
+                    <div class="msg-box" id="msg-box">
+                        <img src="" alt="" id="msg-box-icon">
+                        <span class="msg" id="adf-msg"></span>
                     </div>
                 </div>
-                <div class="msg-box" id="msg-box">
-                    <img src="" alt="" id="msg-box-icon">
-                    <span class="msg" id="adf-msg"></span>
-                </div>
-            </div>
-        </div>`;
+            </div>`;
         root.insertAdjacentHTML('beforeend', view);
 
         let container = document.getElementById('addfriend-cont'),
@@ -390,7 +420,7 @@ import Router from "../components/services/router/router.js";
         });
         send_btn.addEventListener('click', () => {
             validate_request();
-        })
+        });
         close_btn.addEventListener('click', function(e){
             e.preventDefault();
             container_wrapper.classList.add('scale-out-center');
@@ -398,7 +428,7 @@ import Router from "../components/services/router/router.js";
                 container_wrapper.classList.remove('scale-out-center');
                 history.back();
             }, 100);
-        })
+        });
         evenListener.listen.esc(container, container_wrapper);
         evenListener.listen.outClick('container-wrappper');
         
@@ -530,10 +560,9 @@ import Router from "../components/services/router/router.js";
             input.value = '';
             input.disabled = false;
         }
-    }
+    };
     function render_vault(){
         (function(uid){
-            console.log('vault');
             let view = `
                 <div class="vault" id="vault">
                     <div class="wrapper scale-up-center" id="vault-container">
@@ -665,37 +694,37 @@ import Router from "../components/services/router/router.js";
                             .get().then(data => {
                                 let user_data = data.data();
                                 let card = `
-                                <div class="friend-card incoming" id="incoming-card-${req_id}">
-                                    <div class="identifier-cont">
-                                        <span class="identifier">
-                                            <img src="src/icons/incoming.svg" alt="">
-                                            <span class="label">Incoming request</span>
-                                        </span>
-                                        <span class="new-badge"></span>
-                                    </div>
-                                    <div class="card-wrapper">
-                                        <div class="avatar-comp-cont">
-                                            <div class="pfp-cont">
-                                                <div class="pfp" style="background-image: url(${user_data.userProfileAvatar == 'default' ? '../src/imgs/default-avatar.pbg' : user_data.userProfileAvatar});">
+                                    <div class="friend-card incoming" id="incoming-card-${req_id}">
+                                        <div class="identifier-cont">
+                                            <span class="identifier">
+                                                <img src="src/icons/incoming.svg" alt="">
+                                                <span class="label">Incoming request</span>
+                                            </span>
+                                            <span class="new-badge"></span>
+                                        </div>
+                                        <div class="card-wrapper">
+                                            <div class="avatar-comp-cont">
+                                                <div class="pfp-cont">
+                                                    <div class="pfp" style="background-image: url(${user_data.userProfileAvatar == 'default' ? '../src/imgs/default-avatar.pbg' : user_data.userProfileAvatar});">
+                                                    </div>
+                                                </div>
+                                                <div class="user-info-cont">
+                                                    <span class="username">${user_data.user}</span>
+                                                    <span class="id">${utilities.formatDate(req_date)}</span>
                                                 </div>
                                             </div>
-                                            <div class="user-info-cont">
-                                                <span class="username">${user_data.user}</span>
-                                                <span class="id">${utilities.formatDate(req_date)}</span>
+                                            <div class="btn-comp-cont">
+                                                <span class="btn-item btn btn-danger-normal" id="req-decline-btn-${req_id}">
+                                                    Decline
+                                                </span>
+                                                <span class="hr"></span>
+                                                <span class="btn-item btn btn-primary" id="req-accept-btn-${req_id}">
+                                                    Accept
+                                                </span>
+                                                
                                             </div>
                                         </div>
-                                        <div class="btn-comp-cont">
-                                            <span class="btn-item btn btn-danger-normal" id="req-decline-btn-${req_id}">
-                                                Decline
-                                            </span>
-                                            <span class="hr"></span>
-                                            <span class="btn-item btn btn-primary" id="req-accept-btn-${req_id}">
-                                                Accept
-                                            </span>
-                                            
-                                        </div>
-                                    </div>
-                                </div>`;
+                                    </div>`;
     
                                 vault_incoming_req_cont.insertAdjacentHTML('beforeend', card);
     
@@ -972,7 +1001,91 @@ import Router from "../components/services/router/router.js";
             tab_1.classList.add('hide');
             tab_2.classList.remove('hide');
         };
-    }
+    };
+    function render_notifications(){
+        (function(uid){
+            let view = `
+                <div class="vault notifications" id="vault">
+                    <div class="wrapper scale-up-center" id="vault-container">
+                        <div class="content-wrapper">
+                            <div class="header">
+                                <div class="title-cont">
+                                    <div class="title-cont">
+                                        <img src="../src/icons/notification.svg" />
+                                        <span class="title">Notifications</span>
+                                    </div>
+                                </div>
+                                <div class="close-btn-cont" id="vault-close-btn">
+                                    <img src="/src/icons/close-white.svg" alt="">
+                                </div>
+                            </div>
+                            <div class="container-wrapper" id="">
+                                <div class="notification-card" id="">
+                                    <div class="identifier-cont">
+                                        <span class="identifier">
+                                            <img src="src/icons/add-friend-blue.svg" alt="">
+                                            <span class="label">Friend request</span>
+                                        </span>
+                                        <span class="notification-remove-btn">
+                                            Clear
+                                        </span>
+                                    </div>
+                                    <div class="card-wrapper">
+                                        <div class="notification-comp-cont">
+                                            <div class="notification-info-cont">
+                                                <span class="message">jenniffa@338293223 accepted your friend request.</span>
+                                                <span class="id">@date</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="notification-card" id="">
+                                    <div class="identifier-cont">
+                                        <span class="identifier">
+                                            <img src="src/icons/nimo-icon.svg" alt="">
+                                            <span class="label">Nimo Community (NC)</span>
+                                        </span>
+                                        <span class="notification-remove-btn">
+                                            Clear
+                                        </span>
+                                    </div>
+                                    <div class="card-wrapper">
+                                        <div class="notification-comp-cont">
+                                            <div class="notification-info-cont">
+                                                <span class="message">Hello yasvan welcome to Nimo, we hope you have a 
+                                                great time making new friends and chatting. 😊</span>
+                                                <span class="id">@date</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="notification-card" id="">
+                                    <div class="identifier-cont">
+                                        <span class="identifier">
+                                            <img src="src/icons/shield.svg" alt="">
+                                            <span class="label">Nimo Security</span>
+                                        </span>
+                                        <span class="notification-remove-btn">
+                                            Clear
+                                        </span>
+                                    </div>
+                                    <div class="card-wrapper">
+                                        <div class="notification-comp-cont">
+                                            <div class="notification-info-cont">
+                                                <span class="message">Dear Nimo user, for security purposes we recommend
+                                                you verify your email. Have a good day.</span>
+                                                <span class="id">@date</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            root.insertAdjacentHTML('beforeend', view);
+        }(lsDB.getItem('id')));
+    };
     function initLag(){
         setTimeout(() => {
             setTimeout(()=> {
@@ -986,14 +1099,14 @@ import Router from "../components/services/router/router.js";
             return false;
         }
         lsDB.clear();
-    }
+    };
     function hide_preloader(){
         $('#spinnerx').removeClass('load');
         if($('#spinnerx').length > 0){
             $('#spinnerx').removeClass('show');
         }
-    }
+    };
     function log(text){
         return console.log(text);
-    }
+    };
 }());
