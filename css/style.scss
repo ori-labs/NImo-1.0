@@ -24,13 +24,14 @@ $online: #378E5F;
 $moodDark: #2E2E32;
 $snDark: #202024;
 $resReply: #4D59C6;
+$oceanBlue: #4285F4;
 $redirColor: #7C742B;
 $googleRed: #D95644;
 $github: #000000;
 $dangerRed: #A72A48;
 $succesColor: #378E5F;
 $backdrop: rgba($color: #000000, $alpha: .6);
-
+$secureGreen: #1D9654;
 
 body{
     margin: 0%;
@@ -3063,9 +3064,9 @@ body{
                 }
             }
         }
-        /******************/
-        /* Vault  BETA+   */
-        /******************/
+        /********************************/
+        /* Vault & notification BETA+   */
+        /********************************/
         .vault{
             position: absolute;
             top: 0;
@@ -3552,6 +3553,523 @@ body{
                             }
                         }
                     }
+                }
+            }
+        }
+        .notifications{
+            .wrapper{
+                background-color: $compColor-1;
+                padding: 10px;
+                border-radius: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                .content-wrapper{
+                    width: 450px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    row-gap: 5px;
+                    .header{
+                        // background-color: green;
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 0px 0px 5px 0px;
+
+                        .btn-cont{
+                            background-color: $inputBgColor;
+                            padding: 5px;
+                            border-radius: 5px;
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+                            column-gap: 10px;
+
+                            .btn-wrapper{
+                                padding: 6px 15px 6px 15px;
+                                border-radius: 4px;
+                                display: flex;
+                                flex-direction: row;
+                                align-items: center;
+                                column-gap: 5px;
+                                cursor: pointer;
+                                transition: background .2s ease-in;
+
+                                span{
+                                    color: $lightColor;
+                                    font-size: 16px;
+                                    transition: transform .2s ease-in;
+                                }
+                                .bagde{
+                                    background-color: $primaryColor;
+                                    padding: 3px;
+                                    // border: 1px $moodDark solid;
+                                    width: 14px;
+                                    height: 14px;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    border-radius: 100px;
+                                    font-size: 13px;
+                                }
+                               
+                                &:active > span{
+                                    transform: scale(.8);
+                                }
+                            }
+                            .active{
+                                background-color: $compColor-1;
+                            }
+                        }
+                        .close-btn-cont{
+                            width: 32px;
+                            height: 32px;
+                            border-radius: 100px;
+                            background-color: $compColor-2;
+                            border: 1px $inputBgColor solid;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            cursor: pointer;
+                            transition: .2s ease-in;
+
+                            img{
+                                opacity: .9;
+                                width: 20px;
+                                transition: transform .2s ease-in;
+                            }
+
+                            &:hover{
+                                background-color: $inputBgColor;
+                            }
+                            &:active > img{
+                                transform: scale(.8);
+                            }
+                        }
+                    }
+                    .container-wrapper{
+                        background-color: $compColor-2;
+                        border-radius: 5px;
+                        min-height: 400px;
+                        max-height: 400px;
+                        overflow: hidden;
+                        overflow-y: auto;
+                        // display: flex;
+                        gap: 4px;
+                        flex-direction: column;
+                        padding: 0px 5px 5px 5px;
+                        align-items: center;
+
+                        .notification-card{
+                            background-color: $moodDark;
+                            max-width: 100%;
+                            width: 100%;
+                            border-radius: 5px;
+                            overflow: hidden;
+                            transition: background .2s ease-in;
+                            margin-top: 5px;
+                            .identifier-cont{
+                                width: 100%;
+                                // background-color: orange;
+                                border-bottom: 1px rgba($color: $borderColor, $alpha: .4) solid;
+                                padding: 5px;
+                                display: flex;
+                                flex-direction: row;
+                                column-gap: 10px;
+                                align-items: center;
+                                justify-content: space-between;
+                                .identifier{
+                                    display: flex;
+                                    flex-direction: row;
+                                    align-items: center;
+                                    column-gap: 5px;
+
+                                    img{
+                                        width: 18px;
+                                    }
+                                    span{
+                                        // font-weight: lighter;
+                                        font-size: 14px;
+                                        color: $oceanBlue
+                                    }
+                                }
+                                .id{
+                                    font-weight: lighter !important;
+                                    font-size: 13px !important;
+                                }
+                                .notification-remove-btn{
+                                    font-size: 12px;
+                                    // width: 10px;
+                                    // height: 10px;
+                                    // background-color: orange;
+                                    margin-right: 15px;
+                                    // padding: 5px;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    // border-radius: 100px;
+                                    text-align: center;
+                                    color: $lightBorder;
+                                    cursor: pointer;
+                                    transition: .2s ease-in;
+
+                                    img{
+                                        width: 16px;
+                                    }
+
+                                    &:active{
+                                        opacity: .9;
+                                        transform: scale(.8);
+                                    }
+                                }
+                            }
+                            .card-wrapper{
+                                padding: 10px;
+                                display: flex;
+                                flex-direction: row;
+                                align-items: center;
+                                justify-content: space-between;
+                                border-radius: 5px;
+                                
+
+                                .notification-comp-cont{
+                                    display: flex;
+                                    flex-direction: row;
+                                    align-items: center;
+                                    column-gap: 10px;
+                                    .notification-info-cont{
+                                        display: flex;
+                                        flex-direction: column;
+                                        justify-content: center;
+                                        align-items: start;
+                                        row-gap: 3px;
+                                        .message{
+                                            color: $lightColor;
+                                            font-size: 14px;
+                                            font-weight: lighter;
+                                        }
+
+                                        .id{
+                                            font-size: 13px;
+                                        }
+                                    }
+                                }
+                                .btn-comp-cont{
+                                    // background-color: orange;
+                                    display: flex;
+                                    flex-direction: row;
+                                    column-gap: 8px;
+                                    align-items: center;
+                                    border-radius: 5px;
+                                    border: 1px $moodDark solid;
+                                    overflow: hidden;
+
+                                    .hr{
+                                        width: 3px !important;
+                                        background-color: $borderColor !important;
+                                        height: 15px !important;
+                                    }
+                                    .btn-item{
+                                        cursor: pointer;
+                                        padding: 5px 10px 5px 10px;
+                                        // background-color: $compColor-1;
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        transition: background .2s ease-in;
+                                        img{
+                                            transition: transform .2s ease-in;
+                                            width: 20px;
+                                        }
+
+                                        &:hover{
+                                            background-color: $compColor-1;
+                                        }
+                                        &:active > img{
+                                            transform:  scale(.8);
+                                        }
+                                    }
+
+                                }
+                            }
+                            &:hover{
+                                background-color: $moodDark;
+                            }
+                        }
+                        .empty-friend-list{
+                            width: 100%;
+                            height: 300px;
+                            display: flex;
+                            // background-color: orange;
+                            justify-content: center;
+                            align-items: center;
+
+                            .empty-list-wrapper{
+                                display: flex;
+                                // background-color: orange;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                width: 100%;
+                                height: 100%;
+                                row-gap: 10px;
+                                .icon-cont{
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+
+                                    img{
+                                        width: 5rem;
+                                    }
+                                }
+                                .label{
+                                    color: $lightColor;
+                                    font-family: inherit;
+                                    font-size: 14px;
+                                    columns: $idColor;
+                                    font-weight: normal;
+                                    opacity: .5;
+                                    text-align: center;
+                                }
+                                span{
+                                    color: $lightColor;
+                                }
+                                .hr{
+                                    max-width: 40px;
+                                }
+
+                                img{
+                                    width: 55px;
+                                    opacity: .7;
+                                }
+                                .nof-title{
+                                    font-size: 15px;
+                                    opacity: .7;
+                                }
+                                .nof-sub{
+                                    font-size: 13px;
+                                    opacity: .5;
+                                }
+                                button{
+                                    margin-top: 4px;
+                                    padding: 5px 8px 5px 8px;
+                                    background-color: $primaryColor;
+                                    border-radius: 3px;
+                                    border: none;
+                                    font-family: inherit;
+                                    outline: none;
+                                    color: $lightColor;
+                                    font-size: 15px;
+                                    cursor: pointer;
+                                    transition: .2s ease-in;
+                                    display: flex;
+                                    align-items: center;
+                                    flex-direction: row;
+                                    column-gap: 5px;
+
+                                    img{
+                                        width: 15px;
+                                    }
+                                    &:hover{
+                                        opacity: .7;
+                                    }
+                                    &:active{
+                                        opacity: .9;
+                                        transform: scale(.8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .requests{
+                        padding-top: 2px !important;
+                        flex-direction: column;
+                        overflow: hidden;
+
+                        .request-cat-cont{
+                            width: 100%;
+                            // background-color: orange;
+                            display: flex;
+                            align-items: center;
+                            flex-direction: column;
+                            padding-top: 4px;
+                            .cat-wrapper{
+                                // background-color: green;
+                                display: flex;
+                                background-color: $moodDark;
+                                border-radius: 5px;
+                                padding: 5px;
+                                column-gap: 10px;
+                                flex-direction: row;
+                                justify-content: center;
+                                align-items: center;
+
+                                .cat-item{
+                                    border-radius: 4px;
+                                    padding: 4px 8px 4px 8px;
+                                    display: flex;
+                                    flex-direction: row;
+                                    column-gap: 10px;
+                                    cursor: pointer;
+                                    transition: background .2s ease-in;
+
+                                    span{
+                                        color: $lightColor;
+                                        font-size: 13px;
+                                        font-weight: lighter;
+                                        font-family: inherit;
+                                        transition: transform .2s ease-in;
+                                    }
+                                    .bagde{
+                                        background-color: $primaryColor;
+                                        padding: 3px;
+                                        // border: 1px $moodDark solid;
+                                        width: 14px;
+                                        height: 14px;
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        border-radius: 100px;
+                                        font-size: 13px;
+                                    }
+
+                                    &:active{
+                                        background-color: $compColor-1;
+                                    }
+                                    &:active > span{
+                                        transform: scale(.8);
+                                    }
+                                }
+                                .active{
+                                    background-color: $compColor-1 !important;
+                                }
+                            }
+                        }
+                        .request-item-cont{
+                            height: 350px;
+                            width: 100%;
+                            overflow: hidden;
+                            overflow-y: scroll;
+                            padding: 0px 5px 5px 2px;
+                            // background-color: orange;
+
+                            .empty-friend-list{
+                                width: 100%;
+                                height: 100%;
+                                display: flex;
+                                // background-color: orange;
+                                justify-content: center;
+                                align-items: center;
+
+                                .empty-list-wrapper{
+                                    display: flex;
+                                    // background-color: orange;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    // justify-content: center;
+                                    width: 100%;
+                                    // height: 100%;
+                                    row-gap: 10px;
+                                    .icon-cont{
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+
+                                        img{
+                                            width: 5rem;
+                                        }
+                                    }
+                                    .label{
+                                        color: $lightColor;
+                                        font-family: inherit;
+                                        font-size: 14px;
+                                        columns: $idColor;
+                                        font-weight: normal;
+                                        opacity: .5;
+                                    }
+                                }
+                            }
+                            .friend-card{
+                                background-color: $moodDark;
+                                flex-direction: column;
+                                row-gap: 1px !important;
+                                // padding: 2px;
+                                margin-top: 5px;
+    
+                                .identifier-cont{
+                                    width: 100%;
+                                    // background-color: orange;
+                                    border-bottom: 1px rgba($color: $borderColor, $alpha: .4) solid;
+                                    padding: 5px;
+                                    display: flex;
+                                    flex-direction: row;
+                                    column-gap: 10px;
+                                    align-items: center;
+                                    justify-content: space-between;
+                                    .identifier{
+                                        display: flex;
+                                        flex-direction: row;
+                                        align-items: center;
+                                        column-gap: 5px;
+    
+                                        img{
+                                            width: 18px;
+                                        }
+                                        span{
+                                            // font-weight: lighter;
+                                            font-size: 14px;
+                                            color: $idColor
+                                        }
+                                    }
+                                    .id{
+                                        font-weight: lighter !important;
+                                        font-size: 13px !important;
+                                    }
+                                    .new-badge{
+                                        font-size: 12px;
+                                        width: 10px;
+                                        height: 10px;
+                                        background-color: $dangerRed;
+                                        margin-right: 15px;
+                                        border-radius: 100px;
+                                        text-align: center;
+                                        color: $lightColor;
+                                    }
+                                }
+                                .card-wrapper{
+                                    padding: 8px;
+
+                                    .btn-item{
+                                        display: flex;
+                                        justify-content: center;
+
+                                        .preload{
+                                            width: 100%;
+                                            height: 100%;
+                                            display: flex;
+                                            img{
+                                                width: 16px;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .title-cont{
+                // background-color: orange;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                column-gap: 5px;
+                span{
+                    color: $lightColor;
+
                 }
             }
         }
