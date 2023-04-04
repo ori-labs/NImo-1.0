@@ -3688,11 +3688,11 @@ body{
                                     column-gap: 5px;
 
                                     img{
-                                        width: 18px;
+                                        width: 13px;
                                     }
                                     span{
                                         // font-weight: lighter;
-                                        font-size: 14px;
+                                        font-size: 13px;
                                         color: $oceanBlue
                                     }
                                 }
@@ -3750,8 +3750,21 @@ body{
                                             color: $lightColor;
                                             font-size: 14px;
                                             font-weight: lighter;
-                                        }
 
+                                        }
+                                        .user-index{
+                                            color: $primaryColor;
+                                            transition: transform .2s ease-in !important;
+                                            cursor: pointer;
+
+                                            &:hover{
+                                                text-decoration: underline; 
+                                            }
+                                            &:active{
+                                                text-decoration: none !important;
+                                                transform: scale(.7) !important;
+                                            }
+                                        }
                                         .id{
                                             font-size: 13px;
                                         }
@@ -4809,6 +4822,7 @@ body{
                 justify-content: space-around !important;
                 align-items: center !important;
                 padding: 5px 10px 15px 10px;
+                column-gap: 20px;
 
                 button{
                     outline: none;

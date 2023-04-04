@@ -3324,10 +3324,10 @@ body .root .notifications .wrapper .content-wrapper .container-wrapper .notifica
        column-gap: 5px;
 }
 body .root .notifications .wrapper .content-wrapper .container-wrapper .notification-card .identifier-cont .identifier img {
-  width: 18px;
+  width: 13px;
 }
 body .root .notifications .wrapper .content-wrapper .container-wrapper .notification-card .identifier-cont .identifier span {
-  font-size: 14px;
+  font-size: 13px;
   color: #4285F4;
 }
 body .root .notifications .wrapper .content-wrapper .container-wrapper .notification-card .identifier-cont .id {
@@ -3378,6 +3378,18 @@ body .root .notifications .wrapper .content-wrapper .container-wrapper .notifica
   color: #F7F7F8;
   font-size: 14px;
   font-weight: lighter;
+}
+body .root .notifications .wrapper .content-wrapper .container-wrapper .notification-card .card-wrapper .notification-comp-cont .notification-info-cont .user-index {
+  color: #9568A6;
+  transition: transform 0.2s ease-in !important;
+  cursor: pointer;
+}
+body .root .notifications .wrapper .content-wrapper .container-wrapper .notification-card .card-wrapper .notification-comp-cont .notification-info-cont .user-index:hover {
+  text-decoration: underline;
+}
+body .root .notifications .wrapper .content-wrapper .container-wrapper .notification-card .card-wrapper .notification-comp-cont .notification-info-cont .user-index:active {
+  text-decoration: none !important;
+  transform: scale(0.7) !important;
 }
 body .root .notifications .wrapper .content-wrapper .container-wrapper .notification-card .card-wrapper .notification-comp-cont .notification-info-cont .id {
   font-size: 13px;
@@ -4300,6 +4312,8 @@ body .alert-cont .wrapper .btn-cont {
   justify-content: space-around !important;
   align-items: center !important;
   padding: 5px 10px 15px 10px;
+  -moz-column-gap: 20px;
+       column-gap: 20px;
 }
 body .alert-cont .wrapper .btn-cont button {
   outline: none;

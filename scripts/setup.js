@@ -63,12 +63,12 @@ import utilities from "../components/utilities/utilities.js";
                 () => {
                     let uid = lsDB.getItem("deamon");
 
-                    const _pfImage = "defaut",
-                        _pfBdropColor = "default",
-                        _bannerCVal = "default",
+                    const _pfImage = "default",
+                        _pfBdropColor = lsDB.getItem('default_color'),
+                        _bannerCVal = lsDB.getItem('default_color'),
                         _usrName_ = _usrName.value,
                         _about_ = "",
-                        _id_ = lsDB.getItem("user_id");
+                        _id_ = lsDB.getItem("id");
 
                     finalizeSetup(
                         _pfImage,

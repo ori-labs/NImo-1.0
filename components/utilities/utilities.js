@@ -269,18 +269,33 @@ const utilities = {
         })(400);
     },
     formatDate: (date) => {
-        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const monthsOfYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
+        const now = new Date();
+        const yesterday = new Date(now);
+        yesterday.setDate(now.getDate() - 1);
+        
+        const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        
         const dayOfWeek = daysOfWeek[date.getDay()];
         const dayOfMonth = date.getDate();
-        const monthOfYear = monthsOfYear[date.getMonth()];
-        const hour = date.getHours();
-        const minute = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
-
-        const formattedDate = `${dayOfWeek} ${dayOfMonth} ${monthOfYear} @ ${hour % 12}:${minute}${hour >= 12 ? 'pm' : 'am'}`;
-
-        return formattedDate;
+        const month = months[date.getMonth()];
+        const year = date.getFullYear();
+        
+        let hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'pm' : 'am';
+        
+        hours %= 12;
+        hours = hours || 12; // the hour '0' should be '12'
+        
+        if (date.toDateString() === now.toDateString()) {
+            return `today @ ${hours}:${minutes < 10 ? '0' : ''}${minutes}${ampm}`;
+        } else if (date.toDateString() === yesterday.toDateString()) {
+            return `yesterday @ ${hours}:${minutes < 10 ? '0' : ''}${minutes}${ampm}`;
+        } else {
+            const formattedDate = `${dayOfWeek} ${dayOfMonth} ${month} @ ${hours}:${minutes < 10 ? '0' : ''}${minutes}${ampm}`;
+            return formattedDate;
+        }
     }
 }
 

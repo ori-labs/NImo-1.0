@@ -270,6 +270,7 @@ import utilities from "../components/utilities/utilities.js";
             });
         }
         function save_usr(id, uid, type){
+            let default_color = utilities.genColor();
             _fsDb.collection('client')
             .doc('meta')
             .collection(id)
@@ -281,7 +282,7 @@ import utilities from "../components/utilities/utilities.js";
                     state: 'setup',
                     user_type: type,
                     user_id: utilities.genUserId(),
-                    default_color: utilities.genColor(),
+                    default_color: default_color,
                 }
             ).then(() => {
                 console.log('user saved..');
@@ -295,7 +296,8 @@ import utilities from "../components/utilities/utilities.js";
                         id: id
                     }
                 ).then(() => {
-                    lsDB.clear();
+                    // lsDB.clear();
+                    lsDB.setItem('default_color', default_color);
                     console.log('saved index...')
                     setTimeout(() => {
                         location.reload();
@@ -305,7 +307,7 @@ import utilities from "../components/utilities/utilities.js";
                 })
             }).catch((err) => {
                 console.log(err)
-                lsDB.clear();
+                // lsDB.clear();
                 setTimeout(() => {
                     location.reload();
                 }, 100)
