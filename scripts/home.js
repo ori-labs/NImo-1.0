@@ -5,7 +5,7 @@ import Router from "../components/services/router/router.js";
 
 
 (function(){
-    location.hash = '#app';
+    location.hash = '#?app';
     console.log('%cSESSION: Home', 'color: #d71b43');
     firebase.initializeApp({
         apiKey: config._napi,
@@ -35,22 +35,25 @@ import Router from "../components/services/router/router.js";
             let vault_btn = document.getElementById('vault-btn'),
                 notification_btn = document.getElementById('notification-btn');
 
-            fsDB.collection('/client').doc('meta').collection(uid).doc('meta_data').get()
+            fsDB.collection('client').doc('meta').collection(uid).doc('meta_data').get()
             .then((sn) => {
                 $('#spinnerx').removeClass('load');
                 if($('#spinnerx').length > 0){
                     $('#spinnerx').removeClass('show');
                 }
                 const data = sn.data();
+                log(data.userProfileAvatar)
                 id0 = data.id;
                 user0 = data.user;
                 document.querySelector('.h-usr-name').innerHTML = `${data.user}`;
                 document.querySelector('#uid').innerHTML = `@${data.id}`;
-                document.querySelector('.h-prof-img').style.backgroundImage = `url(${data.userProfileAvatar == 'default' ? '../src/imgs/avatar.png' : data.userProfileAvatar})`;
+                document.querySelector('.h-prof-img').style.backgroundImage = `url(${data.userProfileAvatar === 'default' ? '../src/imgs/avatar.png' : data.userProfileAvatar})`;
                 document.querySelector('.h-prof-img').style.backgroundColor = `${data.userProfileBackDrop}`;
 
                 lsDB.setItem('cache', [data.user, data.userProfileAvatar || null, data.userProfileBackDrop])
                 lsDB.setItem('client', data.user);
+
+                update_friends_and_rooms(uid);
             }).catch((err) => {
                 console.log('something went wrong', err);
                 location.reload();
@@ -101,7 +104,8 @@ import Router from "../components/services/router/router.js";
                     notification_btn.innerHTML = `<span>
                                             <img class="frnd" src="../src/icons/notification.svg" alt="">
                                         </span>`
-                    fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('inboxes').onSnapshot(function(sn){
+                    fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('inboxes')
+                    .doc('all').collection('updated').onSnapshot(function(sn){
                         sn.docChanges().forEach(function(ch){
                             lsDB.setItem('inbox size', sn.size);
                             let bagde_card = `
@@ -111,85 +115,13 @@ import Router from "../components/services/router/router.js";
 
                             if(sn.size <= 0){
                                 notification_btn.innerHTML = `<span>
-                                    <img class="frnd" src="../src/icons/friends.svg" alt="">
+                                    <img class="frnd" src="../src/icons/notification.svg" alt="">
                                 </span>`
                             }
                         });
                     })
                 };
             }());
-        }(lsDB.getItem('id')));
-        (function(uid){
-            let get_friends = async () => {
-                let dfCard = `
-                    <div class="NOF">
-                        <img src="/src/assets/nof.svg" />
-                        <span class="nof-title">It's quiet for now!</span>
-                        <span class="hr"></span>
-                        <span class="nof-sub">Add friends to start chatting!</span>
-                        <button class="nof-btn" id="add-friend"> 
-                            <img src="../src/icons/add-freind.svg" />
-                            <span>Add friend </span>
-                        </button>
-                    </div>`;
-                let friend_list_cont = document.getElementById('f_list'),
-                    spmc = 0;
-                firebase.firestore().collection('/client').doc(uid).collection(uid).doc('chats').collection('node')
-                .get().then((sn) => {
-                    if(sn.docs.length > 0) {
-                        let _dId = 0;
-                        sn.forEach((s) => {
-                            const dataVal = s.data();
-                            let _CID = dataVal.cId,
-                                _FID = dataVal.fId;
-                            renderFnd(_FID, _CID);
-                        })
-                    }else{
-                        friend_list_cont.innerHTML = dfCard;
-                        let add_friend_btn = document.getElementById('add-friend');
-
-                        add_friend_btn.addEventListener('click', function(e){
-                            e.preventDefault();
-                            console.log('adding friend thingi');
-                            location.hash = '#?addfriend';
-                        })
-                    }
-                })
-
-                function  renderFnd(fID, cID){
-                    fListCont.innerHTML = '';
-                    fsDB.collection('/client').doc(fID).collection(fID)
-                    .doc('udata').get().then((sn) => {
-                        const _dval = sn.data();
-                        let fCard = `
-                            <div class="friend-card" id="fid=${fID}">
-                                <div class="friend-pfp-cont">
-                                    <span class="f-pfp" style="background-image: url(${_dval.userProfileAvatar || '/src/imgs/avatar.svg'});background-color: ${_dval.userProfileBackDrop};"></span>
-                                    <!-- <span class="bagde">9+</span> -->
-                                </div>
-                                <span class="f-uname">${_dval.user}</span>
-                            </div>
-                        `;
-                        fListCont.insertAdjacentHTML('beforeend', fCard);
-                        const f_btn = document.getElementById(`fid=${fID}`);
-    
-                        f_btn.addEventListener('click', (e)=> {
-                            e.preventDefault();
-                            console.log(fID, cID);
-                            // window.location.hash = '/nimo-app#chats'
-                            // lsDB.setItem('_fRay', _fID);
-                            // lsDB.setItem('_fcRay', cID);
-                        })
-                        
-                    })
-                }
-            };
-            let get_rooms = async () => {
-                console.log(utilities.genID())
-            };
-
-            get_friends();
-            get_rooms();
         }(lsDB.getItem('id')));
     }
     (function(){
@@ -298,8 +230,15 @@ import Router from "../components/services/router/router.js";
             };
             if(main_hash != 'notifications'){
                 let notification_container = document.getElementById('notifications');
+                if(notification_container != null){
+                    notification_container.remove();
+                }
             }else{
                 render_notifications();
+            };
+            if(main_hash == 'app'){
+                log('main home');
+                update_friends_and_rooms();
             }
         })
     }());
@@ -367,7 +306,82 @@ import Router from "../components/services/router/router.js";
             }, 3000)
         }
     };
+    function update_friends_and_rooms(uid){
+        let get_friends = async () => {
+            let dfCard = `
+                <div class="NOF">
+                    <img src="/src/assets/nof.svg" />
+                    <span class="nof-title">It's quiet for now!</span>
+                    <span class="hr"></span>
+                    <span class="nof-sub">Add friends to start chatting!</span>
+                    <button class="nof-btn" id="add-friend"> 
+                        <img src="../src/icons/add-freind.svg" />
+                        <span>Add friend </span>
+                    </button>
+                </div>`;
+            let friend_list_cont = document.getElementById('f_list'),
+                spmc = 0;
+            try {
+                fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
+                .get().then((sn) => {
+                    if(sn.docs.length > 0) {
+                        sn.forEach((s) => {
+                            const friend_data = s.data();
+                            let remote_id = friend_data.remote_id,
+                                friend_id = friend_data.friend_id;
+                            renderFnd(friend_id, remote_id);
+                        })
+                    }else{
+                        friend_list_cont.innerHTML = dfCard;
+                        let add_friend_btn = document.getElementById('add-friend');
 
+                        add_friend_btn.addEventListener('click', function(e){
+                            e.preventDefault();
+                            console.log('adding friend thingi');
+                            location.hash = '#?addfriend';
+                        });
+                    }
+                })
+            } catch (error) {
+                log('hmmmmm')
+            }
+
+            function  renderFnd(fID, cID){
+                friend_list_cont.innerHTML = '';
+                fsDB.collection('client').doc('meta').collection(fID)
+                .doc('meta_data').get().then((data) => {
+                    const f_data = data.data();
+                    log(f_data)
+                    let fCard = `
+                        <div class="friend-card" id="fid=${fID}">
+                            <div class="friend-pfp-cont">
+                                <span class="f-pfp" style="background-image: url(${f_data.userProfileAvatar == 'default' ? '/src/imgs/avatar.svg' : f_data.userProfileAvatar});background-color: ${f_data.userProfileBackDrop};"></span>
+                                <!-- <span class="bagde">9+</span> -->
+                            </div>
+                            <span class="f-uname">${f_data.user}</span>
+                        </div>
+                    `;
+                    friend_list_cont.insertAdjacentHTML('beforeend', fCard);
+                    const f_btn = document.getElementById(`fid=${fID}`);
+
+                    f_btn.addEventListener('click', (e)=> {
+                        e.preventDefault();
+                        console.log(fID, cID);
+                        // window.location.hash = '/nimo-app#chats'
+                        // lsDB.setItem('_fRay', _fID);
+                        // lsDB.setItem('_fcRay', cID);
+                    })
+                    
+                })
+            }
+        };
+        let get_rooms = async () => {
+            console.log(utilities.genID())
+        };
+
+        get_friends();
+        get_rooms();
+    };
     function render_add_friend(){
         let view = `
             <div class="addfriend-cont" id="addfriend-cont">
@@ -705,7 +719,7 @@ import Router from "../components/services/router/router.js";
                                         <div class="card-wrapper">
                                             <div class="avatar-comp-cont">
                                                 <div class="pfp-cont">
-                                                    <div class="pfp" style="background-image: url(${user_data.userProfileAvatar == 'default' ? '../src/imgs/default-avatar.pbg' : user_data.userProfileAvatar});">
+                                                    <div class="pfp" style="background-image: url(${user_data.userProfileAvatar == 'default' ? '../src/imgs/avatar.png' : user_data.userProfileAvatar});background-color:${user_data.userProfileBackDrop}">
                                                     </div>
                                                 </div>
                                                 <div class="user-info-cont">
@@ -745,6 +759,7 @@ import Router from "../components/services/router/router.js";
                                             remote_id = utilities.rayId(),
                                             date = new Date();
                                         log(remote_id);
+                                        let username = lsDB.getItem('client');
                                         
                                         fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
                                         .doc(remote_id).set({
@@ -760,29 +775,45 @@ import Router from "../components/services/router/router.js";
                                                 friend_id: uid,
                                                 date: date
                                             }).then(() => {
-                                                //send them notification of an accepted f-request --> //TODO
+                                                const notification_id = utilities.rayId(),
+                                                    date = new Date();
                                                 fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
                                                 .doc(req_id).delete().then(() => {
-                                                    log('cache cleared from personal inbox!');
                                                     fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('outgoing')
                                                     .doc(uid).delete().then(() => {
                                                         if(incoming_card != null){
                                                             incoming_card.remove();
-                                                        }
-                                                        log('cache deleted from requester')
-                                                    }).catch(err => {
-                                                        log(err);
-                                                    })
-                                                }).catch(err => {
-                                                    log(err);
-                                                })
-                                                log('friend added successful')
-                                            }).catch(error => {
-                                                log(error);
+                                                        };
+                                                        fsDB.collection('client').doc('meta').collection(req_id).doc('notifications').collection('inboxes')
+                                                        .doc('all').collection('updated').doc(notification_id).set({
+                                                            notification_id: notification_id,
+                                                        }).then(() => {
+                                                            fsDB.collection('client').doc('meta').collection(req_id).doc('notifications').collection('history')
+                                                            .doc(notification_id).set({
+                                                                notification_id: notification_id,
+                                                                type: 'request',
+                                                                title: 'Friend request',
+                                                                body: `<b id="start-chat-with-user-${notification_id}" class="user-index">${username}</b> accepted your friend request.`,
+                                                                date: date,
+                                                                remote_id: remote_id
+                                                            }).then(() => {
+                                                                fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('incoming')
+                                                                .doc(uid).delete().then(() => {
+                                                                    fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('outgoing')
+                                                                    .doc(req_id).delete().then(() => {
+                                                                        let pending_card = document.getElementById(`outgoing-card-${req_id}`);
+                                                                        if(pending_card != null){
+                                                                            pending_card.remove();
+                                                                        }
+                                                                        render_outgoing_list();
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    });
+                                                });
                                             });
-                                        }).catch(error => {
-                                            log(error);
-                                        });
+                                        })
                                     });
                                     req_decline_btn.addEventListener('click', () => {
                                         log(req_id);
@@ -796,7 +827,7 @@ import Router from "../components/services/router/router.js";
                                                 .doc(uid).delete().then(() => {
                                                     log('declined friend requests');
                                                 })
-                                            })
+                                            });
                                         }
                                     })
                                 } catch (error) {
@@ -804,7 +835,6 @@ import Router from "../components/services/router/router.js";
                                 }
                             });
                         }
-
                         request_badge.innerText = `${sn.size}`;
                         request_cat_bagde.innerText = `${sn.size}`;
                         request_badge.style.display = sn.size <= 0 ? 'none' : 'flex';
@@ -848,7 +878,7 @@ import Router from "../components/services/router/router.js";
                                     <div class="card-wrapper">
                                         <div class="avatar-comp-cont">
                                             <div class="pfp-cont">
-                                                <div class="pfp" style="background-image: url(${user_data.userProfileAvatar == 'default' ? '../src/imgs/default-avatar.pbg' : user_data.userProfileAvatar});">
+                                                <div class="pfp" style="background-image: url(${user_data.userProfileAvatar == 'default' ? '../src/imgs/avatar.png' : user_data.userProfileAvatar});">
                                                 </div>
                                             </div>
                                             <div class="user-info-cont">
@@ -933,7 +963,7 @@ import Router from "../components/services/router/router.js";
                                     <div class="card-wrapper">
                                         <div class="avatar-comp-cont">
                                             <div class="pfp-cont">
-                                                <div class="pfp" style="background-image: url(${fdata.userProfileAvatar == 'default' ? '../src/imgs/default-avatar.png' : fdata.userProfileAvatar});">
+                                                <div class="pfp" style="background-image: url(${fdata.userProfileAvatar == 'default' ? '../src/imgs/avatar.png' : fdata.userProfileAvatar});">
                                                 </div>
                                             </div>
                                             <div class="user-info-cont">
@@ -1003,11 +1033,26 @@ import Router from "../components/services/router/router.js";
         };
     };
     function render_notifications(){
+        let empty_notifications_holder = `
+            <div class="empty-friend-list">
+                <div class="empty-list-wrapper">
+                    <span class="icon-cont">
+                        <img src="../src/assets/empty-notification.svg" />
+                    </span>
+                    <span class="label">You don't have any notification yet.</span>
+                </div>
+            </div>`;
         (function(uid){
+            let inbox_ref = fsDB.collection('client').doc('meta').collection(uid).doc('notifications')
+                .collection('inboxes').doc('all').collection('updated');
+
+            deleteCollection(inbox_ref, 100)
+            .then(function() {log('')}).catch(function(error) {log(error)});
+
             let view = `
-                <div class="vault notifications" id="vault">
-                    <div class="wrapper scale-up-center" id="vault-container">
-                        <div class="content-wrapper">
+                <div class="vault notifications" id="notifications">
+                    <div class="wrapper scale-up-center" id="notification-container">
+                        <div class="content-wrapper" id="notification-container">
                             <div class="header">
                                 <div class="title-cont">
                                     <div class="title-cont">
@@ -1015,75 +1060,115 @@ import Router from "../components/services/router/router.js";
                                         <span class="title">Notifications</span>
                                     </div>
                                 </div>
-                                <div class="close-btn-cont" id="vault-close-btn">
+                                <div class="close-btn-cont" id="notification-close-btn">
                                     <img src="/src/icons/close-white.svg" alt="">
                                 </div>
                             </div>
-                            <div class="container-wrapper" id="">
-                                <div class="notification-card" id="">
-                                    <div class="identifier-cont">
-                                        <span class="identifier">
-                                            <img src="src/icons/add-friend-blue.svg" alt="">
-                                            <span class="label">Friend request</span>
-                                        </span>
-                                        <span class="notification-remove-btn">
-                                            Clear
-                                        </span>
-                                    </div>
-                                    <div class="card-wrapper">
-                                        <div class="notification-comp-cont">
-                                            <div class="notification-info-cont">
-                                                <span class="message">jenniffa@338293223 accepted your friend request.</span>
-                                                <span class="id">@date</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="notification-card" id="">
-                                    <div class="identifier-cont">
-                                        <span class="identifier">
-                                            <img src="src/icons/nimo-icon.svg" alt="">
-                                            <span class="label">Nimo Community (NC)</span>
-                                        </span>
-                                        <span class="notification-remove-btn">
-                                            Clear
-                                        </span>
-                                    </div>
-                                    <div class="card-wrapper">
-                                        <div class="notification-comp-cont">
-                                            <div class="notification-info-cont">
-                                                <span class="message">Hello yasvan welcome to Nimo, we hope you have a 
-                                                great time making new friends and chatting. 😊</span>
-                                                <span class="id">@date</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="notification-card" id="">
-                                    <div class="identifier-cont">
-                                        <span class="identifier">
-                                            <img src="src/icons/shield.svg" alt="">
-                                            <span class="label">Nimo Security</span>
-                                        </span>
-                                        <span class="notification-remove-btn">
-                                            Clear
-                                        </span>
-                                    </div>
-                                    <div class="card-wrapper">
-                                        <div class="notification-comp-cont">
-                                            <div class="notification-info-cont">
-                                                <span class="message">Dear Nimo user, for security purposes we recommend
-                                                you verify your email. Have a good day.</span>
-                                                <span class="id">@date</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="container-wrapper" id="notification-cont-wraper">
                             </div>
                         </div>
                     </div>
                 </div>`;
             root.insertAdjacentHTML('beforeend', view);
+
+            let notification_wrapper = document.getElementById('notification-container'),
+                notification_close_btn = document.getElementById('notification-close-btn'),
+                notification_container_wrapper = document.getElementById('notification-cont-wraper');
+
+            notification_close_btn.addEventListener('click', () => {
+                notification_wrapper.classList.add('scale-out-center');
+                setTimeout(() => {
+                    history.back();
+                    notification_wrapper.classList.remove('scale-out-center');
+                }, 100);
+            });
+
+            (function(){
+                update_notification();
+            }());
+            function update_notification(){
+                notification_container_wrapper.innerHTML = '';
+                fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
+                .get().then(data => {
+                    if(data.size <= 0){
+                        notification_container_wrapper.innerHTML = empty_notifications_holder;
+                    }
+                    data.forEach((snap) => {
+                        log(data.size);
+                        const history_data = snap.data();
+
+                        let notification_type = history_data.type,
+                            notification_id = history_data.notification_id,
+                            remote_id = history_data.remote_id;
+
+                        let card_view = `
+                            <div class="notification-card" id="notification-card-${notification_id}">
+                                <div class="identifier-cont">
+                                    <span class="identifier">
+                                        <img src="${notification_type == 'request' ? 'src/icons/add-friend-blue.svg' : notification_type == 'nc' ? 'src/icons/nimo-icon.svg' : notification_type == 'ns' ? 'src/icons/shield.svg' : ''}" alt="">
+                                        <span class="label" style="color:${notification_type == 'request' ? '#4285F4' : notification_type == 'nc' ? '#9568A6' : notification_type == 'ns' ? '#1D9654' : '#ffffff'}">${history_data.title}</span>
+                                    </span>
+                                    <span class="notification-remove-btn" id="notification-clear-${history_data.notification_id}">
+                                        Clear
+                                    </span>
+                                </div>
+                                <div class="card-wrapper">
+                                    <div class="notification-comp-cont">
+                                        <div class="notification-info-cont">
+                                            <span class="message">${history_data.body}</span>
+                                            <span class="id">${utilities.formatDate(history_data.date.toDate())}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        
+                        notification_container_wrapper.insertAdjacentHTML('beforeend', card_view);
+
+                        let notification_clear_btn = document.getElementById(`notification-clear-${history_data.notification_id}`),
+                            start_chat_btn = document.getElementById(`start-chat-with-user-${notification_id}`),
+                            notification_card = document.getElementById(`notification-card-${notification_id}`);
+
+                        start_chat_btn.addEventListener('click', ()=> {
+                            location.href = `../pages/chat.html?rid=${remote_id}`;
+                        });
+                        notification_clear_btn.addEventListener('click', () => {
+                            fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
+                            .doc(notification_id).delete().then(() => {
+                                if(notification_card != null){
+                                    notification_card.remove();
+                                }
+                                update_notification();
+                            }).catch(error => log(error));
+                        });
+
+                    });
+                })
+            }
+            //don't touch these functions :<
+            function deleteCollection(inbox_ref, batchSize) {
+                var query = inbox_ref.orderBy('__name__').limit(batchSize);
+                
+                return new Promise(function(resolve, reject) {
+                    deleteQueryBatch(query, batchSize, resolve, reject);
+                });
+            }
+            function deleteQueryBatch(query, batchSize, resolve, reject) {
+                query.get().then(function(snapshot) {
+                    if (snapshot.size == 0) { return 0};
+                    var batch = inbox_ref.firestore.batch();
+                    snapshot.docs.forEach(function(doc) {
+                        batch.delete(doc.ref);
+                    });
+                    return batch.commit().then(function() {
+                        return snapshot.size;
+                    });
+                }).then(function(numDeleted) {
+                    if (numDeleted === 0) {
+                        resolve();
+                        return;
+                    }
+                }).catch(reject);
+            }
         }(lsDB.getItem('id')));
     };
     function initLag(){
