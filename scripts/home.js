@@ -28,6 +28,7 @@ import Router from "../components/services/router/router.js";
     });
 
     function init(){
+        utilities.createNotification('test', 'here goes body', '../src/imgs/avatar.png');
         (function(uid){
             let id0,
                 user0;
@@ -42,9 +43,9 @@ import Router from "../components/services/router/router.js";
                     $('#spinnerx').removeClass('show');
                 }
                 const data = sn.data();
-                log(data.userProfileAvatar)
                 id0 = data.id;
                 user0 = data.user;
+                
                 document.querySelector('.h-usr-name').innerHTML = `${data.user}`;
                 document.querySelector('#uid').innerHTML = `@${data.id}`;
                 document.querySelector('.h-prof-img').style.backgroundImage = `url(${data.userProfileAvatar === 'default' ? '../src/imgs/avatar.png' : data.userProfileAvatar})`;
@@ -319,8 +320,8 @@ import Router from "../components/services/router/router.js";
                         <span>Add friend </span>
                     </button>
                 </div>`;
-            let friend_list_cont = document.getElementById('f_list'),
-                spmc = 0;
+            let friend_list_cont = document.getElementById('f_list');
+
             try {
                 fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
                 .get().then((sn) => {
@@ -337,7 +338,6 @@ import Router from "../components/services/router/router.js";
 
                         add_friend_btn.addEventListener('click', function(e){
                             e.preventDefault();
-                            console.log('adding friend thingi');
                             location.hash = '#?addfriend';
                         });
                     }
@@ -351,7 +351,6 @@ import Router from "../components/services/router/router.js";
                 fsDB.collection('client').doc('meta').collection(fID)
                 .doc('meta_data').get().then((data) => {
                     const f_data = data.data();
-                    log(f_data)
                     let fCard = `
                         <div class="friend-card" id="fid=${fID}">
                             <div class="friend-pfp-cont">
@@ -366,10 +365,7 @@ import Router from "../components/services/router/router.js";
 
                     f_btn.addEventListener('click', (e)=> {
                         e.preventDefault();
-                        console.log(fID, cID);
-                        // window.location.hash = '/nimo-app#chats'
-                        // lsDB.setItem('_fRay', _fID);
-                        // lsDB.setItem('_fcRay', cID);
+                        location.href = `../pages/chat.html?rid=${cID}`;
                     })
                     
                 })

@@ -296,6 +296,22 @@ const utilities = {
             const formattedDate = `${dayOfWeek} ${dayOfMonth} ${month} @ ${hours}:${minutes < 10 ? '0' : ''}${minutes}${ampm}`;
             return formattedDate;
         }
+    },
+    createNotification: (title, body, icon) => {
+        var audio = new Audio('../src/sfx/nimo-bubble.mp3');
+        Notification.requestPermission().then(function(permission) {
+            if (permission === 'granted') {
+            var notification = new Notification(title, {
+                body: body,
+                icon: icon,
+                sound: audio,
+                silent: true
+            });
+            notification.addEventListener('show', function() {
+                audio.play();
+            });
+            }
+        });
     }
 }
 
