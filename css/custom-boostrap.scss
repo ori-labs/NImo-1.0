@@ -1,4 +1,5 @@
 $primaryColor: #9568A6;
+$secondaryColor: #AC4ECF;
 $bgColor: #202024;
 $inputBgColor: #2F2F37;
 $originBg: #2f2f379a;
@@ -144,8 +145,25 @@ $backdrop: rgba($color: #000000, $alpha: .6);
     font-weight: normal;
     border-radius: 5px;
     color: $lightColor;
+    background: $primaryColor;
+    background: linear-gradient(138deg, $primaryColor 0%, $secondaryColor 100%);
+    cursor: pointer;
+    transition: .2s ease-in;
+
+    &:active{
+        opacity: .9;
+        transform: scale(.9);
+    }
+    &:hover{
+        opacity: .8;
+    }
 }
 
+.bg-primary{
+    color: $lightBorder;
+    background: $primaryColor;
+    background: linear-gradient(138deg, $primaryColor 0%, $secondaryColor 100%);
+}
 .btn{
     font-size: 14px !important;
     transition: transform .2s ease-in !important;

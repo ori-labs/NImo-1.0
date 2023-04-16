@@ -30,18 +30,18 @@
                     </div>
                 </div>
                 <div class="h-top-btn">
-                    <div class="btn-cont">
+                    <!-- <div class="btn-cont">
                         <span>
                             <img class="sett" src="src/icons/settings.svg" alt="">
                         </span>
-                    </div>
-                    <div class="btn-cont" id="notification-btn">
+                    </div> -->
+                    <div class="btn-cont tippy-tip" id="notification-btn" data-tippy-content="Notifications">
                         <span>
-                            <img class="noti" src="src/icons/notification.svg" alt="">
+                            <img class="noti"  src="src/icons/notification.svg" alt="">
                         </span>
                         <span class="bagde notification-bagde scale-up-center" id="notification-bagde">9+</span>
                     </div>
-                    <div class="btn-cont" id="vault-btn">
+                    <div class="btn-cont tippy-tip" id="vault-btn" data-tippy-content="Vault">
                         <span>
                             <img class="frnd" src="src/icons/friends.svg" alt="">
                         </span>
@@ -199,11 +199,16 @@
     <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
+    <!-- <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script> -->
     <script src="https://unpkg.com/vanilla-picker@2"></script>
     <script src="components/lib/sanMoji/js/cropper/cropper.js"></script>
     <script src="components/lib/sanMoji/js/snLimit.js"></script>
     <!-- <script defer type="module" src="main.js"></script> -->
+    <script src="components/lib/sanMoji/js/popper.min.js"></script>
+    <script src="components/lib/sanMoji/js/tippy.js"></script>
+
+    <!-- <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>  -->
     <script type="module" defer src="scripts/home.js"></script>
     <script src="components/lib/sanMoji/js/sanMoji.js"></script>
 </body>

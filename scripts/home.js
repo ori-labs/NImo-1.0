@@ -5,7 +5,7 @@ import Router from "../components/services/router/router.js";
 
 
 (function(){
-    location.hash = '#?app';
+    // location.hash = '#?app';
     console.log('%cSESSION: Home', 'color: #d71b43');
     firebase.initializeApp({
         apiKey: config._napi,
@@ -28,7 +28,6 @@ import Router from "../components/services/router/router.js";
     });
 
     function init(){
-        utilities.createNotification('test', 'here goes body', '../src/imgs/avatar.png');
         (function(uid){
             let id0,
                 user0;
@@ -53,8 +52,9 @@ import Router from "../components/services/router/router.js";
 
                 lsDB.setItem('cache', [data.user, data.userProfileAvatar || null, data.userProfileBackDrop])
                 lsDB.setItem('client', data.user);
+                lsDB.setItem('clientAvata', data.userProfileAvatar);
 
-                update_friends_and_rooms(uid);
+                update_friends_and_rooms();
             }).catch((err) => {
                 console.log('something went wrong', err);
                 location.reload();
@@ -74,8 +74,38 @@ import Router from "../components/services/router/router.js";
                 location.hash = '#?vault'
             });
             notification_btn.addEventListener('click', ()=> {
-                location.hash = '#?notifications';
+                let inbox_ref = fsDB.collection('client').doc('meta').collection(uid).doc('notifications')
+                .collection('inboxes').doc('all').collection('updated');
+
+                deleteCollection(inbox_ref, 100)
+                .then(function() {
+                    location.hash = '#?notifications';
+                }).catch(function(error) {log(error)});
             });
+            function deleteCollection(inbox_ref, batchSize) {
+                var query = inbox_ref.orderBy('__name__').limit(batchSize);
+                
+                return new Promise(function(resolve, reject) {
+                    deleteQueryBatch(query, batchSize, resolve, reject);
+                });
+            }
+            function deleteQueryBatch(query, batchSize, resolve, reject) {
+                query.get().then(function(snapshot) {
+                    if (snapshot.size == 0) { return 0};
+                    var batch = inbox_ref.firestore.batch();
+                    snapshot.docs.forEach(function(doc) {
+                        batch.delete(doc.ref);
+                    });
+                    return batch.commit().then(function() {
+                        return snapshot.size;
+                    });
+                }).then(function(numDeleted) {
+                    if (numDeleted === 0) {
+                        resolve();
+                        return;
+                    }
+                }).catch(reject);
+            };
 
             (function(){
                 listen_to_request();
@@ -88,15 +118,21 @@ import Router from "../components/services/router/router.js";
                     fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming').onSnapshot(function(sn){
                         sn.docChanges().forEach(function(ch){
                             lsDB.setItem('vault_inbox_count', sn.size);
-                            let bagde_card = `
-                                <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
-                            `;
-                            vault_btn.insertAdjacentHTML('beforeend', bagde_card);
-
+                            
                             if(sn.size <= 0){
                                 vault_btn.innerHTML = `<span>
                                     <img class="frnd" src="../src/icons/friends.svg" alt="">
-                                </span>`
+                                </span>`;
+                            }else{
+                                let bagde_card = `
+                                    <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
+                                `;
+                                vault_btn.insertAdjacentHTML('beforeend', bagde_card);
+                                utilities.createNotification(
+                                    'Friend Request', 
+                                    'You have a new friend request.', 
+                                    '../src/assets/notification/request-icon.png'
+                                );
                             }
                         })
                     })
@@ -109,32 +145,53 @@ import Router from "../components/services/router/router.js";
                     .doc('all').collection('updated').onSnapshot(function(sn){
                         sn.docChanges().forEach(function(ch){
                             lsDB.setItem('inbox size', sn.size);
-                            let bagde_card = `
-                                <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
-                            `;
-                            notification_btn.insertAdjacentHTML('beforeend', bagde_card);
-
+                            
                             if(sn.size <= 0){
                                 notification_btn.innerHTML = `<span>
                                     <img class="frnd" src="../src/icons/notification.svg" alt="">
                                 </span>`
+                            }else{
+                                if(ch.type == 'added'){
+                                    let bagde_card = `
+                                        <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
+                                    `;
+                                    notification_btn.insertAdjacentHTML('beforeend', bagde_card);
+                                    sn.forEach(data => {
+                                        log(data.data());
+                                        let notification_id = data.data().notification_id;
+
+                                        fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
+                                        .doc(notification_id).get().then((item) => {
+                                            const item_data = item.data();
+                                            log(item_data.title);
+                                            let type = item_data.type;
+                                            utilities.createNotification(
+                                                `${type === 'request' ? 'Friend request - Nimo' : type === 'security' ? item_data.title : type === 'community' ? item_data.title : 'Update'}`,
+                                                `${type === 'request' ? item_data.author + ' accepted your request.' : item_data.body}`,
+                                                `${type === 'request' ? '../src/assets/notification/request-icon.png' : type === 'security' ? '../src/assets/notification/security-icon.png' : '../src/assets/notification/community-icon.png'}`
+                                            )
+                                        })
+                                    })
+                                }
                             }
                         });
                     })
                 };
             }());
         }(lsDB.getItem('id')));
+        
+        tippy('.tippy-tip', {
+            placement: 'bottom',
+            arrow: true,
+        });
     }
     (function(){
         initLag();
         auth.onAuthStateChanged( async __usr__ => {
             if(__usr__){
                 const meta_data = await getMeta(__usr__.uid);
-
                 lsDB.setItem('id', meta_data[1]);
-
                 const state = meta_data[0];
-
                 if(state != null){
                     if(state === 'setup'){
                         location.href = `/pages/setup.html?uid=${__usr__.uid}`;
@@ -307,8 +364,17 @@ import Router from "../components/services/router/router.js";
             }, 3000)
         }
     };
-    function update_friends_and_rooms(uid){
-        let get_friends = async () => {
+    function update_friends_and_rooms(){
+        let get_rooms = async () => {
+            console.log(utilities.genID())
+        };
+
+        get_friend_list()
+        get_rooms();
+    };
+    async function get_friend_list(){
+        let uid = lsDB.getItem('id');
+        try {
             let dfCard = `
                 <div class="NOF">
                     <img src="/src/assets/nof.svg" />
@@ -321,63 +387,56 @@ import Router from "../components/services/router/router.js";
                     </button>
                 </div>`;
             let friend_list_cont = document.getElementById('f_list');
+            
+            fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
+            .get().then((sn) => {
+                if(sn.docs.length > 0) {
+                    sn.forEach((s) => {
+                        const friend_data = s.data();
+                        let remote_id = friend_data.remote_id,
+                            friend_id = friend_data.friend_id;
+                        renderFnd(friend_id, remote_id);
+                    })
+                }else{
+                    friend_list_cont.innerHTML = dfCard;
+                    let add_friend_btn = document.getElementById('add-friend');
 
-            try {
-                fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
-                .get().then((sn) => {
-                    if(sn.docs.length > 0) {
-                        sn.forEach((s) => {
-                            const friend_data = s.data();
-                            let remote_id = friend_data.remote_id,
-                                friend_id = friend_data.friend_id;
-                            renderFnd(friend_id, remote_id);
-                        })
-                    }else{
-                        friend_list_cont.innerHTML = dfCard;
-                        let add_friend_btn = document.getElementById('add-friend');
-
-                        add_friend_btn.addEventListener('click', function(e){
-                            e.preventDefault();
-                            location.hash = '#?addfriend';
-                        });
-                    }
-                })
-            } catch (error) {
-                log('hmmmmm')
-            }
+                    add_friend_btn.addEventListener('click', function(e){
+                        e.preventDefault();
+                        location.hash = '#?addfriend';
+                    });
+                }
+            });
 
             function  renderFnd(fID, cID){
                 friend_list_cont.innerHTML = '';
                 fsDB.collection('client').doc('meta').collection(fID)
-                .doc('meta_data').get().then((data) => {
+                .doc('meta_data').get().then(async(data) => {
                     const f_data = data.data();
                     let fCard = `
-                        <div class="friend-card" id="fid=${fID}">
-                            <div class="friend-pfp-cont">
+                        <div class="friend-card" id="fid-${fID}">
+                            <div class="friend-pfp-cont" id="tippy-tip" data-tippy-content="${f_data.user}">
                                 <span class="f-pfp" style="background-image: url(${f_data.userProfileAvatar == 'default' ? '/src/imgs/avatar.svg' : f_data.userProfileAvatar});background-color: ${f_data.userProfileBackDrop};"></span>
-                                <!-- <span class="bagde">9+</span> -->
+                                <span class="bagde bg-primary">9+</span>
                             </div>
-                            <span class="f-uname">${f_data.user}</span>
+                            <!--<span class="f-uname">${f_data.user}</span> -->
                         </div>
                     `;
                     friend_list_cont.insertAdjacentHTML('beforeend', fCard);
-                    const f_btn = document.getElementById(`fid=${fID}`);
-
+                    tippy('#tippy-tip', {
+                        placement: 'bottom',
+                        arrow: true,
+                    });
+                    const f_btn = document.getElementById(`fid-${fID}`);
+                    const f_card = document.getElementById(`fid-${fID}`);
                     f_btn.addEventListener('click', (e)=> {
                         e.preventDefault();
                         location.href = `../pages/chat.html?rid=${cID}`;
                     })
-                    
                 })
             }
-        };
-        let get_rooms = async () => {
-            console.log(utilities.genID())
-        };
-
-        get_friends();
-        get_rooms();
-    };
+        } catch (error) {}
+    }
     function render_add_friend(){
         let view = `
             <div class="addfriend-cont" id="addfriend-cont">
@@ -395,7 +454,7 @@ import Router from "../components/services/router/router.js";
                         <span class="label">Add friends easily by entering their user id. <br> eg. sadie@123456789.</span>
                         <div class="input-cont">
                             <input type="text" name="id" id="input-fr" placeholder="sadie@123456789">
-                            <span class="add-btn" id="send_btn">Send</span>
+                            <span class="add-btn btn-primary" id="send_btn">Send</span>
                         </div>
                     </div>
                     <div class="msg-box" id="msg-box">
@@ -455,7 +514,6 @@ import Router from "../components/services/router/router.js";
              
                 (function(uid){
                     if(!regex.test(value)){
-                        console.log('invalid username and ID');
                         msgbox.alert(
                             'Invalid or poorly formatted Username and ID!',
                             msgbox_icoonEl,
@@ -465,91 +523,105 @@ import Router from "../components/services/router/router.js";
                         )
                     }else{
                         let user_id = input.value.split('@')[1];
-                        log(user_id);
                         if(user_id == uid){
                             msgbox.alert(
-                                'You cannot send yourself friend request!',
+                                'You can not send yourself friend request!',
                                 msgbox_icoonEl,
                                 msgbox_msgEl,
                                 msgbox_parent,
                                 'error'
                             )
                         }else{
-                            send_btn.innerHTML = _prld;
-                            send_btn.disabled = true;
-                            input.disabled = true;
-
-                            fsDB.collection("client")
-                            .doc("meta")
-                            .collection(user_id)
-                            .limit(1)
+                            fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
                             .get()
-                            .then((user) => {
-                                console.log(user.size);
-                                if(user.size <= 0){
-                                    msgbox.alert(
-                                        `Opps! No user with '${input.value}' was found!`,
-                                        msgbox_icoonEl,
-                                        msgbox_msgEl,
-                                        msgbox_parent,
-                                        'error'
-                                    );
-                                    reset();
-                                }else{
-                                    let date = new Date();
-                                    fsDB.collection('client').doc('meta').collection(user_id).doc('requests')
-                                    .collection('incoming').doc(uid)
-                                    .set({
-                                        id: uid,
-                                        date: date
-                                    }).then(() => {
-                                        fsDB.collection('client').doc('meta').collection(uid).doc('requests')
-                                        .collection('outgoing').doc(user_id)
-                                        .set({
-                                            id: user_id,
-                                            date: date
-                                        }).then(() => {
-                                            log('request sent to'+user_id);
-                                            msgbox.alert(
-                                                `Request was sent successfully!`,
-                                                msgbox_icoonEl,
-                                                msgbox_msgEl,
-                                                msgbox_parent,
-                                                'success'
-                                            );
-                                            reset();
-                                        }).catch(error => {
-                                            msgbox.alert(
-                                                `Opps! Something went seriously wrong, try again later!`,
-                                                msgbox_icoonEl,
-                                                msgbox_msgEl,
-                                                msgbox_parent,
-                                                'error'
-                                            );
-                                            reset();
-                                        })
-                                    }).catch(error => {
+                            .then(sn => {
+                                send_btn.innerHTML = _prld;
+                                send_btn.disabled = true;
+                                input.disabled = true;
+                                sn.forEach((user) => {
+                                    log(user.data());
+                                    if(user.data().friend_id == user_id){
                                         msgbox.alert(
-                                            `Opps! Something went seriously wrong, try again later!`,
+                                            'This person is already your friend',
                                             msgbox_icoonEl,
                                             msgbox_msgEl,
                                             msgbox_parent,
                                             'error'
                                         );
                                         reset();
-                                    })
-                                }
-                            }).catch(error => {
-                                msgbox.alert(
-                                    `Opps! Something went seriously wrong, try again later!`,
-                                    msgbox_icoonEl,
-                                    msgbox_msgEl,
-                                    msgbox_parent,
-                                    'error'
-                                );
-                                reset();
-                            })
-                            console.log('searching for valid match');
+                                    }else{
+                                        fsDB.collection('client')
+                                        .doc('meta').collection(user_id).get().then((d) => {
+                                            log(d)
+                                            if(d.size <= 0){
+                                                msgbox.alert(
+                                                    'There is no user of given username or id!',
+                                                    msgbox_icoonEl,
+                                                    msgbox_msgEl,
+                                                    msgbox_parent,
+                                                    'error'
+                                                );
+                                                reset();
+                                            }else{
+                                                fsDB.collection("client")
+                                                .doc("meta")
+                                                .collection(user_id)
+                                                .limit(1)
+                                                .get()
+                                                .then((user) => {
+                                                    console.log(user.size);
+                                                    if(user.size <= 0){
+                                                        msgbox.alert(
+                                                            `Opps! No user with '${input.value}' was found!`,
+                                                            msgbox_icoonEl,
+                                                            msgbox_msgEl,
+                                                            msgbox_parent,
+                                                            'error'
+                                                        );
+                                                        reset();
+                                                    }else{
+                                                        let date = new Date();
+                                                        fsDB.collection('client').doc('meta').collection(user_id).doc('requests')
+                                                        .collection('incoming').doc(uid)
+                                                        .set({
+                                                            id: uid,
+                                                            date: date
+                                                        }).then(() => {
+                                                            fsDB.collection('client').doc('meta').collection(uid).doc('requests')
+                                                            .collection('outgoing').doc(user_id)
+                                                            .set({
+                                                                id: user_id,
+                                                                date: date
+                                                            }).then(() => {
+                                                                log('request sent to'+user_id);
+                                                                msgbox.alert(
+                                                                    `Request was sent successfully!`,
+                                                                    msgbox_icoonEl,
+                                                                    msgbox_msgEl,
+                                                                    msgbox_parent,
+                                                                    'success'
+                                                                );
+                                                                setTimeout(() => {
+                                                                    reset();
+                                                                }, 500);
+                                                            });
+                                                        });
+                                                    }
+                                                }).catch(error => {
+                                                    msgbox.alert(
+                                                        `Opps! Something went seriously wrong, try again later!`,
+                                                        msgbox_icoonEl,
+                                                        msgbox_msgEl,
+                                                        msgbox_parent,
+                                                        'error'
+                                                    );
+                                                    reset();
+                                                });
+                                            }
+                                        })
+                                    }
+                                })
+                            });
                         }
                     };
                 }(lsDB.getItem('id')));
@@ -578,16 +650,22 @@ import Router from "../components/services/router/router.js";
                     <div class="wrapper scale-up-center" id="vault-container">
                         <div class="content-wrapper">
                             <div class="header">
-                                <div class="btn-cont">
-                                    <div class="btn-wrapper active" id="vault-friends-btn">
-                                        <span class="btn">Friends</span>
+                                <div class="btn-cont-wrapper">
+                                    <div class="btn-cont">
+                                        <div class="btn-wrapper active" id="vault-friends-btn">
+                                            <span class="btn">Friends</span>
+                                        </div>
+                                        <div class="btn-wrapper" id="vault-requests-btn">
+                                            <span class="btn">Requests</span>
+                                            <span class="bagde" style="display: none" id="request-badge"></span>
+                                        </div>
                                     </div>
-                                    <div class="btn-wrapper" id="vault-requests-btn">
-                                        <span class="btn">Requests</span>
-                                        <span class="bagde" style="display: none" id="request-badge"></span>
+                                    <div class="add-friend-btn btn-primary" id="add-friend-btn">
+                                        <img src="../src/icons/add-freind.svg" />
+                                        <span >Add friend</span>
                                     </div>
                                 </div>
-                                <div class="close-btn-cont" id="vault-close-btn">
+                                <div class="close-btn-cont tippy-tip" id="vault-close-btn" data-tippy-content="Close">
                                     <img src="/src/icons/close-white.svg" alt="">
                                 </div>
                             </div>
@@ -621,8 +699,9 @@ import Router from "../components/services/router/router.js";
                 vault_requests_btn = document.getElementById('vault-requests-btn'),
                 vault_friends_cont = document.getElementById('vault-friends-cont'),
                 vault_requests_cont = document.getElementById('vault-requests-cont'),
-                vault_close_btn = document.getElementById('vault-close-btn');
-            
+                vault_close_btn = document.getElementById('vault-close-btn'),
+                add_friend_btn = document.getElementById('add-friend-btn');
+
             let vault_incoming_req_btn = document.getElementById('incoming-req-btn'),
                 vault_pending_req_btn = document.getElementById('pending-req-btn'),
                 vault_incoming_req_cont = document.getElementById('incoming-req-cont'),
@@ -648,6 +727,13 @@ import Router from "../components/services/router/router.js";
                     switch_tab(vault_friends_cont, vault_requests_cont);
                 }
             });
+            add_friend_btn.addEventListener('click', () => {
+                vault_wrapper.classList.add('scale-out-center');
+                setTimeout(() => {
+                    location.hash = '#?addfriend'
+                    vault_wrapper.classList.remove('scale-out-center');
+                }, 100);
+            });
             vault_close_btn.addEventListener('click', () => {
                 vault_wrapper.classList.add('scale-out-center');
                 setTimeout(() => {
@@ -672,7 +758,10 @@ import Router from "../components/services/router/router.js";
                     switch_tab(vault_incoming_req_cont, vault_pending_req_cont);
                 }
             });
-
+            tippy('.tippy-tip', {
+                placement: 'bottom',
+                arrow: true,
+            });
             (function(){
                 vault_incoming_req_cont.innerHTML =  `<div class="empty-friend-list">
                     <div class="empty-list-wrapper">
@@ -756,7 +845,7 @@ import Router from "../components/services/router/router.js";
                                             date = new Date();
                                         log(remote_id);
                                         let username = lsDB.getItem('client');
-                                        
+
                                         fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
                                         .doc(remote_id).set({
                                             link_id: link_id,
@@ -791,6 +880,7 @@ import Router from "../components/services/router/router.js";
                                                                 title: 'Friend request',
                                                                 body: `<b id="start-chat-with-user-${notification_id}" class="user-index">${username}</b> accepted your friend request.`,
                                                                 date: date,
+                                                                author: username,
                                                                 remote_id: remote_id
                                                             }).then(() => {
                                                                 fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('incoming')
@@ -802,6 +892,7 @@ import Router from "../components/services/router/router.js";
                                                                             pending_card.remove();
                                                                         }
                                                                         render_outgoing_list();
+                                                                        get_friend_list();
                                                                     });
                                                                 });
                                                             });
@@ -838,6 +929,7 @@ import Router from "../components/services/router/router.js";
                     });
                 });
             }());
+
             render_outgoing_list();
 
             function render_outgoing_list(){
@@ -853,74 +945,76 @@ import Router from "../components/services/router/router.js";
                                 <span class="label">No pending request.</span>
                             </div>
                         </div>`;
-                    };
-                    sn.forEach(req => {
-                        let req_id = req.data().id,
-                            req_date = req.data().date.toDate();
-                        
-                        console.log(utilities.formatDate(req_date));
-
-                        fsDB.collection('client').doc('meta').collection(req_id).doc('meta_data')
-                        .get().then(data => {
-                            let user_data = data.data();
-                            let card = `
-                                <div class="friend-card outgoing" id="outgoing-card-${req_id}">
-                                    <div class="identifier-cont">
-                                        <span class="identifier">
-                                            <img src="src/icons/outgoing.svg" alt="">
-                                            <span class="label">Outgoing request</span>
-                                        </span>
-                                    </div>
-                                    <div class="card-wrapper">
-                                        <div class="avatar-comp-cont">
-                                            <div class="pfp-cont">
-                                                <div class="pfp" style="background-image: url(${user_data.userProfileAvatar == 'default' ? '../src/imgs/avatar.png' : user_data.userProfileAvatar});">
-                                                </div>
-                                            </div>
-                                            <div class="user-info-cont">
-                                                <span class="username">${user_data.user}</span>
-                                                <span class="id">${utilities.formatDate(req_date)}</span>
-                                            </div>
-                                        </div>
-                                        <div class="btn-comp-cont">
-                                            <span class="btn-item btn btn-danger-normal" id="outgoing-cancel-btn-${req_id}">
-                                                Cancel
+                    }else{
+                        vault_pending_req_cont.innerHTML = '';
+                        sn.forEach(req => {
+                            let req_id = req.data().id,
+                                req_date = req.data().date.toDate();
+                            
+                            console.log(utilities.formatDate(req_date));
+    
+                            fsDB.collection('client').doc('meta').collection(req_id).doc('meta_data')
+                            .get().then(data => {
+                                let user_data = data.data();
+                                let card = `
+                                    <div class="friend-card outgoing" id="outgoing-card-${req_id}">
+                                        <div class="identifier-cont">
+                                            <span class="identifier">
+                                                <img src="src/icons/outgoing.svg" alt="">
+                                                <span class="label">Outgoing request</span>
                                             </span>
                                         </div>
-                                    </div>
-                                </div>`;
-
-                            vault_pending_req_cont.insertAdjacentHTML('beforeend', card);
-
-                            let outgoing_cancel_btn = document.getElementById(`outgoing-cancel-btn-${req_id}`),
-                                outgoing_card = document.getElementById(`outgoing-card-${req_id}`);
-
-                            outgoing_cancel_btn.addEventListener('click', () => {
-                                log(req_id);
-                                utilities.alert('Do you want to cancel this request?', 'alert', action);
-
-                                function action(){ //delete my outgoing request --> go to friends incoming and check for my request id -> delete;
-                                    fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('incoming')
-                                    .doc(uid).delete().then(() => {
-                                         fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('outgoing')
-                                        .doc(req_id).delete().then(() => {
-                                            render_outgoing_list();
+                                        <div class="card-wrapper">
+                                            <div class="avatar-comp-cont">
+                                                <div class="pfp-cont">
+                                                    <div class="pfp" style="background-image: url(${user_data.userProfileAvatar == 'default' ? '../src/imgs/avatar.png' : user_data.userProfileAvatar});">
+                                                    </div>
+                                                </div>
+                                                <div class="user-info-cont">
+                                                    <span class="username">${user_data.user}</span>
+                                                    <span class="id">${utilities.formatDate(req_date)}</span>
+                                                </div>
+                                            </div>
+                                            <div class="btn-comp-cont">
+                                                <span class="btn-item btn btn-danger-normal" id="outgoing-cancel-btn-${req_id}">
+                                                    Cancel
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>`;
+    
+                                vault_pending_req_cont.insertAdjacentHTML('beforeend', card);
+    
+                                let outgoing_cancel_btn = document.getElementById(`outgoing-cancel-btn-${req_id}`),
+                                    outgoing_card = document.getElementById(`outgoing-card-${req_id}`);
+    
+                                outgoing_cancel_btn.addEventListener('click', () => {
+                                    log(req_id);
+                                    utilities.alert('Do you want to cancel this request?', 'alert', action);
+    
+                                    function action(){ //delete my outgoing request --> go to friends incoming and check for my request id -> delete;
+                                        fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('incoming')
+                                        .doc(uid).delete().then(() => {
+                                             fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('outgoing')
+                                            .doc(req_id).delete().then(() => {
+                                                render_outgoing_list();
+                                            }).catch(err => {
+                                                log(err);
+                                            })
                                         }).catch(err => {
-                                            log(err);
-                                        })
-                                    }).catch(err => {
-                                        log(err)
-                                    });
-                                }
-                            })
-                        }).catch(error => {
-                            log(error);
+                                            log(err)
+                                        });
+                                    }
+                                })
+                            }).catch(error => {
+                                log(error);
+                            });
                         });
-                    });
+                    }
                 }).catch(error => {
                     log(error);
                 });
-            }
+            };
             (function(){
                 render_friends_list();
             }());
@@ -997,6 +1091,7 @@ import Router from "../components/services/router/router.js";
                                         fsDB.collection('client').doc('meta').collection(friend_id).doc('links')
                                         .collection('remotes').doc(remote_id).delete().then(() => {
                                             render_friends_list();
+                                            get_friend_list();
                                         }).catch(error => log(error));
                                     }).catch(error => log(error));
                                 }
@@ -1039,12 +1134,6 @@ import Router from "../components/services/router/router.js";
                 </div>
             </div>`;
         (function(uid){
-            let inbox_ref = fsDB.collection('client').doc('meta').collection(uid).doc('notifications')
-                .collection('inboxes').doc('all').collection('updated');
-
-            deleteCollection(inbox_ref, 100)
-            .then(function() {log('')}).catch(function(error) {log(error)});
-
             let view = `
                 <div class="vault notifications" id="notifications">
                     <div class="wrapper scale-up-center" id="notification-container">
@@ -1056,7 +1145,7 @@ import Router from "../components/services/router/router.js";
                                         <span class="title">Notifications</span>
                                     </div>
                                 </div>
-                                <div class="close-btn-cont" id="notification-close-btn">
+                                <div class="close-btn-cont tippy-tip" id="notification-close-btn" data-tippy-content="Close">
                                     <img src="/src/icons/close-white.svg" alt="">
                                 </div>
                             </div>
@@ -1079,11 +1168,16 @@ import Router from "../components/services/router/router.js";
                 }, 100);
             });
 
-            (function(){
-                update_notification();
-            }());
+            tippy('.tippy-tip', {
+                placement: 'bottom',
+                arrow: true,
+            });
+
+            update_notification();
+
             function update_notification(){
                 notification_container_wrapper.innerHTML = '';
+                log(uid);
                 fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
                 .get().then(data => {
                     if(data.size <= 0){
@@ -1140,31 +1234,6 @@ import Router from "../components/services/router/router.js";
                     });
                 })
             }
-            //don't touch these functions :<
-            function deleteCollection(inbox_ref, batchSize) {
-                var query = inbox_ref.orderBy('__name__').limit(batchSize);
-                
-                return new Promise(function(resolve, reject) {
-                    deleteQueryBatch(query, batchSize, resolve, reject);
-                });
-            }
-            function deleteQueryBatch(query, batchSize, resolve, reject) {
-                query.get().then(function(snapshot) {
-                    if (snapshot.size == 0) { return 0};
-                    var batch = inbox_ref.firestore.batch();
-                    snapshot.docs.forEach(function(doc) {
-                        batch.delete(doc.ref);
-                    });
-                    return batch.commit().then(function() {
-                        return snapshot.size;
-                    });
-                }).then(function(numDeleted) {
-                    if (numDeleted === 0) {
-                        resolve();
-                        return;
-                    }
-                }).catch(reject);
-            }
         }(lsDB.getItem('id')));
     };
     function initLag(){
@@ -1179,7 +1248,6 @@ import Router from "../components/services/router/router.js";
         window.oncontextmenu = function() {
             return false;
         }
-        lsDB.clear();
     };
     function hide_preloader(){
         $('#spinnerx').removeClass('load');

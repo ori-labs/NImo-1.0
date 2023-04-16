@@ -1009,6 +1009,7 @@ body .root .content .h-content .h-content-wraper .content-wrapper .friend-cont .
   row-gap: 10px;
   justify-content: center;
   cursor: pointer;
+  transition: 0.2s ease-in;
 }
 body .root .content .h-content .h-content-wraper .content-wrapper .friend-cont .list-cont .friend-card .friend-pfp-cont {
   display: flex;
@@ -1018,7 +1019,6 @@ body .root .content .h-content .h-content-wraper .content-wrapper .friend-cont .
 body .root .content .h-content .h-content-wraper .content-wrapper .friend-cont .list-cont .friend-card .friend-pfp-cont .f-pfp {
   width: 60px;
   height: 60px;
-  background-color: #3487ad;
   border-radius: 100px;
   background-repeat: no-repeat;
   background-position: center;
@@ -1047,10 +1047,11 @@ body .root .content .h-content .h-content-wraper .content-wrapper .friend-cont .
   word-wrap: break-word;
 }
 body .root .content .h-content .h-content-wraper .content-wrapper .friend-cont .list-cont .friend-card:hover {
-  opacity: 0.6;
+  opacity: 0.8;
 }
 body .root .content .h-content .h-content-wraper .content-wrapper .friend-cont .list-cont .friend-card:active {
   opacity: 0.9;
+  transform: scale(0.9);
 }
 body .root .content .h-content .h-content-wraper .content-wrapper .friend-cont .list-cont .NOF {
   width: 100%;
@@ -2783,7 +2784,15 @@ body .root .vault .wrapper .content-wrapper .header {
   justify-content: space-between;
   padding: 0px 0px 5px 0px;
 }
-body .root .vault .wrapper .content-wrapper .header .btn-cont {
+body .root .vault .wrapper .content-wrapper .header .btn-cont-wrapper {
+  display: flex;
+  flex-direction: row;
+  -moz-column-gap: 20px;
+       column-gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+}
+body .root .vault .wrapper .content-wrapper .header .btn-cont-wrapper .btn-cont {
   background-color: #2F2F37;
   padding: 5px;
   border-radius: 5px;
@@ -2793,7 +2802,7 @@ body .root .vault .wrapper .content-wrapper .header .btn-cont {
   -moz-column-gap: 10px;
        column-gap: 10px;
 }
-body .root .vault .wrapper .content-wrapper .header .btn-cont .btn-wrapper {
+body .root .vault .wrapper .content-wrapper .header .btn-cont-wrapper .btn-cont .btn-wrapper {
   padding: 6px 15px 6px 15px;
   border-radius: 4px;
   display: flex;
@@ -2804,12 +2813,12 @@ body .root .vault .wrapper .content-wrapper .header .btn-cont .btn-wrapper {
   cursor: pointer;
   transition: background 0.2s ease-in;
 }
-body .root .vault .wrapper .content-wrapper .header .btn-cont .btn-wrapper span {
+body .root .vault .wrapper .content-wrapper .header .btn-cont-wrapper .btn-cont .btn-wrapper span {
   color: #F7F7F8;
   font-size: 16px;
   transition: transform 0.2s ease-in;
 }
-body .root .vault .wrapper .content-wrapper .header .btn-cont .btn-wrapper .bagde {
+body .root .vault .wrapper .content-wrapper .header .btn-cont-wrapper .btn-cont .btn-wrapper .bagde {
   background-color: #9568A6;
   padding: 3px;
   width: 14px;
@@ -2820,11 +2829,27 @@ body .root .vault .wrapper .content-wrapper .header .btn-cont .btn-wrapper .bagd
   border-radius: 100px;
   font-size: 13px;
 }
-body .root .vault .wrapper .content-wrapper .header .btn-cont .btn-wrapper:active > span {
+body .root .vault .wrapper .content-wrapper .header .btn-cont-wrapper .btn-cont .btn-wrapper:active > span {
   transform: scale(0.8);
 }
-body .root .vault .wrapper .content-wrapper .header .btn-cont .active {
+body .root .vault .wrapper .content-wrapper .header .btn-cont-wrapper .btn-cont .active {
   background-color: #3E3E45;
+}
+body .root .vault .wrapper .content-wrapper .header .btn-cont-wrapper .add-friend-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  -moz-column-gap: 5px;
+       column-gap: 5px;
+  padding: 6px 10px 6px 10px;
+}
+body .root .vault .wrapper .content-wrapper .header .btn-cont-wrapper .add-friend-btn img {
+  width: 16px;
+}
+body .root .vault .wrapper .content-wrapper .header .btn-cont-wrapper .add-friend-btn span {
+  font-size: 14px;
+  font-family: inherit;
 }
 body .root .vault .wrapper .content-wrapper .header .close-btn-cont {
   width: 32px;

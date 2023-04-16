@@ -120,6 +120,23 @@
   font-weight: normal;
   border-radius: 5px;
   color: #F7F7F8;
+  background: #9568A6;
+  background: linear-gradient(138deg, #9568A6 0%, #AC4ECF 100%);
+  cursor: pointer;
+  transition: 0.2s ease-in;
+}
+.btn-primary:active {
+  opacity: 0.9;
+  transform: scale(0.9);
+}
+.btn-primary:hover {
+  opacity: 0.8;
+}
+
+.bg-primary {
+  color: rgba(255, 255, 255, 0.2196078431);
+  background: #9568A6;
+  background: linear-gradient(138deg, #9568A6 0%, #AC4ECF 100%);
 }
 
 .btn {
