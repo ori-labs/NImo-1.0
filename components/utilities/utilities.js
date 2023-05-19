@@ -301,15 +301,16 @@ const utilities = {
         var audio = new Audio('../src/sfx/nimo-bubble.mp3');
         Notification.requestPermission().then(function(permission) {
             if (permission === 'granted') {
-            var notification = new Notification(title, {
-                body: body,
-                icon: icon,
-                sound: audio,
-                silent: true
-            });
-            notification.addEventListener('show', function() {
-                audio.play();
-            });
+                var notification = new Notification(title, {
+                    body: body,
+                    icon: icon,
+                    sound: audio,
+                    silent: true
+                });
+                notification.addEventListener('show', function() {
+                    audio.play();
+                    audio.volume = 0.2;
+                });
             }
         });
     }

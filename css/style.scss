@@ -4346,6 +4346,19 @@ body{
                 }
             }
         }
+        .profile-card{
+            position: absolute;
+            left: calc(15px * 2);
+            top: 100px;
+            background-color: orange;
+            z-index: 999;
+
+            .wrapper{
+                display: flex;
+                width: 200px;
+                height: 100px;   
+            }
+        }
         /****************
         outbound sinppets
         *****************/

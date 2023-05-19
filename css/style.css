@@ -3902,6 +3902,18 @@ body .root .focus #focus-img .caption-cont:hover {
 body .root .focus #focus-img:hover > .caption-cont {
   opacity: 1;
 }
+body .root .profile-card {
+  position: absolute;
+  left: 30px;
+  top: 100px;
+  background-color: orange;
+  z-index: 999;
+}
+body .root .profile-card .wrapper {
+  display: flex;
+  width: 200px;
+  height: 100px;
+}
 body .root::-webkit-scrollbar {
   display: none !important;
 }
