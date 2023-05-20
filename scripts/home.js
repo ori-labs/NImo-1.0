@@ -33,7 +33,8 @@ import Router from "../components/services/router/router.js";
                 user0;
 
             let vault_btn = document.getElementById('vault-btn'),
-                notification_btn = document.getElementById('notification-btn');
+                notification_btn = document.getElementById('notification-btn'),
+                new_room_btn = document.getElementById('new-room-btn');
 
             fsDB.collection('client').doc('meta').collection(uid).doc('meta_data').get()
             .then((sn) => {
@@ -55,6 +56,76 @@ import Router from "../components/services/router/router.js";
                 lsDB.setItem('clientAvata', data.userProfileAvatar);
 
                 update_friends_and_rooms();
+                get_profile_data();
+
+                function get_profile_data(){
+                    let profile_card = `
+                        <div class="profile-card hide fade-in" id="profile-card">
+                            <div class="wrapper">
+                                <div class="banner-prof-cont">
+                                    <div class="banner" style="background-color: ${data.bannerColor}"></div>
+                                    <div class="profile-cont">
+                                        <span class="profile-holder" style="background-image:url('${data.userProfileAvatar == 'default' ? './src/imgs/avatar.png' : data.userProfileAvatar}')"></span>
+                                    </div>
+                                </div>
+                                <div class="u-id-cont">
+                                    <div class="wrapper">
+                                        <span class="uname">${data.user}</span>
+                                        <span class="uid id">@${data.id}</span>
+                                    </div>
+                                </div>
+                                <div class="hr-wrapper">
+                                    <span class="hr-1">
+                                        <hr class="hr">
+                                    </span>
+                                </div>
+                                <div class="bio-cont" style="display: ${data.about == '' ? 'none' : 'flex'}">
+                                    <div class="bio-cont-wrapper">
+                                        <span class="label">Bio</span>
+                                        <div class="bio-wrapper">
+                                            <div class="context-wrapper">
+                                                <span class="bio-context">${data.about}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-cont">
+                                    <div class="btn-cont-wrapper">
+                                        <div class="cont">
+                                            <div class="btn-item profile-setting">
+                                                <img src="./src/icons/profile.svg" alt="">
+                                                <span class="label">Edit profile</span>
+                                            </div>
+                                            <hr class="hr">
+                                            <div class="btn-item profile-setting">
+                                                <img src="./src/icons/settings.svg" alt="">
+                                                <span class="label">Settings</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    root.insertAdjacentHTML('beforeend', profile_card);
+
+                    let toggle = document.getElementById('profile-toggle'),
+                        profile_card_container = document.getElementById('profile-card');
+
+
+                    toggle.addEventListener('click', function(){
+                        log(profile_card_container.id);
+                        if(profile_card_container.classList.contains('hide')){
+                            profile_card_container.classList.remove('hide');
+                        }
+                    });
+                    document.addEventListener("mouseup", function(event) {
+                        if (!profile_card_container.contains(event.target)) {
+                            profile_card_container.classList.add('hide');
+                        }
+                    });
+                }
             }).catch((err) => {
                 console.log('something went wrong', err);
                 location.reload();
@@ -71,7 +142,7 @@ import Router from "../components/services/router/router.js";
             });
 
             vault_btn.addEventListener('click', ()=> {
-                location.hash = '#?vault'
+                location.hash = '#?vault';
             });
             notification_btn.addEventListener('click', ()=> {
                 let inbox_ref = fsDB.collection('client').doc('meta').collection(uid).doc('notifications')
@@ -107,7 +178,9 @@ import Router from "../components/services/router/router.js";
                     }).catch(reject);
                 };
             });
-
+            new_room_btn.addEventListener('click', ()=>{
+                location.hash = '#?new-room';
+            });
             (function(){
                 listen_to_request();
                 listen_to_notification();
@@ -292,6 +365,14 @@ import Router from "../components/services/router/router.js";
             }else{
                 render_notifications();
             };
+            if(main_hash != 'new-room'){
+                let new_room_container = document.getElementById('new-room-container');
+                if(new_room_container != null){
+                    new_room_container.remove();
+                }
+            }else{
+                render_create_room();
+            }
             if(main_hash == 'app'){
                 log('main home');
                 update_friends_and_rooms();
@@ -413,7 +494,7 @@ import Router from "../components/services/router/router.js";
                     const f_data = data.data();
                     let fCard = `
                         <div class="friend-card fade-in" id="fid-${fID}">
-                            <div class="friend-pfp-cont" id="tippy-tip" data-tippy-content="${f_data.user}">
+                            <div class="friend-pfp-cont tippy-tip" data-tippy-content="${f_data.user}">
                                 <span class="f-pfp" style="background-image: url(${f_data.userProfileAvatar == 'default' ? '/src/imgs/avatar.svg' : f_data.userProfileAvatar});background-color: ${f_data.userProfileBackDrop};"></span>
                                 <span class="bagde bg-primary">9+</span>
                             </div>
@@ -429,7 +510,7 @@ import Router from "../components/services/router/router.js";
                     f_btn.addEventListener('click', (e)=> {
                         e.preventDefault();
                         location.href = `../pages/chat.html?rid=${cID}`;
-                    })
+                    });
                 })
             }
         } catch (error) {}
@@ -499,7 +580,7 @@ import Router from "../components/services/router/router.js";
         evenListener.listen.outClick('container-wrappper');
         
         function validate_request(){
-            const regex = /^[a-zA-Z]+@[0-9]{9}$/;
+            const regex = /^[\w]+@[0-9]{9}$/;
 
             const _prld = `
                 <span class="preload">
@@ -653,6 +734,139 @@ import Router from "../components/services/router/router.js";
             input.disabled = false;
         }
     };
+    function render_create_room(){
+        let view = `
+            <div class="new-room vault" id="new-room-container">
+                <div class="wrapper scale-up-center" id="new-room-main-container">
+                    <div class="content-wrapper" id="new-room-main-container">
+                        <div class="header">
+                            <div class="title-cont">
+                                <div class="title-cont">
+                                    <img src="/src/icons/rooms.svg" />
+                                    <span class="title">New room</span>
+                                </div>
+                            </div>
+                            <div class="close-btn-cont tippy-tip" id="new-room-close-btn" data-tippy-content="Close">
+                                <img src="/src/icons/close-white.svg" alt="">
+                            </div>
+                        </div>
+                        <div class="container-wrapper" id="notification-cont-wraper">
+                            <div class="icon-preview-cont">
+                                <div class="icon-cont" id="room-icon">
+                                    <span class="pfp _pfp_">
+                                    </span>
+                                    <label for="room-icon-input" class="pfp-picker _pfp-picker_" id="pfp-picker" >
+                                        <img src="../src/icons/editor.svg" alt="">
+                                    </label>
+                                    <input type="file" accept="image/*" name="" id="room-icon-input" hidden>
+                                </div>
+                                <div class="preview-cont">
+                                    <div class="preview-wrapper">
+                                        <span class="preview-tag">
+                                            Preview
+                                        </span>
+                                        <div class="preview-card">
+                                            <div class="preview-icon" id="preview-icon">
+                                                <span class="p-icon"></span>
+                                            </div>
+                                            <div class="preview-info-cont">
+                                                <span class="prev-name">Room name</span>
+                                                <span class="description">description goes here!</span>
+                                                <div class="prev-stat-cont">
+                                                    <span class="item member">
+                                                        <span class="id">Members :</span>
+                                                        <span class="count">0</span>
+                                                    </span>
+                                                    <span class="item member">
+                                                        <span class="id">Type :</span>
+                                                        <span class="count">Private</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-cont">
+                                <div class="input-item">
+                                    <span class="label">New room</span>
+                                    <input type="text" name="Room name" id="room-name" placeholder="Cute Loafies">
+                                </div>
+                                <div class="item-switch-cont">
+                                    <div class="switch-item active-switch">
+                                        <img src="/src/icons/show.svg" alt="">
+                                        <span class="label">Public</span>
+                                    </div>
+                                    <div class="switch-item">
+                                        <img src="/src/icons/hide.svg" alt="">
+                                        <span class="label">Private</span>
+                                    </div>
+                                </div>
+                                <div class="input-item">
+                                    <div class="des-cont">
+                                        <span class="title">Description <small style="opacity: .4;">(Optional)</small></span>
+                                        <textarea name="about" id="_set-about" cols="30" rows="10" placeholder="Let members know what this room is about."></textarea>
+                                        <span class="tl">0/200</span>
+                                    </div>
+                                </div>
+                                <button class="btn-primary create-room" id="create-rooom">
+                                    Create
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        root.insertAdjacentHTML('beforeend', view);
+
+        let new_room_container = document.getElementById('new-room-main-container'),
+            new_room_close_btn = document.getElementById('new-room-close-btn'),
+            new_room_container_wrapper = document.getElementById('new_room_wrapper-container');
+
+        new_room_close_btn.addEventListener('click', () => {
+            new_room_container.classList.add('scale-out-center');
+            setTimeout(() => {
+                history.back();
+                new_room_container.classList.remove('scale-out-center');
+            }, 100);
+        });
+
+
+        setTip();
+        configure_room();
+
+        function configure_room(){
+            pick_icon();
+
+            function pick_icon(){
+                const cropper_container = document.querySelector("[data-cropper]"),
+                    cropper_wrapper = document.querySelector("[data-c-wrapper]"),
+                    cropper_close_btn = document.querySelector("[data-cropper-close-btn]"),
+                    cropper_save_btn = document.querySelector("[data-cropper-save-btn]");
+                    
+                let room_icon_holder = document.getElementById('room-icon'),
+                    room_icon_picker = document.getElementById('room-icon-input'),
+                    room_preview_icon_holder = document.getElementById('preview-icon');
+                
+                room_icon_picker.addEventListener("change", () => {
+                    cropper_container.style.display = "flex";
+                    get_icon_data();
+                });
+
+
+                let vanilla = new Croppie(cropper_wrapper, {
+                    viewport: { width: 250, height: 250, type: "circle" },
+                    showZoomer: false,
+                    enableOrientation: true,
+                });
+
+                function get_icon_data(){
+                    
+                }
+            }
+        }
+    }
     function render_vault(){
         (function(uid){
             let view = `

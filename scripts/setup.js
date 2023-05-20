@@ -48,6 +48,16 @@ import utilities from "../components/utilities/utilities.js";
         }
         _tl.innerText = `${_about.value.length}/120`;
     });
+    _usrName.addEventListener('input', function(e){
+        e.preventDefault();
+        const inputValue = _usrName.value;
+        const isValid = utilities.restrictSpaceCharacter(inputValue);
+        
+        if (!isValid) {
+            let replace_val = inputValue.replace(/[^\w]/g, "");
+            _usrName.value = replace_val;
+        }
+    })
     _setup_skip_btn.addEventListener("click", () => {
         if (_usrName.value == "") {
             err("You need to provide a username!", _errH);
@@ -109,10 +119,23 @@ import utilities from "../components/utilities/utilities.js";
             });
     }
     function _pi() {
+        const cropper_container = document.querySelector("[data-cropper]"),
+            cropper_wrapper = document.querySelector("[data-c-wrapper]"),
+            cropper_close_btn = document.querySelector("[data-cropper-close-btn]"),
+            cropper_save_btn = document.querySelector("[data-cropper-save-btn]");
+
         _pfpFile.addEventListener("change", () => {
+            cropper_container.style.display = "flex";
             fetch_image();
         });
 
+        
+
+        var vanilla = new Croppie(cropper_wrapper, {
+            viewport: { width: 250, height: 250, type: "circle" },
+            showZoomer: false,
+            enableOrientation: true,
+        });
         function fetch_image() {
             const image_file = _pfpFile.files[0];
 
@@ -131,18 +154,8 @@ import utilities from "../components/utilities/utilities.js";
                 });
             }
         }
-        const cropper_container = document.querySelector("[data-cropper]"),
-            cropper_wrapper = document.querySelector("[data-c-wrapper]"),
-            cropper_close_btn = document.querySelector("[data-cropper-close-btn]"),
-            cropper_save_btn = document.querySelector("[data-cropper-save-btn]");
+        
         function crop_image(src) {
-            cropper_container.style.display = "flex";
-
-            var vanilla = new Croppie(cropper_wrapper, {
-                viewport: { width: 250, height: 250, type: "circle" },
-                showZoomer: false,
-                enableOrientation: true,
-            });
             vanilla.bind({
                 url: src,
                 orientation: 0,
@@ -150,9 +163,6 @@ import utilities from "../components/utilities/utilities.js";
 
             cropper_close_btn.addEventListener("click", () => {
                 cropper_container.style.display = "none";
-                setTimeout(() => {
-                    location.reload();
-                }, 100);
             });
             cropper_save_btn.addEventListener("click", () => {
                 vanilla.result("blob").then(function (blob) {
@@ -161,10 +171,8 @@ import utilities from "../components/utilities/utilities.js";
                     reader.onload = () => {
                         let tobase64 = reader.result;
                         lsDB.setItem("selected_image", tobase64);
-
-                        setTimeout(() => {
-                            location.reload();
-                        }, 100);
+                        setIdColor();
+                        cropper_container.style.display = "none";
                     };
                 });
             });
@@ -266,10 +274,8 @@ import utilities from "../components/utilities/utilities.js";
                 }, 1000);
             } else {
                 const _pfImage = lsDB.getItem("selected_image") || "default",
-                    _pfBdropColor =
-                        _pfp_.style.backgroundColor || lsDB.getItem("default_color"),
-                    _bannerCVal =
-                        _banner_.style.backgroundColor || lsDB.getItem("default_color"),
+                    _pfBdropColor = _pfp_.style.backgroundColor || lsDB.getItem("default_color"),
+                    _bannerCVal = _banner_.style.backgroundColor || lsDB.getItem("default_color"),
                     _usrName_ = _usrName.value,
                     _about_ = _about.value || "",
                     _id_ = lsDB.getItem("id");
@@ -296,63 +302,48 @@ import utilities from "../components/utilities/utilities.js";
         document.querySelector(".layer").classList.add("show");
         document.querySelector(".layer").classList.remove("hide");
 
-        let _uid_ = lsDB.getItem("id");
-
-        // console.log(pfp, banner, uname, about, _uid_, id, pfpD);
         _fsDb
-            .collection("client")
-            .doc('meta')
-            .collection(id)
-            .doc("meta_data")
-            .set({
-                user: uname,
-                about: about,
-                id: id,
-                bannerColor: banner,
-                userProfileAvatar: pfp,
-                userProfileBackDrop: pfpD,
-            })
-            .then(() => {
-                _fsDb
-                    .collection("client")
-                    .doc('meta')
-                    .collection(id)
-                    .doc("meta")
-                    .update({
-                        state: "user",
-                    })
-                    .then(() => {
-                        lsDB.clear();
-                        setTimeout(() => {
-                            console.log("local storage cleared..");
-                            location.reload();
-                        }, 100);
-                    })
-                    .catch((error) => {
-                        err("Opps something went wrong, mind trying again later!", _errH);
-                        console.log(error);
-                        _setFnBtn.innerHTML = `<span>Finish</span>`;
-                        _setup_skip_btn.innerHTML = `<span>Skip setup</span>`;
-                        _setFnBtn.disabled = false;
-                        _setup_skip_btn.disabled = false;
-                        _setup_skip_btn.style.cursor = "pointer";
-                        _setFnBtn.style.cursor = "pointer";
-                        document.querySelector(".layer").classList.add("hide");
-                        document.querySelector(".layer").classList.remove("show");
-                    });
-            })
-            .catch((error) => {
-                err("Opps something went wrong, mind trying again later!", _errH);
-                console.log(error);
-                _setFnBtn.innerHTML = `<span>Finish</span>`;
-                _setup_skip_btn.innerHTML = `<span>Skip setup</span>`;
-                _setFnBtn.disabled = false;
-                _setup_skip_btn.disabled = false;
-                _setup_skip_btn.style.cursor = "pointer";
-                _setFnBtn.style.cursor = "pointer";
-                document.querySelector(".layer").classList.add("hide");
-                document.querySelector(".layer").classList.remove("show");
-            });
+        .collection("client")
+        .doc('meta')
+        .collection(id)
+        .doc("meta_data")
+        .set({
+            user: uname,
+            about: about,
+            id: id,
+            bannerColor: banner,
+            userProfileAvatar: pfp,
+            userProfileBackDrop: pfpD,
+        })
+        .then(() => {
+            _fsDb
+                .collection("client")
+                .doc('meta')
+                .collection(id)
+                .doc("meta")
+                .update({
+                    state: "user",
+                })
+                .then(() => {
+                    lsDB.clear();
+                    setTimeout(() => {
+                        console.log("local storage cleared..");
+                        location.reload();
+                    }, 100);
+                });
+        })
+        .catch((error) => {
+            err("Opps something went wrong, mind trying again later!", _errH);
+            console.log(error);
+            _setFnBtn.innerHTML = `<span>Finish</span>`;
+            _setup_skip_btn.innerHTML = `<span>Skip setup</span>`;
+            _setFnBtn.disabled = false;
+            _setup_skip_btn.disabled = false;
+            _setup_skip_btn.style.cursor = "pointer";
+            _setFnBtn.style.cursor = "pointer";
+            document.querySelector(".layer").classList.add("hide");
+            document.querySelector(".layer").classList.remove("show");
+        });
     }
     _cp();
     _pi();

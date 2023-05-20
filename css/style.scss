@@ -1,4 +1,4 @@
-$primaryColor: #9568A6;
+$primaryColor: #86509A; //9568A6
 $bgColor: #202024;
 $inputBgColor: #2F2F37;
 $originBg: #2f2f379a;
@@ -6,7 +6,7 @@ $compColor-1: #3E3E45;
 $compColor-2: #35353D;
 $btnColor: #5B5C63;
 $iconColor: #5B5C63;
-$lightColor: #F7F7F8;
+$lightColor: #D9D9D9;
 $outlineColor: #7D7D7D;
 $offGreen: #5AC793;
 $shaddowGrey: #BEBEBE;
@@ -73,8 +73,8 @@ body{
             justify-content: center;
             align-items: center;
             padding: 2px;
-            width: 400px;
-            max-width: 400px;
+            width: 350px;
+            max-width: 350px;
             .logo-wrapper{
                 display: flex;
                 flex-direction: column;
@@ -486,7 +486,7 @@ body{
                             align-items: center;
                             border: 2px $compColor-1 solid;
                             bottom: -16px;
-
+                            transition: .2s ease-in;
                             img{
                                 width: 16px;
                             }
@@ -522,7 +522,7 @@ body{
                             .pfp{
                                 width: 70px;
                                 height: 70px;
-                                background-color: #608B5F;
+                                background-color: $primaryColor;
                                 background-image: url('../src/imgs/default-avatar.svg');
                                 background-repeat: no-repeat;
                                 background-position: center;
@@ -530,6 +530,7 @@ body{
                                 border-radius: 100px;
                                 position: relative;
                                 overflow: hidden;
+                                border: 2px $primaryColor solid;
 
                                 .progress{
                                     width: 70px;
@@ -556,7 +557,7 @@ body{
                                 position: absolute;
                                 right: 3px;
                                 bottom: 10px;
-
+                                transition: .2s ease-in;
                                 img{
                                     width: 12px;
                                 }
@@ -663,7 +664,7 @@ body{
                         .tl{
                             position: absolute;
                             bottom: 3px;
-                            right: 3px;
+                            right: 10px;
                             color: $lightColor;
                             font-size: 13px;
                             opacity: .3;
@@ -732,89 +733,6 @@ body{
                 }
             }
         }
-        .cropper{
-            display: none;
-            width: 100%;
-            height: 100%;
-            background-color: rgba($color: $lureDark, $alpha: 1);
-            position: absolute;
-            top: 0;
-            left: 0;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            scrollbar-width: none !important;
-            row-gap: 10px;
-            
-            .wrapper{
-                background-color: $compColor-1;
-                position: relative;
-                padding: 10px;
-                width: 500px;
-                max-width: 500px;
-                display: flex;
-                border-radius: 4px;
-                // width: 500px !important;
-                overflow: hidden;
-                flex-direction: column;
-                row-gap: 10px;
-                align-items: center;
-                justify-content: center;
-                .header{
-                    width: 100%;
-                    color: $lightColor;
-                    font-family: inherit;
-                    padding: 4px 0px 3px 4px;
-                }
-                .cropper-wrapper{
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    padding: 2px;
-                    width: 100%;
-                    background-color: $compColor-2;
-                    border-radius: 5px;
-                    height: 300px;
-                    // max-width: 300px;
-                    overflow: hidden;
-    
-                    img{
-                        width: 100%;
-                        display: block;
-                        max-width: 100%;
-                    }
-                }
-                .save-btn-cont{
-                    width: 100% !important;
-                    display: flex;
-                    // background-color: tomato;
-                    border-radius: 5px;
-                    padding: 10px 5px 10px 5px;
-                    flex-direction: row;
-                    justify-content: flex-end;
-                    column-gap: 10px;
-
-                    span{
-                        background-color: $btnColor;
-                        padding: 5px 15px 5px 15px;
-                        border-radius: 4px;
-                        color: $lightColor;
-                        font-size: 15px;
-                        cursor: pointer;
-
-                        &:active{
-                            opacity: .6;
-                        }
-                    }
-                    .crop-save-btn{
-                        background-color: $primaryColor;
-                    }
-                }
-            }
-        }
-
         &::-webkit-scrollbar{
             display: none !important;
         }
@@ -887,7 +805,7 @@ body{
                             opacity: .5;
                         }
                         &:active > img{
-                            transform: scale(.6);
+                            transform: scale(.98);
                         }
                     }
                     
@@ -925,7 +843,7 @@ body{
                     justify-content: center;
                     align-items: center;
                     padding: 1px 10px 1px 10px;
-                    border-radius: 5px;
+                    border-radius: 10px;
 
                     .btn-cont{
                         width: 35px;
@@ -1058,15 +976,16 @@ body{
                             cursor: pointer;
                             font-family: inherit;
                             font-weight: 400;
+                            transition: .2s ease-in;
                             img{
                                 width: 16px;
                             }
     
                             &:hover{
-                                opacity: .6;
+                                opacity: .7;
                             }
                             &:active{
-                                opacity: .9;
+                                opacity: 1;
                             }
                         }
                         .explore-rooms{
@@ -2852,7 +2771,7 @@ body{
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
+            padding: 8px 10px 8px 10px;
             overflow: hidden;
             border-radius: 5px;
             box-shadow: 2px 3px 16px rgba($color: $boxShadow, $alpha: .2);
@@ -2860,7 +2779,7 @@ body{
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
-                column-gap: 30px;
+                column-gap: 10px;
 
                 .contents{
                     display: flex;
@@ -2869,13 +2788,14 @@ body{
                     align-items: center;
                     justify-content: center;
                     color: $lightColor;
+                    font-size: 14px;
                     .icon{
                         display: flex;
                         justify-content: center;
                         align-items: center;
                     }
                     img{
-                        width: 24px;
+                        width: 10px;
                     }
                 }
                 .close-btn{
@@ -2898,7 +2818,7 @@ body{
                 position: absolute;
                 background-color: rgba($color: $lureDark, $alpha: .3);
                 bottom: 0;
-                height: 3px;
+                height: 2px;
                 display: flex;
                 flex-direction: row;
                 justify-content: flex-start;
@@ -4109,6 +4029,405 @@ body{
                 }
             }
         }
+        .new-room{
+            .wrapper{
+                background-color: $compColor-1;
+                padding: 10px;
+                border-radius: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                .content-wrapper{
+                    width: 450px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    row-gap: 5px;
+                    .container-wrapper{
+                        background-color: $compColor-2;
+                        border-radius: 5px;
+                        min-height: 400px;
+                        max-height: 400px;
+                        overflow: hidden;
+                        overflow-y: auto;
+                        flex-direction: column;
+                        padding: 10px 10px 10px 10px;
+                        align-items: center;
+                        row-gap: 10px;
+
+                        .icon-preview-cont{
+                            // background-color: rgba(255, 166, 0, 0.062);
+                            display: flex;
+                            flex-direction: row;
+                            column-gap: 20px;
+                            align-items: center;
+                            justify-content: space-between;
+                            .icon-cont{
+                                // width: 100%;
+                                padding: 10px;
+                                display: flex;
+                                flex-direction: row;
+                                position: relative;
+    
+                                .pfp{
+                                    width: 60px;
+                                    height: 60px;
+                                    background-color: $primaryColor;
+                                    background-image: url('../src/imgs/avatar.png');
+                                    background-repeat: no-repeat;
+                                    background-position: center;
+                                    background-size: cover;
+                                    border-radius: 100px;
+                                    position: relative;
+                                    overflow: hidden;
+                                    border: 2px $primaryColor solid;
+    
+                                    .progress{
+                                        width: 70px;
+                                        height: 70px;
+                                        bottom: 0%;
+                                        background-color: $lureDark;
+                                        opacity: .85;
+                                        // top: 5px;
+                                        // display: flex;
+                                        position: absolute;
+                                        // z-index: 1;
+                                    }
+                                }
+                                .pfp-picker{
+                                    width: 22px;
+                                    height: 22px;
+                                    background-color: $btnColor;
+                                    border-radius: 100px;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    border: 2px $compColor-1 solid;
+                                    cursor: pointer;
+                                    position: absolute;
+                                    right: 3px;
+                                    bottom: 10px;
+                                    transition: .2s ease-in;
+                                    img{
+                                        width: 12px;
+                                    }
+    
+                                    &:hover{
+                                        background-color: $compColor-2;
+                                    }
+                                    &:active{
+                                        background-color: $btnColor;
+                                    }
+                                }
+                            }
+                            .preview-cont{
+                                display: flex;
+                                padding: 10px;
+                                background-color: $inputBgColor;
+                                border: 1px rgba($color: $borderColor, $alpha: .4) solid;
+                                border-radius:10px;
+                                .preview-wrapper{
+                                    display: flex;
+                                    flex-direction: column;
+                                    column-gap: 0px;
+                                    position: relative;
+                                    .preview-card{
+                                        background-color: $compColor-1;
+                                        padding: 5px 10px 5px 10px;
+                                        border-radius: 5px;
+                                        display: flex;
+                                        flex-direction: row;
+                                        align-items: center;
+                                        column-gap: 10px;
+                                        min-width: 280px;
+                                        .preview-icon{
+                                            width: 40px;
+                                            height: 40px;
+                                            border-radius: 100px;
+                                            background-color: $primaryColor;
+                                            background-image: url('../src/imgs/avatar.png');
+                                            background-repeat: no-repeat;
+                                            background-position: center;
+                                            background-size: cover;
+                                        }
+                                        .preview-info-cont{
+                                            display: flex;
+                                            flex-direction: column;
+                                            justify-content: center;
+                                            .prev-name{
+                                                color: $lightColor;
+                                                font-size: 14px;
+                                                font-weight: bold;
+                                                opacity: .7;
+                                            }
+                                            .description{
+                                                font-size: 13px;
+                                                color: rgba($color: $lightColor, $alpha: .6);
+                                                font-weight: light;
+                                            }
+                                            .prev-stat-cont{
+                                                display: flex;
+                                                flex-direction: row;
+                                                align-items: center;
+                                                column-gap: 10px; 
+                                                .item{
+                                                    font-size: 11px;
+
+                                                    .count{
+                                                        color: rgba($color: $lightColor, $alpha: .6);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    .preview-tag{
+                                        margin-left: 10px;
+                                        width: 50px;
+                                        background-color: $btnColor;
+                                        height: 15px;
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        font-size: 9px;
+                                        color: rgba($color: $lightColor, $alpha: .8);
+                                        border-radius: 5px 5px 0px 0px;
+                                    }
+                                }
+                            }
+                        }
+                        .input-cont{
+                            margin-top: 10px;
+                            // background-color: orange;
+                            padding: 4px;
+                            .input-item{
+                                display: flex;
+                                flex-direction: column;
+                                row-gap: 5px;
+                                font-size: 15px;
+
+                                .label{
+                                    color: rgba($color: $lightColor, $alpha: .6);
+                                }
+                                input{
+                                    background-color: $inputBgColor;
+                                    border: none;
+                                    padding: 10px;
+                                    border-radius: 5px;
+                                    caret-color: $primaryColor;
+                                    color: $lightColor;
+                                    transition: .3s ease-in;
+
+                                    &::placeholder{
+                                        color: $borderColor;
+                                    }
+                                }
+                            }
+
+                            .des-cont{
+                                margin-top: 5px;
+                                // background-color: #2F2F37;
+                                display: flex;
+                                flex-direction: column;
+                                width: 100%;
+                                row-gap: 6px;
+                                position: relative;
+    
+                                .title{
+                                    color: $lightColor;
+                                    opacity: .7;
+                                }
+    
+                                textarea{
+                                    background-color: $inputBgColor;
+                                    border-radius: 5px;
+                                    border: none;
+                                    resize: none;
+                                    outline: none;
+                                    padding: 8px;
+                                    font-family: inherit;
+                                    color: $lightColor;
+                                    max-height: 60px;
+                                    overflow: hidden;
+                                    overflow-y: scroll;
+                                    scrollbar-width: none !important;
+                                    caret-color: $primaryColor;
+
+                                    &::placeholder{
+                                        color: $lightColor;
+                                        font-size: 14px;
+                                        opacity: .2;
+                                        padding-left: 2px;
+                                    }
+                                    &::-webkit-scrollbar{
+                                        width: 4px;
+                                    }
+                                }
+                                .tl{
+                                    position: absolute;
+                                    bottom: 3px;
+                                    right: 10px;
+                                    color: $lightColor;
+                                    font-size: 13px;
+                                    opacity: .3;
+                                }
+                            }
+                        }
+                        .item-switch-cont{
+                            margin-top: 10px;
+                            padding: 5px 0px 5px 0px;
+                            display: flex;
+                            flex-direction: row;
+                            column-gap: 15px;
+
+                            .switch-item{
+                                padding: 8px 30px 8px 30px;
+                                background-color: $compColor-1;
+                                font-size: 13px;
+                                color: $lightColor;
+                                border-radius: 4px;
+                                cursor: pointer;
+                                transition: .2s ease-in;
+                                display: flex;
+                                flex-direction: row;
+                                align-items: center;
+                                justify-content: space-between;
+                                column-gap: 10px;
+
+                                img{
+                                    width: 18px;
+                                }
+                                
+                                &:hover{
+                                    opacity: .8;
+                                }
+                                &:active{
+                                    transform: scale(.9);
+                                }
+                            }
+                            .active-switch{
+                                border: 1px $primaryColor solid !important;
+                                background-color: rgba($color: $primaryColor, $alpha: .1);
+                            }
+                        }
+                        .create-room{
+                            margin-top: 20px;
+                            padding: 10px 30px 10px 30px;
+                            border: none;
+
+                        }
+                    }
+                }
+            }
+            .title-cont{
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                column-gap: 5px;
+                span{
+                    color: $lightColor;
+                }
+                img{
+                    width: 20px !important;
+                }
+            }
+        }
+
+
+        /****************
+            Cropper
+        *****************/
+        .cropper{
+            display: none;
+            width: 100%;
+            height: 100%;
+            background-color: rgba($color: $lureDark, $alpha: .5);
+            position: absolute;
+            top: 0;
+            left: 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            scrollbar-width: none !important;
+            row-gap: 10px;
+            z-index: 99;
+            backdrop-filter: blur(3px);
+            
+            .wrapper{
+                background-color: $compColor-1;
+                position: relative;
+                padding: 10px;
+                width: 500px;
+                max-width: 500px;
+                display: flex;
+                border-radius: 4px;
+                // width: 500px !important;
+                overflow: hidden;
+                flex-direction: column;
+                row-gap: 10px;
+                align-items: center;
+                justify-content: center;
+                .header{
+                    width: 100%;
+                    color: $lightColor;
+                    font-family: inherit;
+                    padding: 4px 0px 3px 4px;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    column-gap: 10px;
+                }
+                .cropper-wrapper{
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 2px;
+                    width: 100%;
+                    background-color: $compColor-2;
+                    border-radius: 5px;
+                    height: 300px;
+                    // max-width: 300px;
+                    overflow: hidden;
+    
+                    img{
+                        width: 100%;
+                        display: block;
+                        max-width: 100%;
+                    }
+                }
+                .save-btn-cont{
+                    width: 100% !important;
+                    display: flex;
+                    // background-color: tomato;
+                    border-radius: 5px;
+                    padding: 10px 5px 10px 5px;
+                    flex-direction: row;
+                    justify-content: flex-end;
+                    column-gap: 10px;
+
+                    span{
+                        background-color: $btnColor;
+                        padding: 5px 15px 5px 15px;
+                        border-radius: 4px;
+                        color: $lightColor;
+                        font-size: 15px;
+                        cursor: pointer;
+
+                        &:active{
+                            opacity: .6;
+                        }
+                    }
+                    .crop-save-btn{
+                        background-color: $primaryColor;
+                    }
+                }
+            }
+        }
+        /****************
+            Cropper
+        *****************/
 
         /****************
         outbound sinppets
@@ -4350,13 +4669,175 @@ body{
             position: absolute;
             left: calc(15px * 2);
             top: 100px;
-            background-color: orange;
-            z-index: 999;
-
+            background-color: $compColor-2;
+            z-index: 99;
+            border-radius: 5px;
+            overflow: hidden;
+            padding: 5px;
+            box-shadow: 3px 2px 10px rgba($color: $boxShadow, $alpha: .1);
             .wrapper{
                 display: flex;
-                width: 200px;
-                height: 100px;   
+                flex-direction: column;
+                align-items: center;
+                max-width: 260px;
+                width: 260px;
+                row-gap: 5px;
+                
+                .banner-prof-cont{
+                    // background-color: orange;
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    position: relative;
+                    padding-bottom: 30px;
+                    .banner{
+                        height: 70px;
+                        background-color: $primaryColor;
+                        border-radius: 5px;
+                    }
+                    .profile-cont{
+                        // width: 60px;
+                        // height: 60px;
+                        min-height: 60px;
+                        min-width: 60px;
+                        background-color: $primaryColor;
+                        border: 3px $compColor-2 solid;
+                        position: absolute;
+                        bottom: 0;
+                        left: 10px;
+                        border-radius: 100px;
+                        display: flex;
+                        justify-content: center;
+                        overflow: hidden;
+
+                        .profile-holder{
+                            width: 60px;
+                            height: 60px;
+                            background-size: cover;
+                            background-position: center;
+                            background-repeat: no-repeat;
+                            background-image: url('https://orgboxthailand.com/wp-content/uploads/2018/09/water-melon2-768x559.jpg');
+                        }
+                    }
+                }
+                .u-id-cont{
+                    width: 100%;
+                    display: flex;
+                    // background-color: orange;
+
+                    .wrapper{
+                        display: flex;
+                        // background-color: green;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: start;
+                        align-items: start;
+                        row-gap: 1px;
+                        padding: 0px 10px 0px 10px;
+
+                        .uname{
+                            color: $lightColor;
+                            font-size: 17px;
+                            font-weight: bold;
+                        }
+                        .uid{
+                            font-size: 14px;
+
+                        }
+                    }
+                }
+                .hr-wrapper{
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    .hr-1{
+                        height: 10px;
+                        padding: 0px 10px 0px 10px;
+                        
+                        hr{
+                            border: none;
+                        }
+                    }
+                }
+                .bio-cont{
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    .bio-cont-wrapper{
+                        display: flex;
+                        flex-direction: column;
+                        padding: 0px 10px 0px 10px;
+                        justify-content: center;
+                        align-items: start;
+                        row-gap: 4px;
+                        .label{
+                            color: $lightBorder;
+                            font-size: 16px;
+                        }
+                        .bio-wrapper{
+                            background-color: $inputBgColor;
+                            width: 100%;
+                            border-radius: 4px;
+                            
+                            .context-wrapper{
+                                padding: 6px;
+                                .bio-context{
+                                    word-break: break;
+                                    color: $lightColor;
+                                    opacity: .8;
+                                    font-weight: lighter;
+                                    font-size: 15px;
+                                }
+                            }
+                        }
+                    }
+                }
+                .btn-cont{
+                    width: 100%;
+                    margin-top: 5px;
+                    margin-bottom: 10px;
+                    .btn-cont-wrapper{
+                        padding: 0px 10px 0px 10px;
+                        display: flex;
+                        .cont{
+                            width: 100%;
+                            background-color: $bgColor;
+                            border-radius: 4px;
+                            overflow: hidden;
+
+                            .hr{
+                                padding: 0 !important;
+                                border: none;
+                                margin: 0 !important;
+                            }
+                            .btn-item{
+                                padding: 7px;
+                                display: flex;
+                                flex-direction: row;
+                                justify-content: start;
+                                align-items: center;
+                                column-gap: 5px;
+                                cursor: pointer;
+                                transition: .1s ease-in;
+                                img{
+                                    width: 16px;
+                                }
+                                span{
+                                    color: $shaddowGrey;
+                                    font-size: 14px;
+                                }
+                                &:hover{
+                                    opacity: .8;
+                                }
+                                &:active{
+                                    opacity: 1;
+                                    background-color: $compColor-1;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         /****************

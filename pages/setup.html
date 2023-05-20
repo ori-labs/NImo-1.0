@@ -41,7 +41,7 @@
                         </div>
                         <div class="username-cont">
                             <input type="text" name="usrname" id="set-user-name" autofocus placeholder="Username" required="">
-                            <span class="usrid" id="_id_">#000</span>
+                            <span class="usrid" id="_id_">@000000000</span>
                         </div>
                     </div>
                     <span class="hr"></span>
@@ -69,9 +69,12 @@
                 </div>
             </div>
         </div>
-        <div class="cropper" id="cropper" data-cropper>
+        <div class="cropper fade-in" id="cropper" data-cropper>
             <div class="wrapper">
-                <div class="header">Crop profile picture</div>
+                <div class="header">
+                    <img src="../src/icons/crop.svg" alt="">                    
+                    <span>Crop profile picture</span>
+                </div>
                 <div class="cropper-wrapper" data-c-wrapper>
                 </div>
                 <div class="save-btn-cont">
@@ -98,8 +101,10 @@
     <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <script src="https://unpkg.com/vanilla-picker@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js" integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- <script src="https://unpkg.com/vanilla-picker@2"></script> -->
+    <script src="../components/lib/sanMoji/js/color-picker.min.js"></script>
+    <script src="../components/lib/sanMoji/js/cropper/croppie.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js" integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
     <script defer src="../scripts/setup.js" type="module"></script>
 </body>
 </html>

@@ -219,42 +219,36 @@ const utilities = {
         return   Math.floor(Math.random() * 1000000000);
     },
     popup: (text, root) => {
+        let id = utilities.genID();
         let popup_card = `
-            <div class="popup scale-up-center" id="popup-container">
+            <div class="popup scale-up-center" id="popup-container-${id}">
                 <div class="wrapper">
                     <div class="contents">
-                        <span class="icon">
-                            <img src="src/icons/tick.svg">
-                        </span>
                         <span class="popup-text">${text}</span>
                     </div>
-                    <span class="close-btn" id="popup-close-btn">
-                        <img src="src/icons/close-white.svg">
-                    </span>
                 </div>
                 <span class="timeout-proggress-cont">
-                    <span class="progress" id="progress"></span>
+                    <span class="progress" id="progress-${id}"></span>
                 </span>
             </div>`
         root.insertAdjacentHTML('beforeend', popup_card);
-        let popup_cont = document.getElementById('popup-container');
-        let close_btn = document.getElementById('popup-close-btn');
-        let progress_el = document.getElementById('progress');
+        let popup_cont = document.getElementById(`popup-container-${id}`);
+        let progress_el = document.getElementById(`progress-${id}`);
 
-        close_btn.addEventListener('click', () => {
-            popup_cont.classList.remove('scale-up-center');
-            popup_cont.classList.add('scale-down-center');
+        // close_btn.addEventListener('click', () => {
+        //     popup_cont.classList.remove('scale-up-center');
+        //     popup_cont.classList.add('scale-down-center');
 
-            setTimeout(() => {
-                popup_cont.remove();
-            }, 40)
-            // if(popup_cont != null){
-            // }
-        });
+        //     setTimeout(() => {
+        //         popup_cont.remove();
+        //     }, 40)
+        //     // if(popup_cont != null){
+        //     // }
+        // });
         // count()
         // 50 = 100; current = x; --> current * 100 = x*50 --> x = (current*100) / 50;
         (function count(cc) {
-            let x = (cc * 100) / 400;
+            let x = (cc * 100) / 200;
             progress_el.style.width = `${x}%`
             if(x <= 0){
                 popup_cont.classList.remove('scale-up-center');
@@ -266,7 +260,7 @@ const utilities = {
             }
             if (cc > 0)
                 setTimeout(function() { count(--cc); }, 10);
-        })(400);
+        })(200);
     },
     formatDate: (date) => {
         const now = new Date();
@@ -313,6 +307,10 @@ const utilities = {
                 });
             }
         });
+    },
+    restrictSpaceCharacter: (input) => {
+        const pattern = /[^\w]/;
+        return !pattern.test(input);
     }
 }
 

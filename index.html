@@ -22,7 +22,7 @@
         <div class="head">
             <div class="left-cont">
                 <div class="h-prof">
-                    <span class="h-prof-img r-100" style="background-image: url('src/imgs/avatar.svg');">
+                    <span class="h-prof-img r-100" style="background-image: url('src/imgs/avatar.svg')" id="profile-toggle">
                     </span>
                     <div class="username-cont" data-user-container>
                         <span class="h-usr-name"><b class="id h-uid">User</b></span>
@@ -30,11 +30,6 @@
                     </div>
                 </div>
                 <div class="h-top-btn">
-                    <!-- <div class="btn-cont">
-                        <span>
-                            <img class="sett" src="src/icons/settings.svg" alt="">
-                        </span>
-                    </div> -->
                     <div class="btn-cont tippy-tip" id="notification-btn" data-tippy-content="Notifications">
                         <span>
                             <img class="noti"  src="src/icons/notification.svg" alt="">
@@ -61,7 +56,7 @@
                             <img src="/src/icons/explore.svg" />
                             <span>Explore rooms</span>
                         </button>
-                        <button class="create-room">
+                        <button class="create-room" id="new-room-btn">
                             <img src="/src/icons/add-icon.svg" />
                             <span>Create room</span>
                         </button>
@@ -147,9 +142,18 @@
             </span>
         </div>
 
-        <div class="profile-card">
+        <div class="cropper fade-in" id="cropper" data-cropper>
             <div class="wrapper">
-                profile card here !
+                <div class="header">
+                    <img src="../src/icons/crop.svg" alt="">                    
+                    <span>Crop image</span>
+                </div>
+                <div class="cropper-wrapper" data-c-wrapper>
+                </div>
+                <div class="save-btn-cont">
+                    <span class="crop-close-btn" data-cropper-close-btn>Close</span>
+                    <span class="crop-save-btn" data-cropper-save-btn>Save</span>
+                </div>
             </div>
         </div>
     </div>
@@ -207,6 +211,7 @@
     <!-- <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script> -->
     <script src="https://unpkg.com/vanilla-picker@2"></script>
     <script src="components/lib/sanMoji/js/cropper/cropper.js"></script>
+    <script src="components/lib/sanMoji/js/cropper/croppie.js"></script>
     <script src="components/lib/sanMoji/js/snLimit.js"></script>
     <!-- <script defer type="module" src="main.js"></script> -->
     <script src="components/lib/sanMoji/js/popper.min.js"></script>

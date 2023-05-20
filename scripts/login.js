@@ -507,4 +507,7 @@ import config from "../components/lib/sanMoji/js/config.js";
             $('#spinnerx').removeClass('show');
         }
     }
+    function log(msg){
+        console.log(msg);
+    }
 }())
