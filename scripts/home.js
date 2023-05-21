@@ -20,11 +20,18 @@ import Router from "../components/services/router/router.js";
     let auth = firebase.auth(),
         fsDB = firebase.firestore();
 
-    let root = document.getElementById('root');
+    let root = document.getElementById('root'),
+        croppie_wrapper = document.querySelector("[data-c-wrapper]");
 
     const router = new Router({
         mode: 'hash',
         root: '/'
+    });
+
+    let croppie = new Croppie(croppie_wrapper, {
+        viewport: { width: 250, height: 250, type: "circle" },
+        showZoomer: false,
+        enableOrientation: true,
     });
 
     function init(){
@@ -735,9 +742,15 @@ import Router from "../components/services/router/router.js";
         }
     };
     function render_create_room(){
+        const preloader = `
+                <span class="preload">
+                    <img src="../src/assets/spinner-2.svg" alt="">
+                </span>`;
+
         let view = `
             <div class="new-room vault" id="new-room-container">
                 <div class="wrapper scale-up-center" id="new-room-main-container">
+                    <div class="layer fade-in" id="freezer-layer"></div>
                     <div class="content-wrapper" id="new-room-main-container">
                         <div class="header">
                             <div class="title-cont">
@@ -752,8 +765,8 @@ import Router from "../components/services/router/router.js";
                         </div>
                         <div class="container-wrapper" id="notification-cont-wraper">
                             <div class="icon-preview-cont">
-                                <div class="icon-cont" id="room-icon">
-                                    <span class="pfp _pfp_">
+                                <div class="icon-cont" >
+                                    <span class="pfp _pfp_" id="room-icon">
                                     </span>
                                     <label for="room-icon-input" class="pfp-picker _pfp-picker_" id="pfp-picker" >
                                         <img src="../src/icons/editor.svg" alt="">
@@ -770,8 +783,8 @@ import Router from "../components/services/router/router.js";
                                                 <span class="p-icon"></span>
                                             </div>
                                             <div class="preview-info-cont">
-                                                <span class="prev-name">Room name</span>
-                                                <span class="description">description goes here!</span>
+                                                <span class="prev-name" id="name-preview-holder">My room</span>
+                                                <span class="description" id="description-preview-holder">Room description</span>
                                                 <div class="prev-stat-cont">
                                                     <span class="item member">
                                                         <span class="id">Members :</span>
@@ -779,7 +792,7 @@ import Router from "../components/services/router/router.js";
                                                     </span>
                                                     <span class="item member">
                                                         <span class="id">Type :</span>
-                                                        <span class="count">Private</span>
+                                                        <span class="count" id="type-preview-holder">Public</span>
                                                     </span>
                                                 </div>
                                             </div>
@@ -789,30 +802,34 @@ import Router from "../components/services/router/router.js";
                             </div>
                             <div class="input-cont">
                                 <div class="input-item">
-                                    <span class="label">New room</span>
-                                    <input type="text" name="Room name" id="room-name" placeholder="Cute Loafies">
+                                    <span class="label">Room name <small style="opacity: .4;">(Require)</small></span>
+                                    <input type="text" name="Room name" id="room-name-input" placeholder="Cute Loafies" value="My room">
                                 </div>
                                 <div class="item-switch-cont">
-                                    <div class="switch-item active-switch">
+                                    <div class="switch-item active-switch" id="switch-component-public">
                                         <img src="/src/icons/show.svg" alt="">
                                         <span class="label">Public</span>
                                     </div>
-                                    <div class="switch-item">
+                                    <div class="switch-item" id="switch-component-private">
                                         <img src="/src/icons/hide.svg" alt="">
                                         <span class="label">Private</span>
                                     </div>
                                 </div>
                                 <div class="input-item">
                                     <div class="des-cont">
-                                        <span class="title">Description <small style="opacity: .4;">(Optional)</small></span>
-                                        <textarea name="about" id="_set-about" cols="30" rows="10" placeholder="Let members know what this room is about."></textarea>
-                                        <span class="tl">0/200</span>
+                                        <span class="title">Description <small style="opacity: .4;">(Require)</small></span>
+                                        <textarea name="about" id="new-room-description-input" cols="30" rows="10" placeholder="Let members know what this room is about."></textarea>
+                                        <span class="tl" id="sl">0/120</span>
                                     </div>
                                 </div>
                                 <button class="btn-primary create-room" id="create-rooom">
                                     Create
                                 </button>
                             </div>
+                        </div>
+                        <div class="msg-box" id="msg-box">
+                            <img src="" alt="" id="msg-box-icon">
+                            <span class="msg" id="adf-msg"></span>
                         </div>
                     </div>
                 </div>
@@ -823,8 +840,27 @@ import Router from "../components/services/router/router.js";
         let new_room_container = document.getElementById('new-room-main-container'),
             new_room_close_btn = document.getElementById('new-room-close-btn'),
             new_room_container_wrapper = document.getElementById('new_room_wrapper-container');
+        
+        let new_rooom_name_input = document.getElementById('room-name-input'),
+            name_preview_holder = document.getElementById('name-preview-holder'),
+            description_input = document.getElementById('new-room-description-input'),
+            description_preview_hodler = document.getElementById('description-preview-holder');
 
-        new_room_close_btn.addEventListener('click', () => {
+        let switch_component_public = document.getElementById('switch-component-public'),
+            switch_component_private = document.getElementById('switch-component-private'),
+            type_preview_holder = document.getElementById('type-preview-holder'),
+            string_length_holder = document.getElementById('sl');
+
+        let create_btn = document.getElementById('create-rooom'),
+            layer = document.getElementById('freezer-layer');
+
+        let msgbox_parent = document.getElementById('msg-box'),
+            msgbox_msgEl = document.getElementById('adf-msg'),
+            msgbox_icoonEl = document.getElementById('msg-box-icon');
+
+        let is_public = true;
+
+        new_room_close_btn.addEventListener('input', () => {
             new_room_container.classList.add('scale-out-center');
             setTimeout(() => {
                 history.back();
@@ -837,32 +873,177 @@ import Router from "../components/services/router/router.js";
         configure_room();
 
         function configure_room(){
-            pick_icon();
+            const cropper_container = document.querySelector("[data-cropper]"),
+                cropper_close_btn = document.querySelector("[data-cropper-close-btn]"),
+                cropper_save_btn = document.querySelector("[data-cropper-save-btn]");
 
-            function pick_icon(){
-                const cropper_container = document.querySelector("[data-cropper]"),
-                    cropper_wrapper = document.querySelector("[data-c-wrapper]"),
-                    cropper_close_btn = document.querySelector("[data-cropper-close-btn]"),
-                    cropper_save_btn = document.querySelector("[data-cropper-save-btn]");
-                    
-                let room_icon_holder = document.getElementById('room-icon'),
-                    room_icon_picker = document.getElementById('room-icon-input'),
-                    room_preview_icon_holder = document.getElementById('preview-icon');
+            let room_icon_holder = document.getElementById('room-icon'),
+                room_icon_picker = document.getElementById('room-icon-input'),
+                room_preview_icon_holder = document.getElementById('preview-icon');
+
                 
+            lsDB.removeItem('selected_room_icon');
+            lsDB.removeItem('is_room_visible');
+
+            pick_icon();
+            update_name_description();
+            on_create_room();
+
+            function pick_icon(){                
                 room_icon_picker.addEventListener("change", () => {
                     cropper_container.style.display = "flex";
                     get_icon_data();
                 });
 
-
-                let vanilla = new Croppie(cropper_wrapper, {
-                    viewport: { width: 250, height: 250, type: "circle" },
-                    showZoomer: false,
-                    enableOrientation: true,
-                });
-
                 function get_icon_data(){
-                    
+                    const icon_file = room_icon_picker.files[0];
+
+                    if (icon_file) {
+                        const file_reader = new FileReader();
+                        file_reader.readAsDataURL(icon_file);
+                        file_reader.addEventListener("load", function () {
+                            if (icon_file.size > 5120000) {
+                                utilities.alert(
+                                    "Whoppsy!, selected file is too large, please consider selecting smaller file.",
+                                    "info",
+                                );
+                            }
+                            crop_icon(this.result);
+                        });
+                    }
+                }
+                function crop_icon(ic_file){
+                    croppie.bind({
+                        url: ic_file,
+                        orientation: 0,
+                    });
+                    cropper_close_btn.addEventListener("click", () => {
+                        cropper_container.style.display = "none";
+                    });
+                    cropper_save_btn.addEventListener("click", () => {
+                        croppie.result("blob").then(function (blob) {
+                            let reader = new FileReader();
+                            reader.readAsDataURL(blob);
+                            reader.onload = () => {
+                                let tobase64 = reader.result;
+                                lsDB.setItem("selected_room_icon", tobase64);
+                                cropper_container.style.display = "none";
+                                set_icon_preview();
+                            };
+                        });
+                    });
+                }
+                function set_icon_preview(){
+                    let selcted_icon = lsDB.getItem('selected_room_icon');
+
+                    room_icon_holder.style.backgroundImage = `url(${selcted_icon})`;
+                    room_preview_icon_holder.style.backgroundImage = `url(${selcted_icon})`;
+                }
+            }
+            function update_name_description(){
+                new_rooom_name_input.addEventListener('input', function(e){
+                    e.preventDefault();
+                    name_preview_holder.innerText = utilities.stringLimit(this.value, 30);
+                });
+                (function(){
+                    switch_component_public
+                    .addEventListener('click', function(){
+                        this.classList.add('active-switch');
+                        switch_component_private.classList.remove('active-switch');
+                        is_public = true;
+                        lsDB.setItem('is_room_visible', is_public);
+                        type_preview_holder.innerText = is_public ? 'Public' : 'Private'
+                    });
+                    switch_component_private
+                    .addEventListener('click', function(){
+                        this.classList.add('active-switch');
+                        switch_component_public.classList.remove('active-switch');
+                        is_public = false;
+                        lsDB.setItem('is_room_visible', is_public);
+                        type_preview_holder.innerText = is_public ? 'Public' : 'Private'
+                    });
+                }());
+                description_input.addEventListener("keyup", function(){
+                    let maxLen = 120;
+                    let val = this.value;
+                    let chars = val.length;
+                    if (chars > maxLen) {
+                        this.value = val.substring(0, maxLen);
+                    }
+                    string_length_holder.innerText = `${this.value.length}/120`;
+                    description_preview_hodler.innerText = utilities.stringLimit(this.value, 50);
+                });
+            }
+            function on_create_room(){
+                create_btn.onclick = function(e){
+                    e.preventDefault();
+                    if(new_rooom_name_input.value == ''){
+                        new_rooom_name_input.classList.add("invalid");
+                        new_rooom_name_input.focus();
+                        setTimeout(() => {
+                            new_rooom_name_input.classList.remove("invalid");
+                        }, 1000);
+                    }else if(description_input.value == ''){
+                        description_input.classList.add("invalid");
+                        description_input.focus();
+                        setTimeout(() => {
+                            description_input.classList.remove("invalid");
+                        }, 1000);
+                    }else{
+                        create_room();
+                        log(new_rooom_name_input.value+"--"+description_input.value+"--"+is_public);
+                    }
+                }
+            }
+            function create_room(){
+                freeze_configuration();
+                make_rooom();
+
+                function make_rooom(){
+                    let room_id = utilities.genID(),
+                        room_name = new_rooom_name_input.value,
+                        room_op = `${lsDB.getItem('client')}@${lsDB.getItem('id')}`,
+                        room_type = lsDB.getItem('is_room_visible') || is_public,
+                        description = description_input.value,
+                        date_created = new Date();
+                    let client_id = lsDB.getItem('id');
+
+                    console.table([room_id, room_name, room_op, room_type, description, date_created]);
+
+                    fsDB.collection('client').doc('rooms').collection(`${room_id}`).doc('room_meta')
+                    .set({
+                        id: `${room_id}`,
+                        name: room_name,
+                        op: [room_op],
+                        type: room_type,
+                        description: description,
+                        date_created: date_created
+                    }).then(() => {
+                        fsDB.collection('client').doc('meta').collection(client_id).doc('logs').collection('rooms').doc(`${room_id}`)
+                        .set({
+                            id: `${room_id}`
+                        }).then(() => {
+                            fsDB.collection('client').doc('rooms').collection(`${room_id}`).doc('members').collection('list').doc(client_id)
+                            .set({
+                                name: lsDB.getItem('client'),
+                                id: client_id
+                            }).then(() => {
+                                log('room creating successfully navigating to the room now...');
+                            })
+                        })
+                    }).catch(error => {
+                        msgbox.alert(
+                            `Opps! Something went seriously wrong, try again later!`,
+                            msgbox_icoonEl,
+                            msgbox_msgEl,
+                            msgbox_parent,
+                            'error'
+                        );
+                    })
+                }
+                function freeze_configuration(){
+                    layer.style.display = 'flex';
+                    create_btn.innerHTML = preloader;
                 }
             }
         }

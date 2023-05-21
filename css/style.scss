@@ -2960,29 +2960,6 @@ body{
                         }
                     }
                 }
-                .msg-box{
-                    width: 100%;
-                    background-color: $compColor-2;
-                    padding: 10px;
-                    display: none;
-                    flex-direction: row;
-                    align-items: center;
-                    column-gap: 10px;
-
-                    img{
-                        width: 20px;
-                    }
-                    span{
-                        color: $lightColor;
-                        font-size: 14px;
-                    }
-                }
-                .msg-box-error{
-                    background-color: $googleRed;
-                }
-                .msg-box-success{
-                    background-color: $succesColor;
-                }
             }
         }
         /********************************/
@@ -4037,7 +4014,19 @@ body{
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                position: relative;
+                overflow: hidden;
 
+                .layer{
+                    position: absolute;
+                    display: none;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba($color: $boxShadow, $alpha: .2);
+                    z-index: 4;
+                    cursor: wait;
+                    backdrop-filter: blur(2px);
+                }
                 .content-wrapper{
                     width: 450px;
                     display: flex;
@@ -4073,6 +4062,8 @@ body{
                                 .pfp{
                                     width: 60px;
                                     height: 60px;
+                                    min-height: 60px;
+                                    min-width: 60px;
                                     background-color: $primaryColor;
                                     background-image: url('../src/imgs/avatar.png');
                                     background-repeat: no-repeat;
@@ -4140,10 +4131,13 @@ body{
                                         flex-direction: row;
                                         align-items: center;
                                         column-gap: 10px;
-                                        min-width: 280px;
+                                        min-width: 270px;
+                                        max-width: 270px;
                                         .preview-icon{
                                             width: 40px;
                                             height: 40px;
+                                            min-width: 40px;
+                                            min-height: 40px;
                                             border-radius: 100px;
                                             background-color: $primaryColor;
                                             background-image: url('../src/imgs/avatar.png');
@@ -4165,6 +4159,7 @@ body{
                                                 font-size: 13px;
                                                 color: rgba($color: $lightColor, $alpha: .6);
                                                 font-weight: light;
+                                                word-break: break-all;
                                             }
                                             .prev-stat-cont{
                                                 display: flex;
@@ -4314,7 +4309,18 @@ body{
                             margin-top: 20px;
                             padding: 10px 30px 10px 30px;
                             border: none;
+                            display: flex;
+                            justify-content: center;
 
+                            .preload{
+                                display: flex;
+                                width: 100%;
+                                justify-content: center;
+                                align-items: center;
+                                img{
+                                    width: 16px;
+                                }
+                            }
                         }
                     }
                 }
@@ -4425,9 +4431,6 @@ body{
                 }
             }
         }
-        /****************
-            Cropper
-        *****************/
 
         /****************
         outbound sinppets
@@ -4840,10 +4843,33 @@ body{
                 }
             }
         }
+      
         /****************
-        outbound sinppets
+              Public
         *****************/
+        .msg-box{
+            border-radius: 5px;
+            background-color: $compColor-2;
+            padding: 10px;
+            display: none;
+            flex-direction: row;
+            align-items: center;
+            column-gap: 10px;
 
+            img{
+                width: 20px;
+            }
+            span{
+                color: $lightColor;
+                font-size: 14px;
+            }
+        }
+        .msg-box-error{
+            background-color: $googleRed;
+        }
+        .msg-box-success{
+            background-color: $succesColor;
+        }
         &::-webkit-scrollbar{
             display: none !important;
         }

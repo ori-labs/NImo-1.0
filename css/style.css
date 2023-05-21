@@ -659,13 +659,10 @@ body .root {
       Cropper
   *****************/
   /****************
-      Cropper
-  *****************/
-  /****************
   outbound sinppets
   *****************/
   /****************
-  outbound sinppets
+        Public
   *****************/
 }
 body .root .head {
@@ -2660,29 +2657,6 @@ body .root .addfriend-cont .wrapper .contents .input-cont .add-btn .preload {
 body .root .addfriend-cont .wrapper .contents .input-cont .add-btn .preload img {
   width: 16px;
 }
-body .root .addfriend-cont .wrapper .msg-box {
-  width: 100%;
-  background-color: #35353D;
-  padding: 10px;
-  display: none;
-  flex-direction: row;
-  align-items: center;
-  -moz-column-gap: 10px;
-       column-gap: 10px;
-}
-body .root .addfriend-cont .wrapper .msg-box img {
-  width: 20px;
-}
-body .root .addfriend-cont .wrapper .msg-box span {
-  color: #D9D9D9;
-  font-size: 14px;
-}
-body .root .addfriend-cont .wrapper .msg-box-error {
-  background-color: #D95644;
-}
-body .root .addfriend-cont .wrapper .msg-box-success {
-  background-color: #378E5F;
-}
 body .root .vault {
   position: absolute;
   top: 0;
@@ -3645,6 +3619,19 @@ body .root .new-room .wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+body .root .new-room .wrapper .layer {
+  position: absolute;
+  display: none;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 4;
+  cursor: wait;
+  -webkit-backdrop-filter: blur(2px);
+          backdrop-filter: blur(2px);
 }
 body .root .new-room .wrapper .content-wrapper {
   width: 450px;
@@ -3682,6 +3669,8 @@ body .root .new-room .wrapper .content-wrapper .container-wrapper .icon-preview-
 body .root .new-room .wrapper .content-wrapper .container-wrapper .icon-preview-cont .icon-cont .pfp {
   width: 60px;
   height: 60px;
+  min-height: 60px;
+  min-width: 60px;
   background-color: #86509A;
   background-image: url("../src/imgs/avatar.png");
   background-repeat: no-repeat;
@@ -3747,11 +3736,14 @@ body .root .new-room .wrapper .content-wrapper .container-wrapper .icon-preview-
   align-items: center;
   -moz-column-gap: 10px;
        column-gap: 10px;
-  min-width: 280px;
+  min-width: 270px;
+  max-width: 270px;
 }
 body .root .new-room .wrapper .content-wrapper .container-wrapper .icon-preview-cont .preview-cont .preview-wrapper .preview-card .preview-icon {
   width: 40px;
   height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: 100px;
   background-color: #86509A;
   background-image: url("../src/imgs/avatar.png");
@@ -3774,6 +3766,7 @@ body .root .new-room .wrapper .content-wrapper .container-wrapper .icon-preview-
   font-size: 13px;
   color: rgba(217, 217, 217, 0.6);
   font-weight: light;
+  word-break: break-all;
 }
 body .root .new-room .wrapper .content-wrapper .container-wrapper .icon-preview-cont .preview-cont .preview-wrapper .preview-card .preview-info-cont .prev-stat-cont {
   display: flex;
@@ -3918,6 +3911,17 @@ body .root .new-room .wrapper .content-wrapper .container-wrapper .create-room {
   margin-top: 20px;
   padding: 10px 30px 10px 30px;
   border: none;
+  display: flex;
+  justify-content: center;
+}
+body .root .new-room .wrapper .content-wrapper .container-wrapper .create-room .preload {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+body .root .new-room .wrapper .content-wrapper .container-wrapper .create-room .preload img {
+  width: 16px;
 }
 body .root .new-room .title-cont {
   display: flex;
@@ -4377,6 +4381,29 @@ body .root .profile-card .wrapper .btn-cont .btn-cont-wrapper .cont .btn-item:ho
 body .root .profile-card .wrapper .btn-cont .btn-cont-wrapper .cont .btn-item:active {
   opacity: 1;
   background-color: #3E3E45;
+}
+body .root .msg-box {
+  border-radius: 5px;
+  background-color: #35353D;
+  padding: 10px;
+  display: none;
+  flex-direction: row;
+  align-items: center;
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+}
+body .root .msg-box img {
+  width: 20px;
+}
+body .root .msg-box span {
+  color: #D9D9D9;
+  font-size: 14px;
+}
+body .root .msg-box-error {
+  background-color: #D95644;
+}
+body .root .msg-box-success {
+  background-color: #378E5F;
 }
 body .root::-webkit-scrollbar {
   display: none !important;
