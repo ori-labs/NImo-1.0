@@ -113,9 +113,10 @@ const utilities = {
                             ${msg}
                         </span>
                     </div>
+                    <hr>
                     <div class="btn-cont" style="justify-content: ${type == 'alert' ? 'space-between' : 'center'}">
-                        <button class="cancel" id="alert-cancel" style="">${type == 'info'?'Okay':'Cancel'}</button>
-                        <button class="confirm" id="alert-confirm" style="display:${type == 'info' ? 'none' : 'block'}">Confirm</button>
+                        <button class="cancel  btn" id="alert-cancel" style="">${type == 'info'?'Okay':'Cancel'}</button>
+                        <button class="btn-primary" id="alert-confirm" style="display:${type == 'info' ? 'none' : 'block'}">Confirm</button>
                     </div>
                 </div>
             </div>

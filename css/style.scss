@@ -53,7 +53,14 @@ body{
     background-size: contain;
     scrollbar-width: thin;          /* "auto" or "thin" */
     scrollbar-color: $compColor-1;
-    
+
+    input{
+        outline: none !important;
+    }
+    button{
+        outline: none !important;
+    }
+
     ._auth{
         background-color: $compColor-2;
         width: 100vw;
@@ -895,6 +902,54 @@ body{
                         }
                     }
                 }
+                .top-cont{
+                    // width: 100%;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    padding: 10px;
+                    column-gap: 20px;
+                    align-items: center;
+
+                    button{
+                        // width: 120px;
+                        // height: 30px;
+                        padding: 8px 10px 8px 10px;
+                        border: none;
+                        outline:none;
+                        border-radius: 4px;
+                        font-size: 15px;
+                        display: flex;
+                        flex-direction: row;
+                        flex-wrap: wrap;
+                        justify-content: center;
+                        align-items: center;
+                        column-gap: 10px;
+                        background-color: $btnColor;
+                        color: $lightColor;
+                        cursor: pointer;
+                        font-family: inherit;
+                        font-weight: 400;
+                        transition: .2s ease-in;
+                        img{
+                            width: 16px;
+                        }
+
+                        &:hover{
+                            opacity: .7;
+                        }
+                        &:active{
+                            opacity: 1;
+                        }
+                    }
+                    .explore-rooms{
+                        background-color: $noraBlue !important;
+                        border-bottom: 2px $lightBorder solid;
+                    }
+                    .create-room{
+                        border-bottom: 2px $lightBorder solid;
+                    }
+                }
             }
             .mark{
                 display: flex;
@@ -917,28 +972,29 @@ body{
             }
         }
         .content{
+            margin-top: 5px;
             width: 100%;
             // background-color: orange;
-            height: calc(100vh - 120px);
-            // display: flex;
-            // flex-direction: row;
+            height: calc(100vh - 90px);
+            display: flex;
+            flex-direction: column;
             // flex-wrap: wrap;
             // justify-content: center;
             // align-items: center;
             // column-gap: 20px;
-            padding: 10px 10px 20px 10px;
+            padding: 10px 10px 10px 10px;
             // position: relative;
             // padding-left: 20px;
-            // padding-right: 20px;
+            // padding-right: 20px;\
+            overflow: hidden;
+            overflow-y: auto;
             .h-content{
-                width: 100%;
                 // background-color: orange;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 .h-content-wraper{
-                    height: auto;
-                    width: 450px;
+                    width: 550px;
                     // max-width: 400px;
                     // background-color: $compColor-2;
                     display: flex;
@@ -947,65 +1003,16 @@ body{
                     flex-direction: column;
                     // justify-content: center;
                     // align-items: center;
-    
-                    .top-cont{
-                        width: 100%;
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: center;
-                        padding: 10px;
-                        column-gap: 40px;
-                        align-items: center;
-    
-                        button{
-                            // width: 120px;
-                            // height: 30px;
-                            padding: 8px 10px 8px 10px;
-                            border: none;
-                            outline:none;
-                            border-radius: 4px;
-                            font-size: 15px;
-                            display: flex;
-                            flex-direction: row;
-                            flex-wrap: wrap;
-                            justify-content: center;
-                            align-items: center;
-                            column-gap: 10px;
-                            background-color: $btnColor;
-                            color: $lightColor;
-                            cursor: pointer;
-                            font-family: inherit;
-                            font-weight: 400;
-                            transition: .2s ease-in;
-                            img{
-                                width: 16px;
-                            }
-    
-                            &:hover{
-                                opacity: .7;
-                            }
-                            &:active{
-                                opacity: 1;
-                            }
-                        }
-                        .explore-rooms{
-                            background-color: $noraBlue !important;
-                            border-bottom: 2px $lightBorder solid;
-                        }
-                        .create-room{
-                            border-bottom: 2px $lightBorder solid;
-                        }
-                    }
+                    
                     .content-wrapper{
                         background-color: $compColor-2;
-                        // width: 100%;
+
+                        border-radius: 5px;
+                        overflow: hidden;
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
                         // align-items: center;
-                        overflow: hidden;
-                        border-radius: 5px;
-    
                         .friend-cont{
                             background-color: $compColor-2;
                             display: flex;
@@ -1031,29 +1038,30 @@ body{
                                 }
                             }
                             .list-cont{
-                                // width: 100%;
-                                // background-color:black;
-                                display: flex;
+                                display:flex;
                                 flex-direction: row;
                                 flex-wrap: wrap;
-                                padding: 10px 15px 5px 15px;
+                                column-gap: 5px;
+                                row-gap: 3px;
+                                padding: 10px 10px 10px 15px;
                                 column-gap: 5px;
                                 overflow: hidden;
                                 overflow-y: scroll;
                                 gap: 5px;
                                 justify-content: flex-start;
                                 align-items: baseline;
-                                max-height: 150px;
-                                min-height: 150px;
+                                max-height: 180px;
+                                min-height: 180px;
                                 // background-color: #000000;
                                 overflow: hidden;
                                 
                                 .friend-card{
-                                    // background-color: orange;
                                     max-width: 90px;
+                                    max-height: 90px;
                                     display: flex;
                                     flex-direction: column;
-                                    padding: 5px 10px 5px 10px;
+                                    // padding: 5px 10px 5px 10px;
+                                    padding: 5px;
                                     row-gap: 10px;
                                     justify-content: center;
                                     cursor: pointer;
@@ -1066,8 +1074,8 @@ body{
                                         justify-content: center;
     
                                         .f-pfp{
-                                            width: 60px;
-                                            height: 60px;
+                                            width: 70px;
+                                            height: 70px;
                                             border-radius: 100px;
                                             background-repeat: no-repeat;
                                             background-position: center;
@@ -1097,14 +1105,6 @@ body{
                                         text-align: center;
                                         color: $lightColor;
                                         word-wrap: break-word;
-                                    }
-    
-                                    &:hover{
-                                        opacity: .8;
-                                    }
-                                    &:active{
-                                        opacity: .9;
-                                        transform: scale(.9);
                                     }
                                 }
                                 .NOF{
@@ -1206,68 +1206,128 @@ body{
                                 }
                             }
                             .list-cont{
-                                display:inline-flex;
+                                display:flex;
                                 flex-direction: row;
                                 flex-wrap: wrap;
                                 column-gap: 5px;
-                                row-gap: 5px;
+                                row-gap: 3px;
                                 padding: 10px 10px 10px 15px;
                                 overflow: hidden;
                                 overflow-y: scroll;
                                 justify-content: flex-start;
                                 // align-items:flex-start;
                                 // gap: 5px !important;
-                                max-height: 150px;
-                                min-height: 150px;
+                                max-height: 200px;
+                                min-height: 200px;
                                 // row-gap:5px !important;
-                                
                                 .room-card{
-                                    background-color: $halfBG;
-                                    border-radius: 4px;
-                                    max-width: 195px;
-                                    min-width: 195px;
-                                    max-height: 50px;
-                                    min-height: 50px;
+                                    // background-color: orange;
+                                    max-width: 90px;
+                                    max-height: 90px;
                                     display: flex;
-                                    flex-direction: row;
-                                    padding: 8px 6px 8px 8px;
-                                    // justify-content: center;
+                                    flex-direction: column;
+                                    // padding: 5px 10px 5px 10px;
+                                    padding: 5px;
+                                    row-gap: 10px;
+                                    justify-content: center;
                                     cursor: pointer;
-                                    align-items: center;
-                                    column-gap: 10px;
+                                    transition: .2s ease-in;
     
-                                    .room-pfp-cont{
-                                        min-width: 45px;
-                                        width: 45px;
-                                        height: 45px;
+                                    .friend-pfp-cont{
                                         // background-color: green;
                                         display: flex;
+                                        position: relative;
                                         justify-content: center;
-                                        .r-pfp{
-                                            width: 45px;
-                                            height: 45px;
-                                            background-color: #3487ad;
+    
+                                        .f-pfp{
+                                            width: 70px;
+                                            height: 70px;
                                             border-radius: 100px;
                                             background-repeat: no-repeat;
                                             background-position: center;
                                             background-size: cover;
+                                            border: 1px $primaryColor solid;
+
+                                        }
+                                        .bagde{
+                                            position: absolute;
+                                            bottom: 0%;
+                                            right: 0%;
+                                            width: 20px;
+                                            height: 20px;
+                                            background-color: $primaryColor;
+                                            border-radius: 100px;
+                                            border: 2px $compColor-2 solid;
+                                            text-align: center;
+                                            color: $lightColor;
+                                            font-size: 13px;
+                                            display: flex;
+                                            justify-content: center;
+                                            align-items: center;
                                         }
                                     }
-                                    .r-name{
+                                    .f-uname{
                                         // background-color: green;
-                                        text-align: left;
+                                        text-align: center;
                                         color: $lightColor;
                                         word-wrap: break-word;
-                                        font-size: 15px;
                                     }
     
                                     &:hover{
-                                        opacity: .6;
+                                        opacity: .8;
                                     }
                                     &:active{
                                         opacity: .9;
+                                        transform: scale(.9);
                                     }
                                 }
+                                // .room-card{
+                                //     background-color: $halfBG;
+                                //     border-radius: 4px;
+                                //     max-width: 195px;
+                                //     min-width: 195px;
+                                //     max-height: 50px;
+                                //     min-height: 50px;
+                                //     display: flex;
+                                //     flex-direction: row;
+                                //     padding: 8px 6px 8px 8px;
+                                //     // justify-content: center;
+                                //     cursor: pointer;
+                                //     align-items: center;
+                                //     column-gap: 10px;
+    
+                                //     .room-pfp-cont{
+                                //         min-width: 45px;
+                                //         width: 45px;
+                                //         height: 45px;
+                                //         // background-color: green;
+                                //         display: flex;
+                                //         justify-content: center;
+                                //         .r-pfp{
+                                //             width: 45px;
+                                //             height: 45px;
+                                //             background-color: #3487ad;
+                                //             border-radius: 100px;
+                                //             background-repeat: no-repeat;
+                                //             background-position: center;
+                                //             background-size: cover;
+                                //         }
+                                //     }
+                                //     .r-name{
+                                //         // background-color: green;
+                                //         text-align: left;
+                                //         color: $lightColor;
+                                //         word-wrap: break-word;
+                                //         font-size: 15px;
+                                //     }
+    
+                                //     &:hover{
+                                //         opacity: .6;
+                                //     }
+                                //     &:active{
+                                //         opacity: .9;
+                                //     }
+                                // }
                                 .NOR{
                                     width: 100%;
                                     height: 150px;
@@ -4338,6 +4398,484 @@ body{
                 }
             }
         }
+        .explore-rooms-cont{
+            .wrapper{
+                background-color: $compColor-1;
+                padding: 10px;
+                border-radius: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+                overflow: hidden;
+
+                .layer{
+                    position: absolute;
+                    display: none;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba($color: $boxShadow, $alpha: .2);
+                    z-index: 4;
+                    cursor: wait;
+                    backdrop-filter: blur(2px);
+                }
+                .header{
+                    .right-box{
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        column-gap: 20px;
+                    }
+                    .search-cont{
+                        background-color: $inputBgColor;
+                        padding: 3px 3px 3px 10px;
+                        display: flex;
+                        width: 300px;
+                        flex-direction: row;
+                        align-items: center;
+                        border-radius: 100px;
+                        column-gap: 5px;
+                        border: 1px $bgColor solid;
+                        justify-content: space-between;
+                        input{
+                            border: none;
+                            caret-color: $primaryColor;
+                            padding: 2px;
+                            background-color: $inputBgColor;
+                            color: $lightColor;
+                            font-size: 13px;
+                            outline: none;
+                            text-align: center;
+                            width: 100%;
+                            &::placeholder{
+                                color: $btnColor;
+                                font-weight: lighter;
+                                opacity: .5;
+                            }
+                        }
+                        button{
+                            border: none;
+                            border-radius: 100px;
+                            outline: none;
+                            display: flex;
+                            justify-content: center;
+                            padding: 4px 20px 4px 20px;
+
+                            img{
+                                width: 20px;
+                            }
+                        }
+                    }
+                }
+                .content-wrapper{
+                    width: 625px;
+                    // display: flex;
+                    // flex-direction: column;
+                    justify-content: center;
+                    // background-color: green;
+                    row-gap: 5px;
+                    .container-wrapper{
+                        // display: flex;
+                        // flex-direction: row;
+                        // flex-wrap: wrap;
+                        // height: 400px;
+                        // background-color: orange;
+                        // background-color: orange;
+                        // border-radius: 5px;
+                        // min-height: 400px;
+                        // max-height: 400px;
+                        // overflow: hidden;
+                        // overflow-y: auto;
+                        // display: flex;
+                        // flex-direction: row;
+                        // flex-wrap: wrap;
+                        // gap: 2px;
+                        // padding: 6px 6px 6px 6px;
+                        // justify-content: start;
+                        // align-items: start;
+                        .card-content-wrapper{
+                            display: flex;
+                            flex-direction: row;
+                            flex-wrap: wrap;
+                            column-gap: 6px;
+                            padding: 3px;
+                            row-gap: 6px;
+                        }
+
+                        .room-card-cont{
+                            display: flex;
+                            // padding: 5px;
+                            flex-direction: column;
+                            justify-content: center;
+                            background-color: $compColor-1;
+                            border-radius: 5px;
+                            overflow: hidden;
+                            width: 300px;
+                            max-width: 300px;
+                            max-height: 115px;
+                            height: 115px;
+                            background-image: url('https://th.bing.com/th/id/OIP.FIQtO7poOvF52JDIxnU1rAHaEK?w=262&h=180&c=7&r=0&o=5&pid=1.7');
+                            background-position: center;
+                            background-size: cover;
+                            background-repeat: no-repeat;
+                            box-shadow: 2px 2px 5px rgba($color: $boxShadow, $alpha: .0122);
+
+                            .room-info-wrapper{
+                                background-color: rgba($color: $boxShadow, $alpha: .8);
+                                display: flex;
+                                flex-direction: row;
+                                padding: 10px 10px 10px 10px;
+                                align-items: center;
+                                column-gap: 10px;
+                                position: relative;
+
+                                .room-icon-cont{
+                                    width: 50px;
+                                    height: 50px;
+                                    min-width: 50px;
+                                    min-height: 50px;
+                                    background-color: $primaryColor;
+                                    border-radius: 100px;
+                                    overflow: hidden;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    .icon{
+                                        width: 100%;
+                                        height: 100%;
+                                        background-image: url(../src/imgs/room.svg);
+                                        background-position: center;
+                                        background-size: cover;
+                                        background-repeat: no-repeat;
+                                    }
+                                }
+                                .room-info-cont{
+                                    display: flex;
+                                    flex-direction: column;
+                                    justify-content: center;
+                                    align-items: start;
+                                    row-gap: 2px;
+                                    background-color: transparent;
+                                    
+
+                                    .room-name{
+                                        color: $lightColor;
+                                        font-size: 14px;
+                                        font-weight: 600;
+                                        word-wrap: break-word;
+                                    }
+
+                                    .small{
+                                        font-size: 12px;
+                                        color: $lightColor;
+                                        font-weight: lighter !important;
+                                    }
+                                }
+                                .join-btn{
+                                    position: absolute;
+                                    width: 25px;
+                                    height: 25px;
+                                    // background-color: orange;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    right: 10px;
+                                    bottom: 15px;
+                                    cursor: pointer;
+                                    transition: .2s ease-in;
+
+                                    img{
+                                        width: 25px;
+                                    }
+
+                                    &:hover{
+                                        opacity: .8;
+                                    }
+                                    &:active{
+                                        opacity: 1;
+                                        transform: scale(.9);
+                                    }
+                                }
+                            }
+                            .room-description-cont{
+                                background-color: $halfBG;
+                                padding: 3px 10px 5px 10px;
+                                color: $lightColor;
+                                font-size: 14px;
+                                height: 100%;
+                                span{
+                                    opacity: .8;
+                                }
+                            }
+                            .room-card-wrapper{
+                                display: flex;
+                                flex-direction: column;
+                                column-gap: 0px;
+                                position: relative;
+                                .room-card{
+                                    background-color: $compColor-1;
+                                    padding: 5px 5px 5px 5px;
+                                    border-radius: 8px;
+                                    display: flex;
+                                    flex-direction: row;
+                                    align-items: center;
+                                    column-gap: 10px;
+                                    min-width: 270px;
+                                    max-width: 270px;
+                                    .preview-icon{
+                                        width: 40px;
+                                        height: 40px;
+                                        min-width: 40px;
+                                        min-height: 40px;
+                                        border-radius: 100px;
+                                        background-color: $primaryColor;
+                                        background-image: url('../src/imgs/avatar.png');
+                                        background-repeat: no-repeat;
+                                        background-position: center;
+                                        background-size: cover;
+                                    }
+                                    .preview-info-cont{
+                                        display: flex;
+                                        flex-direction: column;
+                                        justify-content: center;
+                                        .prev-name{
+                                            color: $lightColor;
+                                            font-size: 14px;
+                                            font-weight: bold;
+                                            opacity: .7;
+                                        }
+                                        .description{
+                                            font-size: 13px;
+                                            color: rgba($color: $lightColor, $alpha: .6);
+                                            font-weight: light;
+                                            word-break: break-all;
+                                        }
+                                        .prev-stat-cont{
+                                            display: flex;
+                                            flex-direction: row;
+                                            align-items: center;
+                                            column-gap: 10px; 
+                                            .item{
+                                                font-size: 11px;
+
+                                                .count{
+                                                    color: rgba($color: $lightColor, $alpha: .6);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                .preview-tag{
+                                    margin-left: 10px;
+                                    width: 50px;
+                                    background-color: $btnColor;
+                                    height: 15px;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    font-size: 9px;
+                                    color: rgba($color: $lightColor, $alpha: .8);
+                                    border-radius: 5px 5px 0px 0px;
+                                }
+                            }
+                        }
+                        .skeleton{
+                            display: flex;
+                            // padding: 5px;
+                            flex-direction: column;
+                            justify-content: center;
+                            background-color: rgba($color: $borderColor, $alpha: .4);
+                            border-radius: 5px;
+                            overflow: hidden;
+                            width: 300px;
+                            max-width: 300px;
+                            max-height: 115px;
+                            height: 115px;
+                            background-position: center;
+                            background-size: cover;
+                            background-repeat: no-repeat;
+                            box-shadow: 2px 2px 5px rgba($color: $boxShadow, $alpha: .0122);
+
+                            .room-info-wrapper{
+                                // background-color: rgba($color: $boxShadow, $alpha: .8);
+                                display: flex;
+                                flex-direction: row;
+                                padding: 10px 10px 10px 10px;
+                                align-items: center;
+                                column-gap: 10px;
+                                position: relative;
+
+                                .room-icon-cont{
+                                    width: 50px;
+                                    height: 50px;
+                                    min-width: 50px;
+                                    min-height: 50px;
+                                    background-color: $btnColor;
+                                    border-radius: 100px;
+                                    overflow: hidden;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                   
+                                    mask-repeat:no-repeat;
+                                    background:linear-gradient(90deg,#ccca 40%,#fffa ,#ccca 60%) right/300% 100% ;
+                                    animation: skeleton 2s linear infinite;
+                                    opacity: .3;
+                                }
+                                .room-info-cont{
+                                    display: flex;
+                                    flex-direction: column;
+                                    justify-content: center;
+                                    align-items: start;
+                                    row-gap: 5px;
+                                    background-color: transparent;
+                                    
+
+                                    .room-name{
+                                        color: $lightColor;
+                                        background-color: $btnColor;
+                                        height: 20px;
+                                        width: 200px;
+                                        font-size: 14px;
+                                        font-weight: 600;
+                                        word-wrap: break-word;
+                                        mask-repeat:no-repeat;
+                                        background:linear-gradient(90deg,#ccca 40%,#fffa ,#ccca 60%) right/300% 100% ;
+                                        animation: skeleton 2s linear infinite;
+                                        opacity: .3;
+                                    }
+                                    .small{
+                                        font-size: 12px;
+                                        color: $lightColor;
+                                        font-weight: lighter !important;
+                                    }
+                                    .op{
+                                        width: 50px;
+                                        height: 10px;
+                                        background-color: $btnColor;
+                                        opacity: .8;
+                                        mask-repeat:no-repeat;
+                                        background:linear-gradient(90deg,#ccca 40%,#fffa ,#ccca 60%) right/300% 100% ;
+                                        animation: skeleton 2s linear infinite;
+                                        opacity: .3;
+                                    }
+                                    .member-type{
+                                        width: 140px;
+                                        height: 10px;
+                                        background-color: $btnColor;
+                                        mask-repeat:no-repeat;
+                                        background:linear-gradient(90deg,#ccca 40%,#fffa ,#ccca 60%) right/300% 100% ;
+                                        animation: skeleton 2s linear infinite;
+                                        opacity: .3;
+                                    }
+                                }
+                            }
+                            .room-description-cont{
+                                background-color: $halfBG;
+                                padding: 10px 10px 5px 10px;
+                                color: $lightColor;
+                                font-size: 14px;
+                                height: 100%;
+                                width: 100%;
+                                .des{
+                                    opacity: .3;
+                                    height: 20px;
+                                    width: 200px !important;
+                                    mask-repeat:no-repeat;
+                                    background:linear-gradient(90deg,#ccca 40%,#fffa ,#ccca 60%) right/300% 100% ;
+                                    animation: skeleton 2s linear infinite;
+                                    opacity: .3;
+                                }
+                            }
+                            .room-card-wrapper{
+                                display: flex;
+                                flex-direction: column;
+                                column-gap: 0px;
+                                position: relative;
+                                .room-card{
+                                    background-color: $compColor-1;
+                                    padding: 5px 5px 5px 5px;
+                                    border-radius: 8px;
+                                    display: flex;
+                                    flex-direction: row;
+                                    align-items: center;
+                                    column-gap: 10px;
+                                    min-width: 270px;
+                                    max-width: 270px;
+                                    .preview-icon{
+                                        width: 40px;
+                                        height: 40px;
+                                        min-width: 40px;
+                                        min-height: 40px;
+                                        border-radius: 100px;
+                                        background-color: $primaryColor;
+                                        background-image: url('../src/imgs/avatar.png');
+                                        background-repeat: no-repeat;
+                                        background-position: center;
+                                        background-size: cover;
+                                    }
+                                    .preview-info-cont{
+                                        display: flex;
+                                        flex-direction: column;
+                                        justify-content: center;
+                                        .prev-name{
+                                            color: $lightColor;
+                                            font-size: 14px;
+                                            font-weight: bold;
+                                            opacity: .7;
+                                        }
+                                        .description{
+                                            font-size: 13px;
+                                            color: rgba($color: $lightColor, $alpha: .6);
+                                            font-weight: light;
+                                            word-break: break-all;
+                                        }
+                                        .prev-stat-cont{
+                                            display: flex;
+                                            flex-direction: row;
+                                            align-items: center;
+                                            column-gap: 10px; 
+                                            .item{
+                                                font-size: 11px;
+
+                                                .count{
+                                                    color: rgba($color: $lightColor, $alpha: .6);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                .preview-tag{
+                                    margin-left: 10px;
+                                    width: 50px;
+                                    background-color: $btnColor;
+                                    height: 15px;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    font-size: 9px;
+                                    color: rgba($color: $lightColor, $alpha: .8);
+                                    border-radius: 5px 5px 0px 0px;
+                                }
+                            }
+                        }
+                       
+                    }
+                }
+            }
+            .title-cont{
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                column-gap: 5px;
+                span{
+                    color: $lightColor;
+                }
+                img{
+                    width: 20px !important;
+                }
+            }
+        }
 
 
         /****************
@@ -5356,6 +5894,12 @@ body{
                     font-size: 14px;
                     font-weight: lighter;
                 }
+            }
+            hr{
+                width: 100%;
+                background-color: $lightColor;
+                border-top: 1px;
+                opacity: .1;
             }
             .btn-cont{
                 // width: 100%;
