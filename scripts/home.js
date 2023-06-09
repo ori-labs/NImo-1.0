@@ -4,275 +4,264 @@ import utilities from "../components/utilities/utilities.js";
 import Router from "../components/services/router/router.js";
 
 
-(function(){
-    // location.hash = '#?app';
-    console.log('%cSESSION: Home', 'color: #d71b43');
-    firebase.initializeApp({
-        apiKey: config._napi,
-        authDomain: config._ndomain,
-        projectId: config._pid,
-        appId: config._aid,
-        storageBucket: config._stBck
-    })
-    
-    let  lsDB = localStorage;
+(function(uid){
+    init_lib();
 
+    let  lsDB = localStorage;
     let auth = firebase.auth(),
         fsDB = firebase.firestore();
-
     let root = document.getElementById('root'),
-        croppie_wrapper = document.querySelector("[data-c-wrapper]");
+        room_cont = document.querySelector('[data-room-container]'),
+        chat_cont = document.querySelector('[data-chat-container]');
 
     const router = new Router({
         mode: 'hash',
         root: '/'
     });
+    
+    home_components();
 
-    let croppie = new Croppie(croppie_wrapper, {
-        viewport: { width: 250, height: 250, type: "circle" },
-        showZoomer: false,
-        enableOrientation: true,
-    });
+    function home_components(){
+        listen_auth();
+        // render_homepage();
+        manage_router();
+    }
+    function render_homepage(){
+        let id0,
+            user0;
 
-    function init(){
-        (function(uid){
-            let id0,
-                user0;
+        let vault_btn = document.getElementById('vault-btn'),
+            notification_btn = document.getElementById('notification-btn'),
+            new_room_btn = document.getElementById('new-room-btn'),
+            explore_rooms_btn = document.getElementById('explore-rooms');
 
-            let vault_btn = document.getElementById('vault-btn'),
-                notification_btn = document.getElementById('notification-btn'),
-                new_room_btn = document.getElementById('new-room-btn'),
-                explore_rooms_btn = document.getElementById('explore-rooms');
+        fsDB.collection('client').doc('meta').collection(uid).doc('meta_data').get()
+        .then((sn) => {
+            $('#spinnerx').removeClass('load');
+            if($('#spinnerx').length > 0){
+                $('#spinnerx').removeClass('show');
+            };
 
-            fsDB.collection('client').doc('meta').collection(uid).doc('meta_data').get()
-            .then((sn) => {
-                $('#spinnerx').removeClass('load');
-                if($('#spinnerx').length > 0){
-                    $('#spinnerx').removeClass('show');
-                }
-                const data = sn.data();
-                id0 = data.id;
-                user0 = data.user;
-                
-                document.querySelector('.h-usr-name').innerHTML = `${data.user}`;
-                document.querySelector('#uid').innerHTML = `@${data.id}`;
-                document.querySelector('.h-prof-img').style.backgroundImage = `url(${data.userProfileAvatar === 'default' ? '../src/imgs/avatar.png' : data.userProfileAvatar})`;
-                document.querySelector('.h-prof-img').style.backgroundColor = `${data.userProfileBackDrop}`;
+            const data = sn.data();
+            id0 = data.id;
+            user0 = data.user;
+            
+            document.querySelector('.h-usr-name').innerHTML = `${data.user}`;
+            document.querySelector('#uid').innerHTML = `@${data.id}`;
+            document.querySelector('.h-prof-img').style.backgroundImage = `url(${data.userProfileAvatar === 'default' ? '../src/imgs/avatar.png' : data.userProfileAvatar})`;
+            document.querySelector('.h-prof-img').style.backgroundColor = `${data.userProfileBackDrop}`;
 
-                lsDB.setItem('cache', [data.user, data.userProfileAvatar || null, data.userProfileBackDrop])
-                lsDB.setItem('client', data.user);
-                lsDB.setItem('clientAvata', data.userProfileAvatar);
+            lsDB.setItem('cache', [data.user, data.userProfileAvatar || null, data.userProfileBackDrop])
+            lsDB.setItem('client', data.user);
+            lsDB.setItem('clientAvata', data.userProfileAvatar);
 
-                update_friends_and_rooms();
-                get_profile_data();
+            update_friends_and_rooms();
+            get_profile_data();
 
-                function get_profile_data(){
-                    let profile_card = `
-                        <div class="profile-card hide fade-in" id="profile-card">
-                            <div class="wrapper">
-                                <div class="banner-prof-cont">
-                                    <div class="banner" style="background-color: ${data.bannerColor}"></div>
-                                    <div class="profile-cont">
-                                        <span class="profile-holder" style="background-image:url('${data.userProfileAvatar == 'default' ? './src/imgs/avatar.png' : data.userProfileAvatar}')"></span>
-                                    </div>
+            function get_profile_data(){
+                let profile_card = `
+                    <div class="profile-card hide fade-in" id="profile-card">
+                        <div class="wrapper">
+                            <div class="banner-prof-cont">
+                                <div class="banner" style="background-color: ${data.bannerColor}"></div>
+                                <div class="profile-cont">
+                                    <span class="profile-holder" style="background-image:url('${data.userProfileAvatar == 'default' ? './src/imgs/avatar.png' : data.userProfileAvatar}')"></span>
                                 </div>
-                                <div class="u-id-cont">
-                                    <div class="wrapper">
-                                        <span class="uname">${data.user}</span>
-                                        <span class="uid id">@${data.id}</span>
-                                    </div>
+                            </div>
+                            <div class="u-id-cont">
+                                <div class="wrapper">
+                                    <span class="uname">${data.user}</span>
+                                    <span class="uid id">@${data.id}</span>
                                 </div>
-                                <div class="hr-wrapper">
-                                    <span class="hr-1">
-                                        <hr class="hr">
-                                    </span>
-                                </div>
-                                <div class="bio-cont" style="display: ${data.about == '' ? 'none' : 'flex'}">
-                                    <div class="bio-cont-wrapper">
-                                        <span class="label">Bio</span>
-                                        <div class="bio-wrapper">
-                                            <div class="context-wrapper">
-                                                <span class="bio-context">${data.about}</span>
-                                            </div>
+                            </div>
+                            <div class="hr-wrapper">
+                                <span class="hr-1">
+                                    <hr class="hr">
+                                </span>
+                            </div>
+                            <div class="bio-cont" style="display: ${data.about == '' ? 'none' : 'flex'}">
+                                <div class="bio-cont-wrapper">
+                                    <span class="label">Bio</span>
+                                    <div class="bio-wrapper">
+                                        <div class="context-wrapper">
+                                            <span class="bio-context">${data.about}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="btn-cont">
-                                    <div class="btn-cont-wrapper">
-                                        <div class="cont">
-                                            <div class="btn-item profile-setting">
-                                                <img src="./src/icons/profile.svg" alt="">
-                                                <span class="label">Edit profile</span>
-                                            </div>
-                                            <hr class="hr">
-                                            <div class="btn-item profile-setting">
-                                                <img src="./src/icons/settings.svg" alt="">
-                                                <span class="label">Settings</span>
-                                            </div>
+                            </div>
+                            <div class="btn-cont">
+                                <div class="btn-cont-wrapper">
+                                    <div class="cont">
+                                        <div class="btn-item profile-setting">
+                                            <img src="./src/icons/profile.svg" alt="">
+                                            <span class="label">Edit profile</span>
+                                        </div>
+                                        <hr class="hr">
+                                        <div class="btn-item profile-setting">
+                                            <img src="./src/icons/settings.svg" alt="">
+                                            <span class="label">Settings</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    `;
+                    </div>
+                `;
 
-                    root.insertAdjacentHTML('beforeend', profile_card);
+                root.insertAdjacentHTML('beforeend', profile_card);
 
-                    let toggle = document.getElementById('profile-toggle'),
-                        profile_card_container = document.getElementById('profile-card');
+                let toggle = document.getElementById('profile-toggle'),
+                    profile_card_container = document.getElementById('profile-card');
 
 
-                    toggle.addEventListener('click', function(){
-                        log(profile_card_container.id);
-                        if(profile_card_container.classList.contains('hide')){
-                            profile_card_container.classList.remove('hide');
-                        }
-                    });
-                    document.addEventListener("mouseup", function(event) {
-                        if (!profile_card_container.contains(event.target)) {
-                            profile_card_container.classList.add('hide');
-                        }
-                    });
-                }
-            }).catch((err) => {
-                console.log('something went wrong', err);
-                location.reload();
-            });
-            document.querySelector('[data-user-container]').addEventListener('click', () => {
-                console.log(id0);
-                navigator.clipboard.writeText(`${user0}@${id0}`)
-                .then(() => {
-                    utilities.popup('User id copied successfully!', root);
-                })
-                .catch((err) => {
-                    console.error('%cNode error', 'color: #1299dc');
+                toggle.addEventListener('click', function(){
+                    log(profile_card_container.id);
+                    if(profile_card_container.classList.contains('hide')){
+                        profile_card_container.classList.remove('hide');
+                    }
                 });
-            });
+                document.addEventListener("mouseup", function(event) {
+                    if (!profile_card_container.contains(event.target)) {
+                        profile_card_container.classList.add('hide');
+                    }
+                });
+            }
+        }).catch((err) => {
+            console.log('something went wrong', err);
+            location.reload();
+        });
 
-            vault_btn.addEventListener('click', ()=> {
-                location.hash = '#?vault';
+        document.querySelector('[data-user-container]').addEventListener('click', () => {
+            navigator.clipboard.writeText(`${user0}@${id0}`)
+            .then(() => {
+                utilities.popup('User id copied successfully!', root);
+            })
+            .catch((err) => {
+                console.error('%cNode error', 'color: #1299dc');
             });
-            notification_btn.addEventListener('click', ()=> {
-                let inbox_ref = fsDB.collection('client').doc('meta').collection(uid).doc('notifications')
-                .collection('inboxes').doc('all').collection('updated');
+        });
+
+        vault_btn.addEventListener('click', ()=> {
+            location.hash = '#?vault';
+        });
+        notification_btn.addEventListener('click', ()=> {
+            let inbox_ref = fsDB.collection('client').doc('meta').collection(uid).doc('notifications')
+            .collection('inboxes').doc('all').collection('updated');
+            
+            location.hash = '#?notifications';
+            deleteCollection(inbox_ref, 100)
+            .then(function() {
+            }).catch(function(error) {log(error)});
+            
+            function deleteCollection(inbox_ref, batchSize) {
+                var query = inbox_ref.orderBy('__name__').limit(batchSize);
                 
-                location.hash = '#?notifications';
-                deleteCollection(inbox_ref, 100)
-                .then(function() {
-                }).catch(function(error) {log(error)});
-                
-                function deleteCollection(inbox_ref, batchSize) {
-                    var query = inbox_ref.orderBy('__name__').limit(batchSize);
-                    
-                    return new Promise(function(resolve, reject) {
-                        deleteQueryBatch(query, batchSize, resolve, reject);
+                return new Promise(function(resolve, reject) {
+                    deleteQueryBatch(query, batchSize, resolve, reject);
+                });
+            }
+            function deleteQueryBatch(query, batchSize, resolve, reject) {
+                query.get().then(function(snapshot) {
+                    if (snapshot.size == 0) { return 0};
+                    var batch = inbox_ref.firestore.batch();
+                    snapshot.docs.forEach(function(doc) {
+                        batch.delete(doc.ref);
                     });
-                }
-                function deleteQueryBatch(query, batchSize, resolve, reject) {
-                    query.get().then(function(snapshot) {
-                        if (snapshot.size == 0) { return 0};
-                        var batch = inbox_ref.firestore.batch();
-                        snapshot.docs.forEach(function(doc) {
-                            batch.delete(doc.ref);
-                        });
-                        return batch.commit().then(function() {
-                            return snapshot.size;
-                        });
-                    }).then(function(numDeleted) {
-                        if (numDeleted === 0) {
-                            resolve();
-                            return;
-                        }
-                    }).catch(reject);
-                };
-            });
-            new_room_btn.addEventListener('click', ()=>{
-                location.hash = '#?new-room';
-            });
-            explore_rooms_btn.addEventListener('click', ()=>{
-                location.hash = '#?explore-rooms';
-            });
+                    return batch.commit().then(function() {
+                        return snapshot.size;
+                    });
+                }).then(function(numDeleted) {
+                    if (numDeleted === 0) {
+                        resolve();
+                        return;
+                    }
+                }).catch(reject);
+            };
+        });
+        new_room_btn.addEventListener('click', ()=>{
+            location.hash = '#?new-room';
+        });
+        explore_rooms_btn.addEventListener('click', ()=>{
+            location.hash = '#?explore-rooms';
+        });
 
-            (function(){
-                listen_to_request();
-                listen_to_notification();
+        listen_to_request();
+        listen_to_notification();
+        setTip();
 
-                function listen_to_request(){
-                    vault_btn.innerHTML = `<span>
-                                            <img class="frnd" src="../src/icons/friends.svg" alt="">
-                                        </span>`
-                    fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming').onSnapshot(function(sn){
-                        sn.docChanges().forEach(function(ch){
-                            lsDB.setItem('vault_inbox_count', sn.size);
-                            
-                            if(sn.size <= 0){
-                                vault_btn.innerHTML = `<span>
+        function listen_to_request(){
+            vault_btn.innerHTML = `<span>
                                     <img class="frnd" src="../src/icons/friends.svg" alt="">
-                                </span>`;
-                            }else{
-                                let bagde_card = `
-                                    <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
-                                `;
-                                vault_btn.insertAdjacentHTML('beforeend', bagde_card);
-                                utilities.createNotification(
-                                    'Friend Request', 
-                                    'You have a new friend request.', 
-                                    '../src/assets/notification/request-icon.png'
-                                );
-                            }
-                        })
-                    })
-                };
-                function listen_to_notification(){
-                    notification_btn.innerHTML = `<span>
-                                            <img class="frnd" src="../src/icons/notification.svg" alt="">
-                                        </span>`
-                    fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('inboxes')
-                    .doc('all').collection('updated').onSnapshot(function(sn){
-                        sn.docChanges().forEach(function(ch){
-                            lsDB.setItem('inbox size', sn.size);
-                            
-                            if(sn.size <= 0){
-                                notification_btn.innerHTML = `<span>
+                                </span>`
+            fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming').onSnapshot(function(sn){
+                sn.docChanges().forEach(function(ch){
+                    lsDB.setItem('vault_inbox_count', sn.size);
+                    
+                    if(sn.size <= 0){
+                        vault_btn.innerHTML = `<span>
+                            <img class="frnd" src="../src/icons/friends.svg" alt="">
+                        </span>`;
+                    }else{
+                        let bagde_card = `
+                            <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
+                        `;
+                        vault_btn.insertAdjacentHTML('beforeend', bagde_card);
+                        utilities.createNotification(
+                            'Friend Request', 
+                            'You have a new friend request.', 
+                            '../src/assets/notification/request-icon.png'
+                        );
+                    }
+                })
+            })
+        };
+        function listen_to_notification(){
+            notification_btn.innerHTML = `<span>
                                     <img class="frnd" src="../src/icons/notification.svg" alt="">
                                 </span>`
-                            }else{
-                                if(ch.type == 'added'){
-                                    let bagde_card = `
-                                        <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
-                                    `;
-                                    notification_btn.insertAdjacentHTML('beforeend', bagde_card);
-                                    sn.forEach(data => {
-                                        log(data.data());
-                                        let notification_id = data.data().notification_id;
+            fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('inboxes')
+            .doc('all').collection('updated').onSnapshot(function(sn){
+                sn.docChanges().forEach(function(ch){
+                    lsDB.setItem('inbox size', sn.size);
+                    
+                    if(sn.size <= 0){
+                        notification_btn.innerHTML = `<span>
+                            <img class="frnd" src="../src/icons/notification.svg" alt="">
+                        </span>`
+                    }else{
+                        if(ch.type == 'added'){
+                            let bagde_card = `
+                                <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
+                            `;
+                            notification_btn.insertAdjacentHTML('beforeend', bagde_card);
+                            sn.forEach(data => {
+                                log(data.data());
+                                let notification_id = data.data().notification_id;
 
-                                        fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
-                                        .doc(notification_id).get().then((item) => {
-                                            const item_data = item.data();
-                                            log(item_data.title);
-                                            let type = item_data.type;
-                                            utilities.createNotification(
-                                                `${type === 'request' ? 'Friend request - Nimo' : type === 'security' ? item_data.title : type === 'community' ? item_data.title : 'Update'}`,
-                                                `${type === 'request' ? item_data.author + ' accepted your request.' : item_data.body}`,
-                                                `${type === 'request' ? '../src/assets/notification/request-icon.png' : type === 'security' ? '../src/assets/notification/security-icon.png' : '../src/assets/notification/community-icon.png'}`
-                                            )
-                                        })
-                                    })
-                                }
-                            }
-                        });
-                    })
-                };
-            }());
-        }(lsDB.getItem('id')));
-        
-        setTip();
+                                fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
+                                .doc(notification_id).get().then((item) => {
+                                    const item_data = item.data();
+                                    log(item_data.title);
+                                    let type = item_data.type;
+                                    utilities.createNotification(
+                                        `${type === 'request' ? 'Friend request - Nimo' : type === 'security' ? item_data.title : type === 'community' ? item_data.title : 'Update'}`,
+                                        `${type === 'request' ? item_data.author + ' accepted your request.' : item_data.body}`,
+                                        `${type === 'request' ? '../src/assets/notification/request-icon.png' : type === 'security' ? '../src/assets/notification/security-icon.png' : '../src/assets/notification/community-icon.png'}`
+                                    )
+                                })
+                            })
+                        }
+                    }
+                });
+            })
+        };
     }
-    (function(){
-        initLag();
+
+    function listen_auth(){
+        preloader();
         auth.onAuthStateChanged( async __usr__ => {
             if(__usr__){
-                const meta_data = await getMeta(__usr__.uid);
+                const meta_data = await get_user_meta(__usr__.uid);
                 lsDB.setItem('id', meta_data[1]);
                 const state = meta_data[0];
                 if(state != null){
@@ -283,18 +272,19 @@ import Router from "../components/services/router/router.js";
                         location.href = '/pages/login.html';
                     }else if(state === 'user'){
                         console.log('%cUSER STATE : USER', 'color: #23e34d');
-                        init();  
+                        render_homepage();
                     }
                 }else{
                     console.log('state : '+state);
                     console.log('user not registered yet');
+                    location.href = '/pages/login.html';
                 }
             }else{
                 console.log('not registered yet as a user');
                 location.href = '/pages/login.html';
             }
         })
-        async function getMeta(_usr_) {
+        async function get_user_meta(_usr_) {
             let _state_ = [];
 
             await fsDB
@@ -344,61 +334,46 @@ import Router from "../components/services/router/router.js";
                 });
             return _state_;
         }
-    }());
-    (function(){
+    }
+    function manage_router(){
         router
         .add('', async ()=>{
             let current_hash = location.hash;
             console.log(`%c${current_hash}`, 'color: #df3021');
-
+    
             let main_hash = current_hash.split('?')[1];
-            if(main_hash != 'addfriend'){
-                let adf_container = document.getElementById('addfriend-cont');
+            // log(main_hash);
+            main_hash === 'chat' ? render_chat() : destroy(document.getElementById('chat-container'));
+            main_hash === 'room' ? render_room() : destroy(document.getElementById('room-container'));
+            main_hash === 'vault' ? render_vault() : destroy(document.getElementById('vault'));
+            main_hash === 'new-room' ? render_create_room() : destroy(document.getElementById('new-room-container'));
+            main_hash === 'addfriend' ? render_add_friend() : destroy(document.getElementById('addfriend-cont'));
+            main_hash === 'notifications' ? render_notifications() : destroy(document.getElementById('notifications'));
+            main_hash === 'explore-rooms' ? render_explore_rooms() : destroy(document.getElementById('explore-room-container'))
+
+            function destroy(component){
+                let adf_container = component;
                 if(adf_container != null){
                     adf_container.remove();
                 }
-            }else{
-                render_add_friend();
-            };
-            if(main_hash != 'vault'){
-                let vault_container = document.getElementById('vault');
-                if(vault_container != null){
-                    vault_container.remove();
-                }
-                console.log('not vault')
-            }else{
-                render_vault();
-            };
-            if(main_hash != 'notifications'){
-                let notification_container = document.getElementById('notifications');
-                if(notification_container != null){
-                    notification_container.remove();
-                }
-            }else{
-                render_notifications();
-            };
-            if(main_hash != 'new-room'){
-                let new_room_container = document.getElementById('new-room-container');
-                if(new_room_container != null){
-                    new_room_container.remove();
-                }
-            }else{
-                render_create_room();
-            }
-            if(main_hash != 'explore-rooms'){
-                let explore_room_container = document.getElementById('explore-room-container');
-                if(explore_room_container != null){
-                    explore_room_container.remove();
-                }
-            }else{
-                render_explore_rooms();
-            }
-            if(main_hash == 'app'){
-                log('main home');
-                update_friends_and_rooms();
             }
         })
-    }());
+    }
+    function init_lib(){
+        firebase.initializeApp({
+            apiKey: config._napi,
+            authDomain: config._ndomain,
+            projectId: config._pid,
+            appId: config._aid,
+            storageBucket: config._stBck
+        });
+
+        new Croppie(document.querySelector('[data-c-wrapper]'), {
+            viewport: { width: 250, height: 250, type: "circle" },
+            showZoomer: false,
+            enableOrientation: true,
+        });   
+    }
 
     const evenListener = {
         listen: {
@@ -463,137 +438,134 @@ import Router from "../components/services/router/router.js";
             }, 3000)
         }
     };
+    
     function update_friends_and_rooms(){
         get_friend_list();
         get_room_list();
     };
-    async function get_friend_list(){
-        (function(uid){
-            let friend_404 = `
-                <div class="NOF fade-in">
-                    <img src="/src/assets/nof.svg" />
-                    <span class="nof-title">It's quiet for now!</span>
-                    <span class="hr"></span>
-                    <span class="nof-sub">Add friends to start chatting!</span>
-                    <button class="nof-btn btn-primary" id="add-friend"> 
-                        <img src="../src/icons/add-freind.svg" />
-                        <span>Add friend </span>
-                    </button>
-                </div>`;
-            let friend_list_cont = document.getElementById('f_list');
-            
-            fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
-            .get().then((sn) => {
-                if(sn.docs.length > 0) {
-                    sn.forEach((s) => {
-                        const friend_data = s.data();
-                        let remote_id = friend_data.remote_id,
-                            friend_id = friend_data.friend_id;
-                        render_list(friend_id, remote_id);
-                    })
-                }else{
-                    friend_list_cont.innerHTML = friend_404;
-                    let add_friend_btn = document.getElementById('add-friend');
 
-                    add_friend_btn.addEventListener('click', function(e){
-                        e.preventDefault();
-                        location.hash = '#?addfriend';
-                    });
-                }
-            })
-
-            function  render_list(friend_id, chat_id){
-                friend_list_cont.innerHTML = '';
-                fsDB.collection('client').doc('meta').collection(friend_id)
-                .doc('meta_data').get().then(async(data) => {
-                    const friend_data = data.data();
-                    let card = `
-                        <div class="friend-card fade-in" id="fid-${friend_id}">
-                            <div class="friend-pfp-cont tippy-tip" data-tippy-content="${friend_data.user}">
-                                <span class="f-pfp" style="background-image: url(${friend_data.userProfileAvatar == 'default' ? '/src/imgs/avatar.svg' : friend_data.userProfileAvatar});background-color: ${friend_data.userProfileBackDrop};"></span>
-                                <span class="bagde bg-primary">9+</span>
-                            </div>
-                            <!--<span class="f-uname">${friend_data.user}</span> -->
-                        </div>
-                    `;
-                    friend_list_cont.insertAdjacentHTML('beforeend', card);
-                    setTip();
-
-                    const f_btn = document.getElementById(`fid-${friend_id}`);
-                    
-                    f_btn.addEventListener('click', (e)=> {
-                        e.preventDefault();
-                        location.href = `../pages/chat.html?rid=${chat_id}`;
-                    });
+    function get_friend_list(){
+        let friend_404 = `
+            <div class="NOF fade-in">
+                <img src="/src/assets/nof.svg" />
+                <span class="nof-title">It's quiet for now!</span>
+                <span class="hr"></span>
+                <span class="nof-sub">Add friends to start chatting!</span>
+                <button class="nof-btn btn-primary" id="add-friend"> 
+                    <img src="../src/icons/add-freind.svg" />
+                    <span>Add friend </span>
+                </button>
+            </div>`;
+        let friend_list_cont = document.getElementById('f_list');
+        
+        fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
+        .get().then((sn) => {
+            if(sn.docs.length > 0) {
+                sn.forEach((s) => {
+                    const friend_data = s.data();
+                    let remote_id = friend_data.remote_id,
+                        friend_id = friend_data.friend_id;
+                    render_list(friend_id, remote_id);
                 })
+            }else{
+                friend_list_cont.innerHTML = friend_404;
+                let add_friend_btn = document.getElementById('add-friend');
+
+                add_friend_btn.addEventListener('click', function(e){
+                    e.preventDefault();
+                    location.hash = '#?addfriend';
+                });
             }
-        }(lsDB.getItem('id')));
+        })
+
+        function  render_list(friend_id, chat_id){
+            friend_list_cont.innerHTML = '';
+            fsDB.collection('client').doc('meta').collection(friend_id)
+            .doc('meta_data').get().then(async(data) => {
+                const friend_data = data.data();
+                let card = `
+                    <div class="friend-card fade-in" id="fid-${friend_id}">
+                        <div class="friend-pfp-cont tippy-tip" data-tippy-content="${friend_data.user}">
+                            <span class="f-pfp" style="background-image: url(${friend_data.userProfileAvatar == 'default' ? '/src/imgs/avatar.svg' : friend_data.userProfileAvatar});background-color: ${friend_data.userProfileBackDrop};"></span>
+                            <span class="bagde bg-primary">9+</span>
+                        </div>
+                        <!--<span class="f-uname">${friend_data.user}</span> -->
+                    </div>
+                `;
+                friend_list_cont.insertAdjacentHTML('beforeend', card);
+                setTip();
+
+                const f_btn = document.getElementById(`fid-${friend_id}`);
+                
+                f_btn.addEventListener('click', (e)=> {
+                    e.preventDefault();
+                    location.hash = `#?chat?fid=${friend_id}`;
+                });
+            })
+        }
     }
     function get_room_list(){
-        (function(uid){
-            let room_404 = `
-                <div class="NOR">
-                        <img src="/src/assets/nor.svg" />
-                        <span class="nof-title">You have not joined any rooms yet!</span>
-                        <span class="hr"></span>
-                        <button class="nof-btn" id="join-room-btn">Join room</button>
-                </div>
-                `;
-            let room_list_cont = document.getElementById('room-list-cont');
+        let room_404 = `
+            <div class="NOR">
+                    <img src="/src/assets/nor.svg" />
+                    <span class="nof-title">You have not joined any rooms yet!</span>
+                    <span class="hr"></span>
+                    <button class="nof-btn" id="join-room-btn">Join room</button>
+            </div>
+            `;
+        let room_list_cont = document.getElementById('room-list-cont');
 
-            fsDB.collection('client').doc('meta').collection(uid).doc('logs').collection('rooms')
-            .get().then(room_data => {
-                // log(room_data);
-                if(room_data.size <= 0){
-                    log('no rooms');
-                    room_list_cont.innerHTML = room_404;
-                    let join_room_btn = document.getElementById('join-room-btn');
+        fsDB.collection('client').doc('meta').collection(uid).doc('logs').collection('rooms')
+        .get().then(room_data => {
+            if(room_data.size <= 0){
+                log('no rooms');
+                room_list_cont.innerHTML = room_404;
+                let join_room_btn = document.getElementById('join-room-btn');
 
-                    join_room_btn.addEventListener('click', function(e){
-                        e.preventDefault();
-                        location.hash = '#?explore-rooms';
-                    });
-                }else{
-                    log('there\'re rooms ig');
-                    room_list_cont.innerHTML = '';
-                    room_data.forEach(data => {
-                        const room_id_0 = data.data().id;
-                        log(room_id_0);
-                        fsDB.collection('client').doc('rooms').collection('room_meta').doc(room_id_0)
-                        .get().then(data => {
-                            if(data.exists){
-                                let r_data = data.data();
-                                let card = `
-                                    <div class="room-card fade-in" id="room-id-${r_data.id}">
-                                        <div class="friend-pfp-cont tippy-tip" data-tippy-content="${r_data.name}">
-                                            <span class="f-pfp" style="background-image: url(${r_data.icon == 'default' || r_data.icon == null ? '/src/imgs/room.svg' : r_data.icon});"></span>
-                                            <span class="bagde bg-primary">9+</span>
-                                        </div>
+                join_room_btn.addEventListener('click', function(e){
+                    e.preventDefault();
+                    location.hash = '#?explore-rooms';
+                });
+            }else{
+                log('there\'re rooms ig');
+                room_list_cont.innerHTML = '';
+                room_data.forEach(data => {
+                    const room_id_0 = data.data().id;
+                    log(room_id_0);
+                    fsDB.collection('client').doc('rooms').collection('room_meta').doc(room_id_0)
+                    .get().then(data => {
+                        if(data.exists){
+                            let r_data = data.data();
+                            let card = `
+                                <div class="room-card fade-in" id="room-id-${r_data.id}">
+                                    <div class="friend-pfp-cont tippy-tip" data-tippy-content="${r_data.name}">
+                                        <span class="f-pfp" style="background-image: url(${r_data.icon == 'default' || r_data.icon == null ? '/src/imgs/room.svg' : r_data.icon});"></span>
+                                        <span class="bagde bg-primary">9+</span>
                                     </div>
-                                `;
-                                room_list_cont.insertAdjacentHTML('beforeend', card);
-                                setTip();
-    
-                                const r_btn = document.getElementById(`room-id-${r_data.id}`);
-                                
-                                r_btn.addEventListener('click', (e)=> {
-                                    e.preventDefault();
-                                    location.href = `../pages/room.html?cid=${r_data.id}`;
-                                });
-                            }else{
-                                room_list_cont.innerHTML = room_404;
-                                let join_room_btn = document.getElementById('join-room-btn');
+                                </div>
+                            `;
+                            room_list_cont.insertAdjacentHTML('beforeend', card);
+                            setTip();
 
-                                join_room_btn.addEventListener('click', function(e){
-                                    e.preventDefault();
-                                    location.hash = '#?explore-rooms';
-                                });
-                            }
-                        })
+                            const r_btn = document.getElementById(`room-id-${r_data.id}`);
+                            
+                            r_btn.addEventListener('click', (e)=> {
+                                e.preventDefault();
+                                location.hash = `#?room?rid=${r_data.id}`;
+                            });
+                        }else{
+                            room_list_cont.innerHTML = room_404;
+                            let join_room_btn = document.getElementById('join-room-btn');
+
+                            join_room_btn.addEventListener('click', function(e){
+                                e.preventDefault();
+                                location.hash = '#?explore-rooms';
+                            });
+                        }
                     })
-                }
-            })
-        }(lsDB.getItem('id')))
+                })
+            }
+        });
     }
     function render_add_friend(){
         let view = `
@@ -815,6 +787,7 @@ import Router from "../components/services/router/router.js";
         }
         setTip();
     };
+
     function render_create_room(){
         const preloader = `
                 <span class="preload">
@@ -960,10 +933,31 @@ import Router from "../components/services/router/router.js";
             lsDB.setItem('selected_room_icon', 'default');
             lsDB.setItem('is_room_visible', true);
 
-            pick_icon();
-            update_name_description();
             on_create_room();
 
+            function on_create_room(){
+                pick_icon();
+                update_name_description();
+                create_btn.onclick = function(e){
+                    e.preventDefault();
+                    if(new_rooom_name_input.value == ''){
+                        new_rooom_name_input.classList.add("invalid");
+                        new_rooom_name_input.focus();
+                        setTimeout(() => {
+                            new_rooom_name_input.classList.remove("invalid");
+                        }, 1000);
+                    }else if(description_input.value == ''){
+                        description_input.classList.add("invalid");
+                        description_input.focus();
+                        setTimeout(() => {
+                            description_input.classList.remove("invalid");
+                        }, 1000);
+                    }else{
+                        create_room();
+                        log(new_rooom_name_input.value+"--"+description_input.value+"--"+is_public);
+                    }
+                }
+            }
             function pick_icon(){                
                 room_icon_picker.addEventListener("change", () => {
                     cropper_container.style.display = "flex";
@@ -1049,27 +1043,6 @@ import Router from "../components/services/router/router.js";
                     description_preview_hodler.innerText = utilities.stringLimit(this.value, 50);
                 });
             }
-            function on_create_room(){
-                create_btn.onclick = function(e){
-                    e.preventDefault();
-                    if(new_rooom_name_input.value == ''){
-                        new_rooom_name_input.classList.add("invalid");
-                        new_rooom_name_input.focus();
-                        setTimeout(() => {
-                            new_rooom_name_input.classList.remove("invalid");
-                        }, 1000);
-                    }else if(description_input.value == ''){
-                        description_input.classList.add("invalid");
-                        description_input.focus();
-                        setTimeout(() => {
-                            description_input.classList.remove("invalid");
-                        }, 1000);
-                    }else{
-                        create_room();
-                        log(new_rooom_name_input.value+"--"+description_input.value+"--"+is_public);
-                    }
-                }
-            }
             function create_room(){
                 freeze_configuration();
                 make_rooom();
@@ -1136,13 +1109,13 @@ import Router from "../components/services/router/router.js";
                     <span class="icon"></span>
                 </div>
                 <div class="room-info-cont">
-                    <span class="room-name"></span>
-                    <span class="op small"></span>
-                    <span class="member-type small"></span>
+                    <span class="r-4 room-name"></span>
+                    <span class="r-4 op small"></span>
+                    <span class="r-4 member-type small"></span>
                 </div>
             </div>
             <div class="room-description-cont">
-                <div class="des"></div>
+                <div class="r-4 des"></div>
             </div>
         </div>`;
 
@@ -1160,9 +1133,9 @@ import Router from "../components/services/router/router.js";
                             </div>
                             <div class="right-box">
                                 <div class="search-cont">
-                                    <input type="text" name="rooom-search-input" id="room-search-input" placeholder="Room name or Room ID">
+                                    <input type="text" name="rooom-search-input" id="room-search-input" placeholder="Enter Room id">
                                     <button class="btn-primary room-search-btn">
-                                        <img src="/src/icons/lense.svg" alt="">
+                                        <span class="search-label">Search</span>
                                     </button>
                                 </div>
                                 <div class="close-btn-cont tippy-tip" id="explore-room-close-btn" data-tippy-content="Close">
@@ -1199,7 +1172,6 @@ import Router from "../components/services/router/router.js";
             }, 100);
         });
 
-
         for(let a = 0; a < 10; ++a){
             explore_room_container_wrapper.insertAdjacentHTML('beforeend', preloader);
         };
@@ -1207,51 +1179,67 @@ import Router from "../components/services/router/router.js";
         setTip();
         render_rooms();
 
-
         function render_rooms(){
-            fsDB.collection('client').doc('rooms').collection('room_meta').get()
-            .then(room_meta => {
-                room_meta.forEach(async data => {
-                    explore_room_container_wrapper.innerHTML = '';
-                    let meta_ID = data.id;
-                    fsDB.collection('client').doc('rooms').collection('room_meta').doc(meta_ID).get()
-                    .then(async data => {
-                        const room_data = data.data();
+            let public_rooms = [];
+            let my_rooms = [];
+            
+            get_my_rooms();
+            get_rooms();
 
-                        fsDB.collection('client').doc('rooms').collection('room_meta').doc(meta_ID).collection('members')
-                        .doc('list').collection('all').get().then(size_data =>{
-                            if(room_data.type == 'true'){
-                                let room_card = `
-                                    <div class="room-card-cont fade-in" style="background-image: url(${room_data.icon=='default'?'../src/imgs/room.svg':room_data.icon})">
-                                        <div class="room-info-wrapper">
-                                            <div class="room-icon-cont">
-                                                <span class="icon" style="background-image: url(${room_data.icon=='default'?'../src/imgs/room.svg':room_data.icon})"></span>
-                                            </div>
-                                            <div class="room-info-cont">
-                                                <span class="room-name">${utilities.stringLimit(room_data.name, 30)}</span>
-                                                <span class="op small"><span class="id">Owner : </span>${room_data.op}</span>
-                                                <span class="member-type small"><span class="id">Member : </span>${size_data.size}&nbsp;&nbsp;<span class="id">Type : </span>${room_data.type == 'true' ?'Public':'Private'}</span>
-                                            </div>
-                                            <span class="join-btn tippy-tip" data-tippy-content="Join room" id="join-room-btn-${meta_ID}">
-                                                <img src="src/icons/plus.svg" alt="">
-                                            </span>
-                                        </div>
-                                        <div class="room-description-cont">
-                                            <span>${utilities.stringLimit(room_data.description, 80)}</span>
-                                        </div>
-                                    </div>`;
-                                explore_room_container_wrapper.insertAdjacentHTML('beforeend', room_card);
-                            }
-                        });
-
-                    });
-                    setTip();
+            function get_rooms(){
+                fsDB.collection('client').doc('rooms').collection('room_meta').get()
+                .then(room_meta => {
+                    room_meta.forEach(async data => {
+                        let meta_ID = data.id;
+                        if(!my_rooms.includes(meta_ID)){
+                            explore_room_container_wrapper.innerHTML = '';
+                            log('I don\'t have '+meta_ID+" in my room list yet");
+                            fsDB.collection('client').doc('rooms').collection('room_meta').doc(meta_ID).get()
+                            .then(async data => {
+                                const room_data = data.data();
+                                fsDB.collection('client').doc('rooms').collection('room_meta').doc(meta_ID).collection('members').doc('list').collection('all').get().then(size_data =>{
+                                    if(room_data.type == 'true'){
+                                        let room_card = `
+                                            <div class="room-card-cont fade-in" style="background-image: url(${room_data.icon=='default'?'../src/imgs/room.svg':room_data.icon})">
+                                                <div class="room-info-wrapper">
+                                                    <div class="room-icon-cont">
+                                                        <span class="icon" style="background-image: url(${room_data.icon=='default'?'../src/imgs/room.svg':room_data.icon})"></span>
+                                                    </div>
+                                                    <div class="room-info-cont">
+                                                        <span class="room-name">${utilities.stringLimit(room_data.name, 30)}</span>
+                                                        <span class="op small"><span class="id">Owner : </span>${room_data.op}</span>
+                                                        <span class="member-type small"><span class="id">Member : </span>${size_data.size}&nbsp;&nbsp;<span class="id">Type : </span>${room_data.type == 'true' ?'Public':'Private'}</span>
+                                                    </div>
+                                                    <span class="join-btn tippy-tip" data-tippy-content="Join room" id="join-room-btn-${meta_ID}">
+                                                        <img src="src/icons/plus.svg" alt="">
+                                                    </span>
+                                                </div>
+                                                <div class="room-description-cont">
+                                                    <span>${utilities.stringLimit(room_data.description, 80)}</span>
+                                                </div>
+                                            </div>`;
+                                        explore_room_container_wrapper.insertAdjacentHTML('beforeend', room_card);
+                                    }
+                                });
+                                setTip();
+                            });
+                        }
+                    })
+                });
+            };
+            function get_my_rooms(){
+                fsDB.collection('client').doc('meta').collection(uid).doc('logs').collection('rooms').get()
+                .then(room_data => {
+                    room_data.forEach(data => {
+                        my_rooms.push(data.data().id);
+                    })
                 })
-            })
+            }
         }
     }
+
     function render_vault(){
-        (function(uid){
+        (function(){
             let view = `
                 <div class="vault" id="vault">
                     <div class="wrapper scale-up-center" id="vault-container">
@@ -1695,7 +1683,7 @@ import Router from "../components/services/router/router.js";
                     };
                 }).catch(error => log(error));
             }
-        }(lsDB.getItem('id')));
+        }());
 
         function switch_tab(tab_1, tab_2){
             tab_1.classList.add('hide');
@@ -1811,7 +1799,25 @@ import Router from "../components/services/router/router.js";
             }
         }(lsDB.getItem('id')));
     };
-    function initLag(){
+
+    function render_chat(){
+        log('hello chat');
+        let chat_wrapper = `
+            <div class="chat-container fade-in" data-chat-container id="chat-container">
+                hello chat
+            </div>
+        `;
+        root.insertAdjacentHTML('beforeend', chat_wrapper);
+    }
+    function render_room(){
+        let room_wrapper = `
+            <div class="room-container fade-in" data-room-container id="room-container">
+                hello room
+            </div>`;
+        root.insertAdjacentHTML('beforeend', room_wrapper);
+    };
+
+    function preloader(){
         setTimeout(() => {
             setTimeout(()=> {
                 $('#progress').addClass('reveal');
@@ -1823,7 +1829,7 @@ import Router from "../components/services/router/router.js";
         window.oncontextmenu = function() {
             return false;
         }
-    };
+    }
     function hide_preloader(){
         $('#spinnerx').removeClass('load');
         if($('#spinnerx').length > 0){
@@ -1833,10 +1839,11 @@ import Router from "../components/services/router/router.js";
     function log(text){
         return console.log(text);
     };
+
     function setTip(){
         tippy('.tippy-tip', {
             placement: 'bottom',
             arrow: true,
         });
     }
-}());
+}(localStorage.getItem('id')));

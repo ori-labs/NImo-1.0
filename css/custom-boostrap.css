@@ -114,6 +114,10 @@
   background-color: rgba(217, 86, 68, 0.2) !important;
 }
 
+.r-4 {
+  border-radius: 4px;
+}
+
 .btn-primary {
   background-color: #9568A6;
   font-size: 15px;
