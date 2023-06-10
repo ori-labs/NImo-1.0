@@ -19,7 +19,11 @@ import Router from "../components/services/router/router.js";
         root: '/'
     });
     
-    home_components();
+    try {
+        home_components();
+    } catch (error) {
+        location.reload();
+    }
 
     function home_components(){
         listen_auth();
@@ -497,10 +501,23 @@ import Router from "../components/services/router/router.js";
 
                 const f_btn = document.getElementById(`fid-${friend_id}`);
                 
-                f_btn.addEventListener('click', (e)=> {
-                    e.preventDefault();
-                    location.hash = `#?chat?fid=${friend_id}`;
+                fsDB.collection('client').doc('meta').collection(friend_id).doc('links').collection('remotes').get()
+                .then(data => {
+                    data.forEach(data_index => {
+                        fsDB.collection('client').doc('meta').collection(friend_id).doc('links')
+                        .collection('remotes').doc(data_index.id).get().then(remote_data => {
+                            const remote_data_val = remote_data.data();
+                            if(remote_data_val.friend_id === uid){
+                                lsDB.setItem('remote_id', remote_data_val.remote_id);
+                                f_btn.addEventListener('click', async (e)=> {
+                                    e.preventDefault();
+                                    location.hash = `#?chat?fid=${lsDB.getItem('remote_id')}`;
+                                });
+                            }
+                        })
+                    })
                 });
+                
             })
         }
     }
@@ -1803,11 +1820,336 @@ import Router from "../components/services/router/router.js";
     function render_chat(){
         log('hello chat');
         let chat_wrapper = `
-            <div class="chat-container fade-in" data-chat-container id="chat-container">
-                hello chat
+            <div class="chat-wrapper" id="chat-container">
+                <div class="chat-container">
+                    <div class="wrapper">
+                        <div class="header" id="fc_header">
+                            <div class="head-left-cont">
+                                <span class="back-btn tippy-tip" id="chat-back-btn" data-tippy-content="Back">
+                                    <img src="/src/icons/arrow-left.svg" alt="Back" />
+                                </span>
+                                <div class="f-pf-cont">
+                                    <span class="f-name">User</span>
+                                    <span class="status offline">
+                                        <span class="tag-lock"></span>
+                                        <span>Offline</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <!--<div class="head-left-cont right tippy-tip" data-tippy-content="Options">
+                                <span>
+                                    <img src="/src/icons/options.svg" />
+                                </span>
+                            </div> -->
+                        </div>
+                        <div class="msg-container" id="msg-container">
+                        </div>
+                        <div class="reply-handle" style="display:none" id="reply-handle">
+                        </div>
+                        <div class="input-container">
+                        <div class="input-wrapper">
+                            <input type="text" id="msg_input" autofocus="true" placeholder="Message @User" />
+                            </div>
+                            <span class="input-btn tippy-tip" id="img-toggle" data-tippy-content="Add attachment">
+                                <img src="/src/icons/file.svg" alt="🏞️" />
+                            </span>     
+                            <span class="input-btn tippy-tip" id="moji-btn" data-tippy-content="Emoji">
+                                <img src="/src/icons/moji.svg" alt="😄" />
+                            </span>                               
+                        </div>
+                    </div>
+                    <span class="spike"></span> 
+                    <div class="participant-container">
+                        <div class="header">
+                            <span class="title">Members</span>
+                        </div>
+                        <span class="hr-spike"></span>
+                        <div class="participant_list_container" id="participant_list_container">
+                            <!--<div class="participants-prof-cont"  id="">
+                                <span class="participants-pfp" style="background-image: url('/src/imgs/avatar.svg');">
+                                </span>
+                                <span class="participants-name">Blee<span class="id">#434</span></span>
+                            </div>
+                            <div class="participants-prof-cont"  id="">
+                                <span class="participants-pfp" style="background-image: url('/src/imgs/avatar.svg');">
+                                </span>
+                                <span class="participants-name">Konisa<span class="id">#228</span></span>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="image-input-wrapper" id="image-picker-cont">
+                    <div class="image-picker" id="img-picker">
+                        <div class="picker-wrapper">
+                            <div class="picker-cont">
+                                <label for="image-file" class="picker">
+                                    <img src="/src/icons/upload.svg" />
+                                </label>
+                                <input type="file" id="image-file" hidden accept="image/png, image/jpeg"/>
+                            </div>
+                            <span>Click to upload file</span>
+                        </div>
+                    </div>
+                    <div class="image-displayer" id="img-displayer">
+                        <div class="displayer" id="displayer" style="background-image:url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.KvgBcaaAFQGRpQivDROUdQHaE7%26pid%3DApi&f=1&ipt=1936762ebdbd41e8cb28f931b534faa599ee38e9225259a1aadeb6f27987d09d&ipo=images')">
+                            <span class="display-layer-prog" id="_prog-layer"></span>
+                        </div>
+                        <input class="descr" id="file-desc" placeholder="  Enter description"></input>
+                        <div class="prog-cont">
+                            <span class="prog-bg">
+                                <span class="prog-bar" id="_prog-bar"></span>
+                            </span>
+                        </div>
+                        <span class="cancel-btn" id="cancel-btn">
+                            <img src="/src/icons/cancel.svg" />
+                        </span>
+                    </div>
+                    <div class="image-picker-error" id="img-picker-error">
+                        <div class="picker-wrapper">
+                            <div class="picker-cont">
+                                <label for="image-file" class="picker">
+                                    <img src="/src/icons/retry.svg" />
+                                </label>
+                                <input type="file" id="image-file" hidden accept="image/png, image/jpeg"/>
+                            </div>
+                            <span>Something went wrong!</span>
+                        </div>
+                    </div>
+                    <span class="spinn" id="spin">
+                        <img src="/src/assets/spinner-1.svg" />
+                    </span>
+                </div>
             </div>
         `;
         root.insertAdjacentHTML('beforeend', chat_wrapper);
+
+        let chat_input = document.querySelector('#msg_input');
+
+
+        ((function(){
+            $('.back-btn').on('click', () =>{
+                history.back();
+            })
+            // toggleImgPicker();
+            toggleMoji();
+            function toggleImgPicker(){
+                let img_toggler = document.getElementById('img-toggle'),
+                    image_picker_cont = document.getElementById('image-picker-cont'),
+                    picker_spinner = document.getElementById('spin'),
+                    img_picker = document.getElementById('img-picker'),
+                    img_displayer = document.getElementById('img-displayer'),
+                    img_input = document.getElementById('image-file'),
+                    displayer = document.getElementById('displayer'),
+                    picker_error = document.getElementById('img-picker-error'),
+                    cancel_btn = document.getElementById('cancel-btn');
+
+                img_toggler.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if(image_picker_cont.style.display !== 'flex'){
+                        image_picker_cont.style.display = 'flex';
+                        setTimeout(() => {
+                            picker_spinner.style.display = 'none';
+                            if(imgdisplayer.style.display != 'flex'){
+                                img_picker.style.display = 'flex';
+                            }
+                        }, 300)
+                        if(image_picker_cont.style.display !== 'none'){
+                            if(imgdisplayer.style.display != 'flex'){
+                                events.onElementClose(() => {
+                                    if(img_picker.style.display != 'none'){
+                                        img_picker.style.display = 'none';
+                                        image_picker_cont.style.display = 'none';
+                                        picker_spinner.style.display = 'flex';
+                                    }else{
+                                        return;
+                                    }
+                                })
+                                events.outClick(image_picker_cont.id, () => {
+                                    if(img_picker.style.display != 'none'){
+                                        img_picker.style.display = 'none';
+                                        image_picker_cont.style.display = 'none';
+                                        picker_spinner.style.display = 'flex';
+                                    }else{
+                                        return;
+                                    }
+                                })
+                            }else{
+                                return;
+                            }
+                        }
+                    }
+                })
+
+                cancel_btn.addEventListener('click', (e) =>{
+                    e.preventDefault();
+
+                    if(imgdisplayer.style.display != 'none'){
+                        imgdisplayer.style.display = 'none';
+                        img_picker.style.display = 'flex';
+                        picker_error.style.display = 'none';
+                    }
+                    lsDB.removeItem('attachment');
+                    lsDB.removeItem('hasAttachment');
+                    lsDB.removeItem('desc');
+                })
+
+                let _uid = lsDB.getItem('deamon');
+
+                img_input.addEventListener('change', () => {
+                    _gImgData();
+                })
+
+                function _gImgData(){
+                    picker_error.style.display = 'none';
+                    img_picker.style.display = 'none';
+                    imgdisplayer.style.display = 'flex';
+                    
+                    const files = img_input.files[0];
+
+                    let _progLayer = document.getElementById('_prog-layer'),
+                        _progBar = document.getElementById('_prog-bar'),
+                        _fileDesc = document.getElementById('file-desc');
+
+                    console.log("FileName", files)
+                    const uploadTask = _fstrg.ref(`client/${_uid}`).child(files.name).put(files);
+
+                    uploadTask.on('state_changed', (snapshot) => {
+                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            
+                            let _height_ = (Math.floor(progress) * 70) / 100;
+                            let _cheight = Math.floor(70 - (Math.floor(progress) * 70) / 100)
+
+                            _progLayer.style.height = `${_cheight}px`;
+                            _progBar.style.width = `${Math.floor(progress)}%`;
+                            if(Math.floor(progress) == 100){
+                                _progBar.classList.add('loading');
+                            }
+                        },
+                        (error) => {
+                            if(imgdisplayer.style == 'flex'){
+                                imgdisplayer.style.display = 'none';
+                                picker_error.style.display = 'flex';
+                            }
+                            worker._sn._Err('Couldn\'t upload the image, please try again later!', _errH);
+                            console.log("error:-", error)
+                        },
+                        () => {
+                            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                                 document.querySelector('.prog-bg').style.display = 'none';
+                                 _progBar.classList.remove('loading')
+                                console.log('File available at', downloadURL);
+                                let attachment = downloadURL.toString(),
+                                    hasAttachment = true,
+                                    desc =  _fileDesc.value;
+
+                                lsDB.setItem('hasAttachment', hasAttachment);
+                                lsDB.setItem('attachment', attachment);
+                                lsDB.setItem('description', files.name);
+                            });
+                        }
+                    )
+                    if(files){
+                        const _fReader = new FileReader();
+                        _fReader.readAsDataURL(files);
+                        _fileDesc.value = files.name
+                        _fReader.addEventListener('load', function(){
+                            displayer.style.backgroundImage = `url('${this.result}')`;
+                            displayer.style.backgroundSize = 'cover';
+                            displayer.style.backgroundPosition = 'center';
+                        })
+                        // _fileDesc.innerText = utilities.trimFileName(files.name)
+                        
+                        _fileDesc.addEventListener('input', () => {
+                            lsDB.setItem('desc', _fileDesc.value);
+                            console.log(_fileDesc.value)
+                        }) 
+                    }
+                }
+            }
+            function toggleMoji(){
+                let emoji_cont  = document.querySelector('#san-moji-snippet');
+
+                $('#moji-btn').on('click', () => {
+                    $("#san-moji-snippet").disMojiPicker();
+                    twemoji.parse(document.body);
+                    $('#san-moji-snippet').picker(
+                        emoji => {
+                            chat_input.value += `${emoji}`;
+                            chat_input.focus();
+                        }
+                    )
+                    
+                    let _width = document.documentElement.clientWidth,
+                        _height = document.documentElement.clientHeight;
+                    
+                    emoji_cont.style.display = emoji_cont.style.display != 'flex' ? 'flex' : 'none';
+                    
+                    let mojiPicker = document.querySelector('.emoji-picker');
+                    let pos = mojiPicker.getBoundingClientRect();
+
+                    emoji_cont.style.top = `${_height - pos.height - 60}px`;
+                    emoji_cont.style.left = `${_width - (350 * 2) + 75}px`;
+
+                    if(pos.height + pos.y >= _height){
+                        emoji_cont.style.top = `${_height - pos.height - 68}px`;
+                        console.log('greater than height with', _height+pos.height);
+                    };
+
+                    document.addEventListener("mouseup", function(event) {
+                        if (!emoji_cont.contains(event.target)) {
+                            emoji_cont.style.display = 'none';
+                            emoji_cont.innerHTML = '';
+                        }
+                    });
+                    chat_input.addEventListener('keyup', ()=> {
+                        emoji_cont.style.display = 'none';
+                        emoji_cont.innerHTML = '';
+                    });
+                    
+                });
+                // document.querySelector('#moji-btn')
+                // .addEventListener('click', ()=> {
+                //     let _width = document.documentElement.clientWidth,
+                //         _height = document.documentElement.clientHeight;
+                    
+                //     emoji_cont.style.display = 'flex';
+                    
+                //     let mojiPicker = document.querySelector('.emoji-picker');
+                //     let pos = mojiPicker.getBoundingClientRect();
+                //     // emoji_cont.style.top = `${(_height - 400)}px`
+                //     emoji_cont.style.top = `${_height - pos.height - 68}px`;
+                //     emoji_cont.style.left = `${_width - pos.width - 38}px`;
+
+                //     // events.onElementClose(emoji_cont);
+                //     // events.outClick(emoji_cont.id);
+
+                //     if(pos.height + pos.y >= _height){
+                //         emoji_cont.style.top = `${_height - pos.height - 68}px`;
+                //         console.log('greater than height with', _height+pos.height);
+                //     }
+                // })
+                // $("#san-moji-snippet").disMojiPicker();
+                // // twemoji.parse(document.body);
+                // $('#san-moji-snippet').picker(
+                //     emoji => document.getElementById('msg_input').value += `${emoji} `
+                // )
+            };
+
+            document.addEventListener('keydown', (e)=>{
+                let key = e.key;
+                if (/^[a-zA-Z0-9]$/.test(key)) {
+                    chat_input.focus();
+                }
+                if (key == ' ') {
+                    chat_input.focus();
+                }
+            })
+        }()));
+        (function(){
+            let fid = location.hash.split('?')[2].split('=')[1];
+            log(fid);
+
+        }());
     }
     function render_room(){
         let room_wrapper = `
