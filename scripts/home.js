@@ -38,102 +38,105 @@ import Router from "../components/services/router/router.js";
             notification_btn = document.getElementById('notification-btn'),
             new_room_btn = document.getElementById('new-room-btn'),
             explore_rooms_btn = document.getElementById('explore-rooms');
-
-        fsDB.collection('client').doc('meta').collection(uid).doc('meta_data').get()
-        .then((sn) => {
-            $('#spinnerx').removeClass('load');
-            if($('#spinnerx').length > 0){
-                $('#spinnerx').removeClass('show');
-            };
-
-            const data = sn.data();
-            id0 = data.id;
-            user0 = data.user;
-            
-            document.querySelector('.h-usr-name').innerHTML = `${data.user}`;
-            document.querySelector('#uid').innerHTML = `@${data.id}`;
-            document.querySelector('.h-prof-img').style.backgroundImage = `url(${data.userProfileAvatar === 'default' ? '../src/imgs/avatar.png' : data.userProfileAvatar})`;
-            document.querySelector('.h-prof-img').style.backgroundColor = `${data.userProfileBackDrop}`;
-
-            lsDB.setItem('cache', [data.user, data.userProfileAvatar || null, data.userProfileBackDrop])
-            lsDB.setItem('client', data.user);
-            lsDB.setItem('clientAvata', data.userProfileAvatar);
-
-            update_friends_and_rooms();
-            get_profile_data();
-
-            function get_profile_data(){
-                let profile_card = `
-                    <div class="profile-card hide fade-in" id="profile-card">
-                        <div class="wrapper">
-                            <div class="banner-prof-cont">
-                                <div class="banner" style="background-color: ${data.bannerColor}"></div>
-                                <div class="profile-cont">
-                                    <span class="profile-holder" style="background-image:url('${data.userProfileAvatar == 'default' ? './src/imgs/avatar.png' : data.userProfileAvatar}')"></span>
+        
+        try {
+            fsDB.collection('client').doc('meta').collection(uid).doc('meta_data').get()
+            .then((sn) => {
+                $('#spinnerx').removeClass('load');
+                if($('#spinnerx').length > 0){
+                    $('#spinnerx').removeClass('show');
+                };
+    
+                const data = sn.data();
+                id0 = data.id;
+                user0 = data.user;
+                
+                document.querySelector('.h-usr-name').innerHTML = `${data.user}`;
+                document.querySelector('#uid').innerHTML = `@${data.id}`;
+                document.querySelector('.h-prof-img').style.backgroundImage = `url(${data.userProfileAvatar === 'default' ? '../src/imgs/avatar.png' : data.userProfileAvatar})`;
+                document.querySelector('.h-prof-img').style.backgroundColor = `${data.userProfileBackDrop}`;
+    
+                lsDB.setItem('cache', [data.user, data.userProfileAvatar || null, data.userProfileBackDrop])
+                lsDB.setItem('client', data.user);
+                lsDB.setItem('clientAvata', data.userProfileAvatar);
+    
+                update_friends_and_rooms();
+                get_profile_data();
+    
+                function get_profile_data(){
+                    let profile_card = `
+                        <div class="profile-card-component profile-card hide fade-in" id="profile-card">
+                            <div class="wrapper">
+                                <div class="banner-prof-cont">
+                                    <div class="banner" style="background-color: ${data.bannerColor}"></div>
+                                    <div class="profile-cont">
+                                        <span class="profile-holder" style="background-image:url('${data.userProfileAvatar == 'default' ? './src/imgs/avatar.png' : data.userProfileAvatar}')"></span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="u-id-cont">
-                                <div class="wrapper">
-                                    <span class="uname">${data.user}</span>
-                                    <span class="uid id">@${data.id}</span>
+                                <div class="u-id-cont">
+                                    <div class="wrapper">
+                                        <span class="uname">${data.user}</span>
+                                        <span class="uid id">@${data.id}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="hr-wrapper">
-                                <span class="hr-1">
-                                    <hr class="hr">
-                                </span>
-                            </div>
-                            <div class="bio-cont" style="display: ${data.about == '' ? 'none' : 'flex'}">
-                                <div class="bio-cont-wrapper">
-                                    <span class="label">Bio</span>
-                                    <div class="bio-wrapper">
-                                        <div class="context-wrapper">
-                                            <span class="bio-context">${data.about}</span>
+                                <div class="hr-wrapper">
+                                    <span class="hr-1">
+                                        <hr class="hr">
+                                    </span>
+                                </div>
+                                <div class="bio-cont" style="display: ${data.about == '' ? 'none' : 'flex'}">
+                                    <div class="bio-cont-wrapper">
+                                        <span class="label">Bio</span>
+                                        <div class="bio-wrapper">
+                                            <div class="context-wrapper">
+                                                <span class="bio-context">${data.about}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="btn-cont">
-                                <div class="btn-cont-wrapper">
-                                    <div class="cont">
-                                        <div class="btn-item profile-setting">
-                                            <img src="./src/icons/profile.svg" alt="">
-                                            <span class="label">Edit profile</span>
-                                        </div>
-                                        <hr class="hr">
-                                        <div class="btn-item profile-setting">
-                                            <img src="./src/icons/settings.svg" alt="">
-                                            <span class="label">Settings</span>
+                                <div class="btn-cont">
+                                    <div class="btn-cont-wrapper">
+                                        <div class="cont">
+                                            <div class="btn-item-0 profile-setting">
+                                                <img src="./src/icons/profile.svg" alt="">
+                                                <span class="label">Edit profile</span>
+                                            </div>
+                                            <hr class="hr">
+                                            <div class="btn-item-0 profile-setting">
+                                                <img src="./src/icons/settings.svg" alt="">
+                                                <span class="label">Settings</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-
-                root.insertAdjacentHTML('beforeend', profile_card);
-
-                let toggle = document.getElementById('profile-toggle'),
-                    profile_card_container = document.getElementById('profile-card');
-
-
-                toggle.addEventListener('click', function(){
-                    log(profile_card_container.id);
-                    if(profile_card_container.classList.contains('hide')){
-                        profile_card_container.classList.remove('hide');
-                    }
-                });
-                document.addEventListener("mouseup", function(event) {
-                    if (!profile_card_container.contains(event.target)) {
-                        profile_card_container.classList.add('hide');
-                    }
-                });
-            }
-        }).catch((err) => {
-            console.log('something went wrong', err);
+                    `;
+    
+                    root.insertAdjacentHTML('beforeend', profile_card);
+    
+                    let toggle = document.getElementById('profile-toggle'),
+                        profile_card_container = document.getElementById('profile-card');
+    
+    
+                    toggle.addEventListener('click', function(){
+                        log(profile_card_container.id);
+                        if(profile_card_container.classList.contains('hide')){
+                            profile_card_container.classList.remove('hide');
+                        }
+                    });
+                    document.addEventListener("mouseup", function(event) {
+                        if (!profile_card_container.contains(event.target)) {
+                            profile_card_container.classList.add('hide');
+                        }
+                    });
+                }
+            }).catch((err) => {
+                console.log('something went wrong', err);
+            });
+        } catch (error) {
             location.reload();
-        });
+        }
 
         document.querySelector('[data-user-container]').addEventListener('click', () => {
             navigator.clipboard.writeText(`${user0}@${id0}`)
@@ -245,7 +248,6 @@ import Router from "../components/services/router/router.js";
                                 fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
                                 .doc(notification_id).get().then((item) => {
                                     const item_data = item.data();
-                                    log(item_data.title);
                                     let type = item_data.type;
                                     utilities.createNotification(
                                         `${type === 'request' ? 'Friend request - Nimo' : type === 'security' ? item_data.title : type === 'community' ? item_data.title : 'Update'}`,
@@ -511,7 +513,7 @@ import Router from "../components/services/router/router.js";
                                 lsDB.setItem('remote_id', remote_data_val.remote_id);
                                 f_btn.addEventListener('click', async (e)=> {
                                     e.preventDefault();
-                                    location.hash = `#?chat?fid=${lsDB.getItem('remote_id')}`;
+                                    location.hash = `#?chat?fid=${friend_id}.${lsDB.getItem('remote_id')}`;
                                 });
                             }
                         })
@@ -1829,11 +1831,12 @@ import Router from "../components/services/router/router.js";
                                     <img src="/src/icons/arrow-left.svg" alt="Back" />
                                 </span>
                                 <div class="f-pf-cont">
-                                    <span class="f-name">User</span>
-                                    <span class="status offline">
+                                    <span class="f-pfp" id="f-pfp"></span>
+                                    <span class="f-name" id="f-name">User</span>
+                                    <!-- <span class="status offline">
                                         <span class="tag-lock"></span>
                                         <span>Offline</span>
-                                    </span>
+                                    </span> -->
                                 </div>
                             </div>
                             <!--<div class="head-left-cont right tippy-tip" data-tippy-content="Options">
@@ -1864,7 +1867,7 @@ import Router from "../components/services/router/router.js";
                             <span class="title">Members</span>
                         </div>
                         <span class="hr-spike"></span>
-                        <div class="participant_list_container" id="participant_list_container">
+                        <div class="participant_list_container" id="members_list_container">
                             <!--<div class="participants-prof-cont"  id="">
                                 <span class="participants-pfp" style="background-image: url('/src/imgs/avatar.svg');">
                                 </span>
@@ -2146,10 +2149,170 @@ import Router from "../components/services/router/router.js";
             })
         }()));
         (function(){
-            let fid = location.hash.split('?')[2].split('=')[1];
-            log(fid);
+            const c_id = location.hash.split('?')[2].split('=')[1].split('.')[1];
+            const f_id = location.hash.split('?')[2].split('=')[1].split('.')[0];
 
+            log(c_id + " = " + f_id);
+            render_f_data(f_id);
+            render_members_list(f_id);
         }());
+
+        function render_f_data(id){
+            let f_pfp = document.getElementById('f-pfp'),
+                f_name = document.getElementById('f-name');
+            
+            fsDB.collection('client').doc('meta').collection(id).doc('meta_data').get()
+            .then(data => {
+                const f_data = data.data();
+
+                f_pfp.style.backgroundImage = `url('${f_data.userProfileAvatar == 'default' ? './src/imgs/avatar.png' : f_data.userProfileAvatar}')`;
+                f_name.innerHTML = `${f_data.user}`;
+
+                let profile_card = `
+                        <div class="profile-card-component profile-card hide fade-in chat-profile-card" id="chat-profile-card">
+                            <div class="wrapper">
+                                <div class="banner-prof-cont">
+                                    <div class="banner" style="background-color: ${f_data.bannerColor}"></div>
+                                    <div class="profile-cont">
+                                        <span class="profile-holder" style="background-image:url('${f_data.userProfileAvatar == 'default' ? './src/imgs/avatar.png' : f_data.userProfileAvatar}')"></span>
+                                    </div>
+                                </div>
+                                <div class="u-id-cont">
+                                    <div class="wrapper">
+                                        <span class="uname">${f_data.user}</span>
+                                        <span class="uid id">@${f_data.id}</span>
+                                    </div>
+                                </div>
+                                <div class="hr-wrapper">
+                                    <span class="hr-1">
+                                        <hr class="hr">
+                                    </span>
+                                </div>
+                                <div class="bio-cont">
+                                    <div class="bio-cont-wrapper">
+                                        <span class="label">Bio</span>
+                                        <div class="bio-wrapper">
+                                            <div class="context-wrapper" style="min-height: 20px">
+                                                <span class="bio-context">${f_data.about}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                root.insertAdjacentHTML('beforeend', profile_card);
+
+                let chat_profile_card_container = document.getElementById('chat-profile-card');
+    
+                f_pfp.addEventListener('click', () => {
+                    if(chat_profile_card_container.classList.contains('hide')){
+                        chat_profile_card_container.classList.remove('hide');
+                    }
+                });
+                document.addEventListener("mouseup", function(event) {
+                    if (!chat_profile_card_container.contains(event.target)) {
+                        chat_profile_card_container.classList.add('hide');
+                    }
+                });
+            })
+        }
+        function render_members_list(fid){
+            let member_list_container = document.getElementById('members_list_container');
+            
+            member_list_container.innerHTML = '';
+
+            let members = [fid, uid];
+
+            for(let a in members){
+                fsDB.collection('client').doc('meta').collection(members[a]).doc('meta_data').get()
+                .then(meta => {
+                    const meta_data = meta.data();
+
+                    let member_card = `
+                        <div class="participants-prof-cont fade-in"  id="mem-${meta_data.id}" style="opacity: ${meta_data.id === uid ? '1' : '.6'}">
+                            <span class="participants-pfp" style="background-image: url('${meta_data.userProfileAvatar == 'default' ? './src/imgs/avatar.png' : meta_data.userProfileAvatar}')">
+                            </span>
+                            <span class="participants-name">${meta_data.user}</span>
+                        </div>
+                        `;
+                    member_list_container.insertAdjacentHTML('beforeend', member_card);
+
+                    const card_cont = document.getElementById(`mem-${meta_data.id}`);
+                    
+                    card_cont.addEventListener('click', (e)=> {
+                        let member_profile_card = `<div class="profile-card-component fade-in member-profile-card" id="member-profile-card-${meta_data.id}">
+                                <div class="wrapper">
+                                    <div class="banner-prof-cont">
+                                        <div class="banner" style="background-color: ${meta_data.bannerColor}" id="member-card-banner-${meta_data.id}"></div>
+                                        <div class="profile-cont">
+                                            <span class="profile-holder" style="background-image:url('${meta_data.userProfileAvatar == 'default' ? './src/imgs/avatar.png' : meta_data.userProfileAvatar}')"></span>
+                                        </div>
+                                    </div>
+                                    <div class="u-id-cont">
+                                        <div class="wrapper">
+                                            <span class="uname">${meta_data.user}</span>
+                                            <span class="uid id">@${meta_data.id}</span>
+                                        </div>
+                                    </div>
+                                    <div class="hr-wrapper">
+                                        <span class="hr-1">
+                                            <hr class="hr">
+                                        </span>
+                                    </div>
+                                    <div class="bio-cont">
+                                        <div class="bio-cont-wrapper">
+                                            <span class="label">Bio</span>
+                                            <div class="bio-wrapper">
+                                                <div class="context-wrapper" style="min-height: 20px">
+                                                    <span class="bio-context">${meta_data.about}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="btn-cont" style="display:${meta_data.id == uid ? 'flex' : 'none'}">
+                                        <div class="btn-cont-wrapper members-btn-cont">
+                                            <div class="cont">
+                                                <div class="btn-item-0 profile-setting">
+                                                    <img src="./src/icons/profile.svg" alt="">
+                                                    <span class="label">Edit profile</span>
+                                                </div>
+                                                <hr class="hr">
+                                                <div class="btn-item-0 profile-setting">
+                                                    <img src="./src/icons/settings.svg" alt="">
+                                                    <span class="label">Settings</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+
+                        root.insertAdjacentHTML('beforeend', member_profile_card);
+
+                        let member_profile_card_container = document.getElementById(`member-profile-card-${meta_data.id}`);
+
+                        let window_height = document.documentElement.clientHeight,
+                            card_height = member_profile_card_container.getBoundingClientRect();
+
+                        member_profile_card_container.style.top = e.layerY <= 20 ? '40px' : `${e.layerY}px`;
+                        member_profile_card_container.style.right = '275px';
+
+                        let card_offset_top = member_profile_card_container.offsetTop;
+
+                        if(card_offset_top >= window_height - card_height){
+                            member_profile_card_container.style.top = `${(window_height - card_height) + 20}px`;
+                        }
+
+                        document.addEventListener("mouseup", function(event) {
+                            if (!member_profile_card_container.contains(event.target)) {
+                                member_profile_card_container.remove();
+                            }
+                        });
+                    })
+                })
+            }
+        }
     }
     function render_room(){
         let room_wrapper = `
