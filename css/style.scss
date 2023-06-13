@@ -1066,12 +1066,12 @@ body{
                                     justify-content: center;
                                     cursor: pointer;
                                     transition: .2s ease-in;
-    
+                                    
                                     .friend-pfp-cont{
-                                        // background-color: green;
                                         display: flex;
                                         position: relative;
                                         justify-content: center;
+                                        transition: .2s ease-in;
     
                                         .f-pfp{
                                             width: 70px;
@@ -1079,6 +1079,7 @@ body{
                                             border-radius: 100px;
                                             background-repeat: no-repeat;
                                             background-position: center;
+                                            background-color: $primaryColor;
                                             background-size: cover;
                                             border: 1px $primaryColor solid;
 
@@ -1099,6 +1100,14 @@ body{
                                             justify-content: center;
                                             align-items: center;
                                         }
+
+                                        &:hover{
+                                            opacity: .7;
+                                        }
+                                        &:active{
+                                            opacity: .9;
+                                            transform: scale(.9);
+                                        } 
                                     }
                                     .f-uname{
                                         // background-color: green;
@@ -1231,13 +1240,13 @@ body{
                                     row-gap: 10px;
                                     justify-content: center;
                                     cursor: pointer;
-                                    transition: .2s ease-in;
-    
+                                    
                                     .friend-pfp-cont{
                                         // background-color: green;
                                         display: flex;
                                         position: relative;
                                         justify-content: center;
+                                        transition: .2s ease-in;
     
                                         .f-pfp{
                                             width: 70px;
@@ -1265,20 +1274,20 @@ body{
                                             justify-content: center;
                                             align-items: center;
                                         }
+
+                                        &:hover{
+                                            opacity: .7;
+                                        }
+                                        &:active{
+                                            opacity: .9;
+                                            transform: scale(.9);
+                                        }
                                     }
                                     .f-uname{
                                         // background-color: green;
                                         text-align: center;
                                         color: $lightColor;
                                         word-wrap: break-word;
-                                    }
-    
-                                    &:hover{
-                                        opacity: .8;
-                                    }
-                                    &:active{
-                                        opacity: .9;
-                                        transform: scale(.9);
                                     }
                                 }
                                 // .room-card{
@@ -4193,22 +4202,25 @@ body{
                         overflow: hidden; 
                         overflow-y: auto;
                         position: inherit;
-                        padding-bottom: 10px;
+                        padding: 5px 8px 15px 10px;
                         scrollbar-width: thin;
+                        display: flex;
+                        flex-direction: column;
+                        // background-color: rgba(255, 0, 43, 0.178);
 
-                        .msg-card{
-                            margin: 5px 0px 5px 0px;
-                            display: flex;
-                            flex-direction: column;
-                            padding: 8px 8px 4px 8px;
-                            // row-gap: 5px;
+                        .msg-card-component{
+                            margin: 5px 0px 0px 0px !important;
+                            // display: flex;
+                            // flex-direction: column;
+                            // justify-content: center;
+                            padding: 3px 8px 0px 8px !important;
                             position: relative;
                             // background-color: green;
                             
                             .message-btn-cont{
                                 // height: 100%;
                                 position: absolute;
-                                right: 2%;
+                                right: 0px;
                                 display: flex;
                                 flex-direction: row;
                                 justify-content: center;
@@ -4218,6 +4230,7 @@ body{
                                 border: 1px #20202465 solid;
                                 border-radius: 4px;
                                 padding-left: 3px;
+                                padding: 2px;
                                 z-index: 9;
                                 top: 0;
 
@@ -4239,7 +4252,7 @@ body{
                                     border-radius: 3px;
 
                                     img{
-                                        width: 14px;
+                                        width: 19px;
                                     }
 
                                     &:hover{
@@ -4249,18 +4262,18 @@ body{
                                 // .delete{
                                     
                                 // }
-                                .share{
-                                    // display: flex;
-                                    // background-color: #346CAD;
-                                    img{
-                                        width: 22px;
-                                    }
-                                }
-                                .copy{
-                                    img{
-                                        width: 18px;
-                                    }
-                                }
+                                // .share{
+                                //     // display: flex;
+                                //     // background-color: #346CAD;
+                                //     img{
+                                //         width: 22px;
+                                //     }
+                                // }
+                                // .copy{
+                                //     img{
+                                //         width: 18px;
+                                //     }
+                                // }
 
                             }
                             .reply-container{
@@ -4268,9 +4281,12 @@ body{
                                 display: flex;
                                 // position: relative;
                                 flex-direction: row;
-                                padding: 4px 0px 4px 38px;
+                                padding: 0px 0px 0px 38px;
                                 align-items: center;
                                 cursor: pointer;
+                                z-index: 1;
+                                transition: .2s ease-in;
+
                                 .reply-wrapper{
                                     display: flex;
                                     flex-direction: row;
@@ -4282,6 +4298,8 @@ body{
                                     .replyee-pfp{
                                         width: 20px;
                                         height: 20px;
+                                        min-width: 20px;
+                                        min-height: 20px;
                                         border-radius: 100px;
                                         background-color: $primaryColor;
                                         background-repeat: no-repeat;
@@ -4298,16 +4316,28 @@ body{
                                     .replyee-msg-trim{
                                         color: $lightColor;
                                         font-size: 13px;
+                                        // background-color: orange;
+                                        padding: 0 !important;
+                                        display: flex !important;
+                                        flex-direction: row !important;
+                                        column-gap: 5px !important;
+
+                                        .time-stamp{
+                                            display: none !important;
+                                        }
+                                        img{
+                                            width: 12px !important;
+                                        }
                                     }
                                 }
                                 .link-node{
                                     width: 30px;
                                     // background-color: $primaryColor;
-                                    height: 30px;
+                                    height: 13px;
                                     position: absolute;
-                                    left: 20px;
-                                    top: 22px;
-                                    border-radius: 4px;
+                                    left: 26px;
+                                    top: 12px;
+                                    border-radius: 4px 0px 4px 0px;
                                     border-left: 2px $borderColor solid;
                                     border-top: 2px $borderColor solid;
                                     z-index: 1;
@@ -4320,28 +4350,47 @@ body{
                                 }
                             }
                             .msg-pf{
-                                // background-color: $compColor-2;
+                                // background-color: rgba(205, 188, 219, 0.089);
                                 display: flex;
+                                column-gap: 10px;
                                 flex-direction: row;
                                 align-items: center;
-                                column-gap: 10px;
-                                z-index: 3;
-                                .name{
-                                    color: $lightColor;
-                                    opacity: .5;
-                                    cursor: pointer;
-                                    &:hover{
-                                        opacity: .7;
+                                z-index: 5;
+                                border-radius: 3px;
+                                transition: .2s ease-in;
+                                padding: 0px 0px 0px 0px;
+
+                                .name-ts{
+                                    display: flex;
+                                    flex-direction: row;
+                                    align-items: center;
+                                    // background-color: rgba(0, 128, 0, 0.137);
+                                    .name{
+                                        color: rgba($color: $lightColor, $alpha: .6);
+                                        // opacity: .5;
+                                        cursor: pointer;
+                                        font-size: 17px;
+                                        font-weight: 700;
+                                        padding: 0px 10px 3px 0px;
+                                        &:hover{
+                                            opacity: .7;
+                                        }
+                                        &:active{
+                                            opacity: .8;
+                                        }
                                     }
-                                    &:active{
-                                        opacity: .8;
+                                    .time-stamp{
+                                        font-weight: 400;
+                                        font-size: 12px;
+                                        opacity: .3;
                                     }
+                                    
                                 }
                                 .pfp{
-                                    width: 30px;
-                                    min-width: 30px;
-                                    height: 30px;
-                                    min-height: 30px;
+                                    width: 40px;
+                                    min-width: 40px;
+                                    height: 40px;
+                                    min-height: 40px;
                                     display: flex;
                                     justify-content: center;
                                     align-items: center;
@@ -4351,26 +4400,44 @@ body{
                                     background-repeat: no-repeat;
                                     background-position: center;
                                     background-color: $primaryColor;
-                                    cursor: pointer;
-                                    
-                                &:hover{
-                                    opacity: .8;
-                                }
-
-                                &:active{
-                                    opacity:.9;
-                                }
                                 }
                             }
                             .msg{
                                 color: $lightColor;
-                                padding-left: 38px;
+                                padding-left: 0px;
                                 padding-right: 50px;
                                 font-family: inherit;
                                 font-size: 15px;
-                                // background-color: #3E3E45;
                                 .message-content{
                                     word-break: break;
+                                    display: flex;
+                                    flex-direction: row;
+                                    align-items: start;
+                                    column-gap: 5px;
+                                    // background-color: rgba(255, 166, 0, 0.199);
+                                    // margin-top: 3px;
+
+                                    .time-stamp{
+                                        width: 45px;
+                                        // background-color: #e7e3da42;
+                                        min-width: 45px;
+                                        max-width: 45px !important;
+                                        font-size: 13px;
+                                        text-align: center;
+                                        padding: 4px 0px 0px 0px !important;
+                                    }
+                                    .msg-body{
+                                        // background-color: orange;
+                                        display: flex;
+                                        flex-direction: row;
+                                        align-items: center;
+                                        column-gap: 5px;
+                                        color: $lightColor;
+
+                                        img{
+                                            width: 30px !important;
+                                        }
+                                    }
                                 }
                                 .attachment{
                                     margin-top: 4px;
@@ -4432,27 +4499,33 @@ body{
                                 }
                             }
                         }
+                        .msg-hover{
+                            background-color: rgba($color: $originBg, $alpha: .4) !important;
+                        }
                         .mention{
                             border-left: 2px $resReply solid;
                             background-color:rgba($color: $resReply, $alpha: .3);
                             padding-bottom: 10px;
+                            transition: .2s ease-in;
                         }
                         .reply{
                             border-left: 2px $primaryColor solid;
                             background-color: #b37bc71e;
                             padding-bottom: 10px;
+                            transition: .1s ease-in;
                         }
                         .res-reply{
                             border-left: 2px $resReply solid;
                             background-color:rgba($color: $resReply, $alpha: .2);
                             padding-bottom: 10px;
+                            transition: .1s ease-in;
                         }
                         .msg-redir{
                             border-left: 2px $redirColor solid;
                             background-color:rgba($color: $redirColor, $alpha: .2);
                             padding-bottom: 10px;
                             animation: 1s ease-out blick alternate;
-
+                            transition: .1s ease-in;
 
                             @keyframes blick {
                                 0% {
@@ -4478,7 +4551,13 @@ body{
                         }
                         &::-webkit-scrollbar-thumb {
                             width: 4px;
-                            background-color: $compColor-1;
+                            background-color: rgba($color: $primaryColor, $alpha: .1);
+                            transition: .2s ease-in;
+                            border-radius: 5px;
+
+                            &:active{
+                                opacity: .6;
+                            }
                         }
                     }
                     .reply-handle{

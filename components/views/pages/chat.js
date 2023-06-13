@@ -373,7 +373,6 @@ const chat = {
                             }
                         })
                     })
-                   
                 },
                 onSend: () => {
                     let fcRay = _lstrg.getItem('_fcRay');

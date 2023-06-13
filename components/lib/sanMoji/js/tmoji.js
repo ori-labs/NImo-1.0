@@ -2,20 +2,20 @@
 var twemoji = (function () {
   "use strict";
   var twemoji = {
-      base: "https://twemoji.maxcdn.com/v/14.0.2/",
-      ext: ".png",
-      size: "72x72",
-      className: "emoji",
-      convert: { fromCodePoint: fromCodePoint, toCodePoint: toCodePoint },
-      onerror: function onerror() {
-        if (this.parentNode) {
-          this.parentNode.replaceChild(createText(this.alt, false), this);
-        }
-      },
-      parse: parse,
-      replace: replace,
-      test: test,
+    base: "https://twemoji.maxcdn.com/v/14.0.2/",
+    ext: ".png",
+    size: "72x72",
+    className: "emoji",
+    convert: { fromCodePoint: fromCodePoint, toCodePoint: toCodePoint },
+    onerror: function onerror() {
+      if (this.parentNode) {
+        this.parentNode.replaceChild(createText(this.alt, false), this);
+      }
     },
+    parse: parse,
+    replace: replace,
+    test: test,
+  },
     escaper = {
       "&": "&amp;",
       "<": "&lt;",
@@ -192,6 +192,7 @@ var twemoji = (function () {
     if (!how || typeof how === "function") {
       how = { callback: how };
     }
+    console.log('hmmmm guessing the moji sizee')
     return (typeof what === "string" ? parseString : parseNode)(what, {
       callback: how.callback || defaultImageSrcGenerator,
       attributes:

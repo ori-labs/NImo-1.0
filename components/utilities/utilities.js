@@ -116,7 +116,7 @@ const utilities = {
                     <hr>
                     <div class="btn-cont" style="justify-content: ${type == 'alert' ? 'space-between' : 'center'}">
                         <button class="cancel  btn" id="alert-cancel" style="">${type == 'info'?'Okay':'Cancel'}</button>
-                        <button class="btn-primary" id="alert-confirm" style="display:${type == 'info' ? 'none' : 'block'}">Confirm</button>
+                        <button class="btn-primary confirm" id="alert-confirm" style="display:${type == 'info' ? 'none' : 'block'}">Confirm</button>
                     </div>
                 </div>
             </div>
@@ -278,7 +278,7 @@ const utilities = {
         
         let hours = date.getHours();
         const minutes = date.getMinutes();
-        const ampm = hours >= 12 ? 'pm' : 'am';
+        const ampm = hours >= 12 ? ' PM' : ' AM';
         
         hours %= 12;
         hours = hours || 12; // the hour '0' should be '12'
@@ -312,6 +312,10 @@ const utilities = {
     restrictSpaceCharacter: (input) => {
         const pattern = /[^\w]/;
         return !pattern.test(input);
+    },
+    isOnlyEmojis: (text)=>{
+        const emojiRegex = /^[\u{1F600}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{1F1E0}-\u{1F1FF}\u{1F191}-\u{1F251}\u{1F680}-\u{1F6FF}\u{1F1E6}-\u{1F1FF}]+$/u;
+        return emojiRegex.test(text);
     }
 }
 
