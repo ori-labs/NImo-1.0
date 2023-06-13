@@ -2,6 +2,7 @@
 import config from "../components/lib/sanMoji/js/config.js";
 import utilities from "../components/utilities/utilities.js";
 import Router from "../components/services/router/router.js";
+import fromNow from "../components/lib/sanMoji/js/timeSince.js";
 
 
 (function(uid){
@@ -55,10 +56,10 @@ import Router from "../components/services/router/router.js";
                 document.querySelector('#uid').innerHTML = `@${data.id}`;
                 document.querySelector('.h-prof-img').style.backgroundImage = `url(${data.userProfileAvatar === 'default' ? '../src/imgs/avatar.png' : data.userProfileAvatar})`;
                 document.querySelector('.h-prof-img').style.backgroundColor = `${data.userProfileBackDrop}`;
-    
-                lsDB.setItem('cache', [data.user, data.userProfileAvatar || null, data.userProfileBackDrop])
+                
+                lsDB.setItem('cache', `${data.user}?${data.userProfileAvatar}?${data.userProfileBackDrop}`);
                 lsDB.setItem('client', data.user);
-                lsDB.setItem('clientAvata', data.userProfileAvatar);
+                lsDB.setItem('clientAvatar', data.userProfileAvatar);
     
                 update_friends_and_rooms();
                 get_profile_data();
@@ -68,7 +69,7 @@ import Router from "../components/services/router/router.js";
                         <div class="profile-card-component profile-card hide fade-in" id="profile-card">
                             <div class="wrapper">
                                 <div class="banner-prof-cont">
-                                    <div class="banner" style="background-color: ${data.bannerColor}"></div>
+                                    <div class="banner" style="background-color: ${data.bannerColor} !important"></div>
                                     <div class="profile-cont">
                                         <span class="profile-holder" style="background-image:url('${data.userProfileAvatar == 'default' ? './src/imgs/avatar.png' : data.userProfileAvatar}')"></span>
                                     </div>
@@ -492,7 +493,7 @@ import Router from "../components/services/router/router.js";
                 let card = `
                     <div class="friend-card fade-in" id="fid-${friend_id}">
                         <div class="friend-pfp-cont tippy-tip" data-tippy-content="${friend_data.user}">
-                            <span class="f-pfp" style="background-image: url(${friend_data.userProfileAvatar == 'default' ? '/src/imgs/avatar.svg' : friend_data.userProfileAvatar});background-color: ${friend_data.userProfileBackDrop};"></span>
+                            <span class="f-pfp" style="background-image: url(${friend_data.userProfileAvatar == 'default' ? '/src/imgs/avatar.svg' : friend_data.userProfileAvatar});"></span>
                             <span class="bagde bg-primary">9+</span>
                         </div>
                         <!--<span class="f-uname">${friend_data.user}</span> -->
@@ -510,10 +511,10 @@ import Router from "../components/services/router/router.js";
                         .collection('remotes').doc(data_index.id).get().then(remote_data => {
                             const remote_data_val = remote_data.data();
                             if(remote_data_val.friend_id === uid){
-                                lsDB.setItem('remote_id', remote_data_val.remote_id);
                                 f_btn.addEventListener('click', async (e)=> {
-                                    e.preventDefault();
+                                    lsDB.setItem('remote_id', remote_data_val.remote_id);
                                     location.hash = `#?chat?fid=${friend_id}.${lsDB.getItem('remote_id')}`;
+                                    e.preventDefault();
                                 });
                             }
                         })
@@ -1772,7 +1773,6 @@ import Router from "../components/services/router/router.js";
                         let notification_type = history_data.type,
                             notification_id = history_data.notification_id,
                             remote_id = history_data.remote_id;
-
                         let card_view = `
                             <div class="notification-card fade-in" id="notification-card-${notification_id}">
                                 <div class="identifier-cont">
@@ -1851,7 +1851,7 @@ import Router from "../components/services/router/router.js";
                         </div>
                         <div class="input-container">
                         <div class="input-wrapper">
-                            <input type="text" id="msg_input" autofocus="true" placeholder="Message @User" />
+                            <textarea type="text" id="msg-input" autofocus="true" data-emojiable=true placeholder="Message @User"></textarea>
                             </div>
                             <span class="input-btn tippy-tip" id="img-toggle" data-tippy-content="Add attachment">
                                 <img src="/src/icons/file.svg" alt="🏞️" />
@@ -1926,7 +1926,7 @@ import Router from "../components/services/router/router.js";
         `;
         root.insertAdjacentHTML('beforeend', chat_wrapper);
 
-        let chat_input = document.querySelector('#msg_input');
+        let chat_input = document.querySelector('#msg-input');
 
 
         ((function(){
@@ -2071,17 +2071,17 @@ import Router from "../components/services/router/router.js";
             }
             function toggleMoji(){
                 let emoji_cont  = document.querySelector('#san-moji-snippet');
-
                 $('#moji-btn').on('click', () => {
                     $("#san-moji-snippet").disMojiPicker();
-                    twemoji.parse(document.body);
-                    $('#san-moji-snippet').picker(
+                    twemoji.parse(document.getElementById('san-moji-snippet'));
+                    log(document.body);
+                    $('#san-moji-snippet').picker   (
                         emoji => {
                             chat_input.value += `${emoji}`;
                             chat_input.focus();
                         }
                     )
-                    
+
                     let _width = document.documentElement.clientWidth,
                         _height = document.documentElement.clientHeight;
                     
@@ -2143,7 +2143,7 @@ import Router from "../components/services/router/router.js";
                 if (/^[a-zA-Z0-9]$/.test(key)) {
                     chat_input.focus();
                 }
-                if (key == ' ') {
+                if (key == ' ' || key == 'Enter') {
                     chat_input.focus();
                 }
             })
@@ -2155,21 +2155,27 @@ import Router from "../components/services/router/router.js";
             log(c_id + " = " + f_id);
             render_f_data(f_id);
             render_members_list(f_id);
+            render_messages(c_id, f_id);
+            on_send_message(c_id, f_id);
         }());
 
         function render_f_data(id){
+            log('getting user profile data... from :'+id)
+
             let f_pfp = document.getElementById('f-pfp'),
-                f_name = document.getElementById('f-name');
-            
+                f_name = document.getElementById('f-name'),
+                msg_input = document.getElementById('msg-input');
+
             fsDB.collection('client').doc('meta').collection(id).doc('meta_data').get()
             .then(data => {
                 const f_data = data.data();
 
                 f_pfp.style.backgroundImage = `url('${f_data.userProfileAvatar == 'default' ? './src/imgs/avatar.png' : f_data.userProfileAvatar}')`;
                 f_name.innerHTML = `${f_data.user}`;
+                msg_input.setAttribute('placeholder', `Message @${f_data.user}`)
 
                 let profile_card = `
-                        <div class="profile-card-component profile-card hide fade-in chat-profile-card" id="chat-profile-card">
+                        <div class="profile-card-component profile-card fade-in chat-profile-card" id="chat-profile-card">
                             <div class="wrapper">
                                 <div class="banner-prof-cont">
                                     <div class="banner" style="background-color: ${f_data.bannerColor}"></div>
@@ -2201,23 +2207,19 @@ import Router from "../components/services/router/router.js";
                             </div>
                         </div>
                     `;
-                root.insertAdjacentHTML('beforeend', profile_card);
 
-                let chat_profile_card_container = document.getElementById('chat-profile-card');
-    
                 f_pfp.addEventListener('click', () => {
-                    if(chat_profile_card_container.classList.contains('hide')){
-                        chat_profile_card_container.classList.remove('hide');
-                    }
+                    root.insertAdjacentHTML('beforeend', profile_card);
+                    let chat_profile_card_container = document.getElementById('chat-profile-card');
+                    document.addEventListener("mouseup", function(event) {
+                        if (!chat_profile_card_container.contains(event.target)) {
+                            chat_profile_card_container.remove();
+                        }
+                    });
                 });
-                document.addEventListener("mouseup", function(event) {
-                    if (!chat_profile_card_container.contains(event.target)) {
-                        chat_profile_card_container.classList.add('hide');
-                    }
-                });
-            })
+            });
         }
-        function render_members_list(fid){
+        function render_members_list(fid){            
             let member_list_container = document.getElementById('members_list_container');
             
             member_list_container.innerHTML = '';
@@ -2309,9 +2311,374 @@ import Router from "../components/services/router/router.js";
                                 member_profile_card_container.remove();
                             }
                         });
+                    });
+                });
+            }
+        }
+        function render_messages(cid, fid){
+            let msg_container = document.getElementById('msg-container');
+            const remote_id = lsDB.getItem('remote_id');
+            let is_left_shift = false;
+            
+            let switch_ray = 0;
+            fsDB.collection('client').doc('meta').collection(fid).doc('meta_data').get()
+            .then(meta_data => {
+                let friend_meta_data = meta_data.data();
+                fsDB.collection('client').doc('meta_index').collection(remote_id)
+                .orderBy("timestamp", "asc").onSnapshot(function(sn){
+                    sn.docChanges().forEach(function(ch){
+                        let data = ch.doc.data();
+                        log(data);
+                        if(ch.type == 'added'){
+                            data.maskID === uid && lsDB.getItem('switch_ray') === null ? lsDB.setItem('switch_ray', 1) : lsDB.setItem('switch_ray', 1);
+
+                            let time_stamp = data.date;
+                            let msg_card = `
+                                <div class="msg-card-component ${data.mention.includes(`@${lsDB.getItem('client')}`) ? 'mention' : 'hello'} ${data.reply.replyUserID == uid && data.maskID != uid ? 'res-reply' : 'normal'}" id="msg-card-${data.rayId}"
+                                    style="margin: ${data.switchRay==0?'0px':'5px'} 0px ${data.switchRay==0?'2px':'5px'} 0px;padding: ${data.switchRay==0?'3px':'8px'} 8px ${data.switchRay==0?'2px':'4px'} 8px;"
+                                >
+                                    <div class="message-btn-cont" style="display:none" id="msg-btn-cont-${data.rayId}">
+                                        <span class="btn share tippy-tip" id="reply-btn-${data.rayId}" data-tippy-content="Reply">
+                                            <img src="/src/icons/share.svg" /> 
+                                        </span>
+                                        <span class="btn copy tippy-tip" id="copy-btn-${data.rayId}" data-tippy-content="Copy">
+                                            <img src="/src/icons/copy.svg" /> 
+                                        </span>
+                                        <span class="btn delete tippy-tip" style="display:${data.maskID==uid?'block':'none'}" id="del-btn-${data.rayId}" data-tippy-content="Delete">
+                                            <img src="/src/icons/delete.svg" /> 
+                                        </span>
+                                    </div>
+                                    <div class="reply-container" style="display: ${data.reply.isReply == 'true' ? 'flex' : 'none'}" id="reply-redirect-${data.rayId}">
+                                        <div class="reply-wrapper">
+                                            <span class="replyee-pfp" style="background-image: url(${data.reply.replyUserAvatar != 'default' ? data.reply.replyUserAvatar : '/src/imgs/avatar.svg'});"></span>
+                                            <span class="replyee-uname">@${data.reply.replyUserName}</span>
+                                            <span class="replyee-msg-trim" id="reply-msg-${data.reply.replyId}">${document.getElementById(data.reply.replyId) != null ? data.reply.replyMsg : '<i>Message was deleted</i>'}</span>
+                                        </div>
+                                        <span class="link-node"></span>
+                                    </div>
+                                    <div class="msg-pf" style="display: ${data.switchRay == 0 ? 'none' : 'flex'}">
+                                        <span class="pfp" style="background-image: url(${data.maskID === uid ? (data.message.authorAvatar === 'default' ? '/src/imgs/avatar.svg' : lsDB.getItem('clientAvatar')) : (friend_meta_data.userProfileAvatar === 'default' ? '/src/imgs/avatar.svg' : friend_meta_data.userProfileAvatar)});"></span>
+                                        <span class="name-ts"><span class="name" id="pf-name-${data.rayId}">${data.message.author}</span><span class="time-stamp time">&nbsp;&nbsp;${utilities.formatDate(time_stamp.toDate())}</span></span>
+                                    </div>
+                                    <div class="msg">
+                                        <span class="message-content" id="msg-content-${data.rayId}">
+                                            <span class="time-stamp time" id="msg-time-stamp-${data.rayId}" style="visibility: hidden">${utilities.formatDate(time_stamp.toDate()).split(' @ ')[1]}</span>
+                                            <span class="msg-body" id="msg-body-${data.rayId}">${utilities.linkify(utilities.getmention(data.message.content))}</span>
+                                        </span>
+                                        <div class="attachment" style="display:${data.attachment.hasAttachment?'flex':'none'}">
+                                            <span class="attachment-img" style="background-image: url(${data.attachment.attachment});" id="attachment-${data.rayId}"></span>
+                                            <!-- <span class="desc" style="display: ${data.attachment.description != '' ? 'flex' : 'none'}">${data.attachment.description}</span> -->
+                                        </div>
+                                    </div>  
+                                </div>
+                                `
+                            msg_container.insertAdjacentHTML('beforeend', msg_card);
+                            
+                            msg_container.scrollTop = msg_container.scrollHeight;
+    
+                            let message_card = document.getElementById(`msg-card-${data.rayId}`),
+                                message_content = document.getElementById(`msg-content-${data.rayId}`),
+                                msg_body = document.getElementById(`msg-body-${data.rayId}`),
+                                reply_btn = document.getElementById(`reply-btn-${data.rayId}`),
+                                reply_handle = document.getElementById('reply-handle'),
+                                profile_name = document.getElementById(`pf-name-${data.rayId}`),
+                                reply_redirect = document.getElementById(`reply-redirect-${data.rayId}`),
+                                copy_btn = document.getElementById(`copy-btn-${data.rayId}`),
+                                delete_btn = document.getElementById(`del-btn-${data.rayId}`),
+                                attachment = document.getElementById(`attachment-${data.rayId}`),
+                                msg_time_stamp_comp = document.getElementById(`msg-time-stamp-${data.rayId}`);
+    
+                            // log(data.message.content);
+                            utilities.isOnlyEmojis(data.message.content) ? twemoji.parse(msg_body) : log('');
+                            // if (typeof document.hidden !== "undefined") {
+                            // // Add a listener for visibility change
+                            //     document.addEventListener("visibilitychange", handleVisibilityChange);
+                            // }
+                            // // Function to handle visibility change
+                            // function handleVisibilityChange() {
+                            //     if (document.visibilityState === "visible") {
+                            //         // The window is active
+                            //         console.log("Window is active");
+                                    
+                            //     } else {
+                            //         utilities.createNotification(
+                            //             data.user,
+                            //             data.message.content,
+                            //             data.message.authorAvatar || '/src/imgs/avatar.svg'
+                            //         )
+                            //         // The window is inactive
+                            //         console.log("Window is inactive");
+                            //     }
+                            // }
+                            (function(){
+                                document.addEventListener('keyup', (e) => {
+                                    if(e.key === 'Shift'){
+                                        is_left_shift = false;
+                                    }
+                                });
+                                document.addEventListener('keydown', (e)=> {
+                                    if(e.key === 'Shift'){
+                                        is_left_shift = true;
+                                    }
+                                });
+                                if(profile_name != null){
+                                    profile_name.addEventListener('click', () => {
+                                        chat_input.value += ` @${profile_name.innerText} `;
+                                    });
+                                }
+                                if(delete_btn != null){
+                                    delete_btn.addEventListener('click', () => {
+                                        if(is_left_shift){
+                                            delete_msg();
+                                        }else{
+                                            utilities.alert(
+                                                'Are you sure you want to delete this message?',
+                                                'alert',
+                                                () => {
+                                                    delete_msg();
+                                                }
+                                            )
+                                        }
+                                    });
+
+                                    function delete_msg(){
+                                        fsDB.collection('client').doc('meta_index').collection(remote_id).doc(data.rayId).delete()
+                                        .then().catch(() => {
+                                            utilities.alert(
+                                                'Opps! Couldn\'t perfom the action, try again later.',
+                                                'info',
+                                                () => {}
+                                            )
+                                        })
+                                    }
+                                }
+                                if(reply_btn != null){
+                                    reply_btn.addEventListener('click', ()=> {
+                                        console.log(`msg-card-${data.rayId}`);
+                                        chat_input.focus();
+                                        let replyID = `msg-card-${data.rayId}`, 
+                                            isReply = true,
+                                            replyMsg = document.getElementById(`msg-content-${data.rayId}`).innerHTML,
+                                            replyUserAvatar = data.message.authorAvatar,
+                                            replyUserName = data.message.author,
+                                            replyUserID = data.maskID;
+                                        
+                                        console.log(replyID,isReply,replyMsg,replyUserAvatar,replyUserName);
+                                        
+                                        lsDB.setItem('reply_id', replyID);
+                                        lsDB.setItem('is_reply', isReply);
+                                        lsDB.setItem('reply_msg', data.attachment.hasAttachment ? 'Attachment' : replyMsg);
+                                        lsDB.setItem('reply_avatar', replyUserAvatar);
+                                        lsDB.setItem('reply_username', replyUserName);
+                                        lsDB.setItem('reply_user_id', replyUserID);
+                                        lsDB.setItem('_metaSwitch', lsDB.getItem('switch_ray'))
+                                        
+                                        setTimeout(() => {
+                                            lsDB.setItem('switch_ray', 1);
+                                        }, 100);
+    
+                                        if(reply_handle != null){
+                                            reply_handle.style.display = 'flex';
+                                            reply_handle.innerHTML = `
+                                                <span class="r-text">Replying to <b>${data.message.author}</b></span>
+                                                    <span class="r-close-btn" id="r-close-btn">
+                                                    <img src="/src/icons/close-fill.svg" />
+                                                </span>`;
+    
+                                            if(document.querySelector('.reply') != null){
+                                                document.querySelector('.reply').classList.remove('reply')
+                                            }
+                                            message_card.classList.add('reply');
+                                            document.getElementById('r-close-btn')
+                                            .addEventListener('click', ()=> {
+                                                reply_handle.style.display = 'none';
+                                                if(document.querySelector('.reply') != null){
+                                                    document.querySelector('.reply').classList.remove('reply')
+                                                }
+                                                (function(){
+                                                    lsDB.removeItem('reply_id');
+                                                    lsDB.removeItem('is_reply');
+                                                    lsDB.removeItem('reply_msg');
+                                                    lsDB.removeItem('reply_avatar');
+                                                    lsDB.removeItem('reply_username'),
+                                                    lsDB.removeItem('replyUserProfileBackDrop');
+                                                    lsDB.removeItem('reply_user_id');
+                                                    if(lsDB.getItem('_metaSwitch') == 1){
+                                                        lsDB.setItem('switch_ray', 1);
+                                                    }else{
+                                                        lsDB.setItem('switch_ray', 0);
+                                                    }
+                                                }());
+                                            })
+                                        }
+                                    })
+                                }
+                                if(message_card != null){
+                                    message_card.addEventListener('mouseover', (e) => {
+                                        e.preventDefault();
+                                        let btn_cont = document.getElementById(`msg-btn-cont-${data.rayId}`)
+
+                                        btn_cont.style.display = 'flex';
+                                        message_card.classList.add('msg-hover');
+                                        msg_time_stamp_comp.style.visibility = `${data.switchRay == 1 ? 'hidden' : 'visible'}`
+                                        
+                                        message_card.addEventListener('mouseleave', (e) => {
+                                            e.preventDefault();
+                                            btn_cont.style.display = 'none';
+                                            message_card.classList.remove('msg-hover');
+                                            msg_time_stamp_comp.style.visibility = 'hidden'
+                                        })
+                                    })
+                                }
+                                if(reply_redirect != null){
+                                    reply_redirect.addEventListener('click', (e) => {
+                                        e.preventDefault();
+                                        const msgId = data.reply.replyId;
+    
+                                        if(document.getElementById(msgId) != null){
+                                            message_content.querySelector(`#${msgId}`).classList.add('msg-redir')
+                                            console.log(message_content.querySelector(`#${msgId}`).classList);
+                                            document.getElementById(msgId).scrollIntoView();
+                                            setTimeout(() => {
+                                                message_content.querySelector(`#${msgId}`).classList.remove('msg-redir')
+                                            }, 2000)
+                                        }
+                                    })
+                                }
+                                if(copy_btn != null){
+                                    copy_btn.addEventListener('click', (e) => {
+                                        e.preventDefault();
+                                        const cpMsg = document.getElementById(`msg-card-${data.rayId}`);
+                                        log(cpMsg.innerText)
+                                        navigator.clipboard.writeText(cpMsg.querySelector('.message-content').innerText)
+                                        .then(()=> {log('coppied')}).catch((err) =>{})
+                                    })
+                                }
+                                if(attachment != null){
+                                    attachment.addEventListener('click', (e)=> {
+                                        e.preventDefault();
+                                        let focusCont = document.getElementById('focus-cont'),
+                                        focus = document.getElementById('focus-img'),
+                                        focusCap = document.getElementById('caption'),
+                                        focusSaveBtn = document.getElementById('save-img-btn');
+    
+                                        if(focusCont != null){
+                                            focusCont.style.display = 'flex';
+                                            focus.style.backgroundImage = `url('${data.attachment.attachment}')`;
+                                            focusCap.innerHTML = data.attachment.description || 'Unknown';
+    
+                                            focusSaveBtn.addEventListener('click', ()=> {
+                                                console.log(data.attachment.attachment)
+                                            })
+                                        }
+                                    })
+                                }
+                            }())
+                        }
+                        if(ch.type == 'modified'){
+                            
+                        }
+                        if(ch.type == 'removed'){
+                            if(document.getElementById(`msg-card-${data.rayId}`) != null){
+                                document.getElementById(`msg-card-${data.rayId}`).remove();
+                            }
+                        }
                     })
                 })
-            }
+            })
+        }
+        function on_send_message(cid, fid){
+            let reply_component = document.getElementById('reply-handle');
+
+            document.addEventListener('keyup', function(e){
+                e.preventDefault();
+                if(e.key == 'Enter' || e.keyCode === 13){
+                    let input_value = chat_input.value.trim().trimStart();
+
+                    if(input_value.length > 0 || lsDB.getItem('has_attachement') != null){
+                        log(input_value);
+                        log('valid')
+                        
+                        let msg = chat_input.value,
+                            date = new Date(),
+                            cache = lsDB.getItem('cache'),
+                            cache_data = cache.split('?'),
+                            daemon = lsDB.getItem('deamon'),
+                            desc = lsDB.getItem('description');
+
+                        const ray_id = utilities.rayId();
+                        fsDB.collection('client').doc('meta_index').collection(cid).doc(ray_id)
+                        .set(
+                            {
+                                id: `${fid}.${cid}`,
+                                maskID: `${uid}`,
+                                switchRay: lsDB.getItem('switch_ray'),
+                                rayId: `${ray_id}`,
+                                type: 'default',
+                                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                date: date,
+                                mention: utilities.hasMention(msg),
+                                attachment: {
+                                    hasAttachment: lsDB.getItem('has_attachement') || false,
+                                    attachment: lsDB.getItem('attachment') || 'none',
+                                    description: desc || '',
+                                },
+                                reply: {
+                                    isReply: lsDB.getItem('is_reply') || false,
+                                    replyId: lsDB.getItem('reply_id') || '',
+                                    replyMsg: lsDB.getItem('reply_msg') == 'Attachment' ? 'Attachment' : lsDB.getItem('reply_msg'),
+                                    replyUserName: lsDB.getItem('reply_username') || '',
+                                    replyUserAvatar: lsDB.getItem('reply_avatar') || '',
+                                    replyUserID: lsDB.getItem('reply_user_id') || '',
+                                },
+                                message: {
+                                    author: `${cache_data[0]}`,
+                                    authorBackdrop: `${cache_data[2]}`,
+                                    authorAvatar: `${cache_data[1]}`,
+                                    content: `${msg}` || '',
+                                    timeStamp: `${date}`,
+                                }
+                            }
+                        ).then(() => {
+                            log('sent 📩')
+                            lsDB.getItem('switch_ray') == null ? lsDB.setItem('switch_ray', 1) : lsDB.setItem('switch_ray', 0);
+                        }).catch(error => {
+                            log('something went wrong try again later');
+                        });
+                        chat_input.value = '';
+                        clear_cache();
+
+                        function clear_cache(){
+                            if(document.querySelector('.reply') != null){
+                                document.querySelector('.reply').classList.remove('reply')
+                            }
+                            lsDB.removeItem('is_reply');
+                            lsDB.removeItem('reply_id');
+                            lsDB.removeItem('reply_msg');
+                            lsDB.removeItem('reply_username');
+                            lsDB.removeItem('reply_avatar');
+                            lsDB.removeItem('reply_user_id');
+                            lsDB.removeItem('has_attachement');
+                            lsDB.removeItem('attachment');
+                            lsDB.removeItem('description');
+
+                            if(document.getElementById('image-picker-cont') != null){
+                                document.getElementById('image-picker-cont').style.display = 'none';
+                                document.getElementById('img-picker').style.display = 'none';
+                                document.getElementById('img-displayer').style.display = 'none';
+                                document.getElementById('spin').style.display = 'flex'
+                            }
+                            if(reply_component != null){
+                                reply_component.style.display = 'none';
+                                reply_component.innerHTML = '';
+                            }
+                        }
+                    }else{
+                        log(input_value);
+                        log('invalid')
+                    }
+                }
+            });
         }
     }
     function render_room(){
