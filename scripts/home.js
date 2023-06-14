@@ -1851,14 +1851,15 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                         </div>
                         <div class="input-container">
                         <div class="input-wrapper">
-                            <textarea type="text" id="msg-input" autofocus="true" data-emojiable=true placeholder="Message @User"></textarea>
+                            <input type="text" id="msg-input" autocomplete="off" autofocus="true" data-emojiable=true placeholder="Message @User" />
                             </div>
-                            <span class="input-btn tippy-tip" id="img-toggle" data-tippy-content="Add attachment">
+                            <label for="me" class="input-btn tippy-tip" id="img-toggle" data-tippy-content="Upload media">
                                 <img src="/src/icons/file.svg" alt="🏞️" />
-                            </span>     
+                            </label>     
                             <span class="input-btn tippy-tip" id="moji-btn" data-tippy-content="Emoji">
                                 <img src="/src/icons/moji.svg" alt="😄" />
-                            </span>                               
+                            </span>
+                            <input type="file" id="me" hidden accept="image/png, image/jpeg"/>                               
                         </div>
                     </div>
                     <span class="spike"></span> 
@@ -1881,46 +1882,21 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                         </div>
                     </div>
                 </div>
-                <div class="image-input-wrapper" id="image-picker-cont">
-                    <div class="image-picker" id="img-picker">
-                        <div class="picker-wrapper">
-                            <div class="picker-cont">
-                                <label for="image-file" class="picker">
-                                    <img src="/src/icons/upload.svg" />
-                                </label>
-                                <input type="file" id="image-file" hidden accept="image/png, image/jpeg"/>
-                            </div>
-                            <span>Click to upload file</span>
-                        </div>
-                    </div>
+                <div class="image-input-wrapper fade-in" id="image-picker-cont">
                     <div class="image-displayer" id="img-displayer">
-                        <div class="displayer" id="displayer" style="background-image:url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.KvgBcaaAFQGRpQivDROUdQHaE7%26pid%3DApi&f=1&ipt=1936762ebdbd41e8cb28f931b534faa599ee38e9225259a1aadeb6f27987d09d&ipo=images')">
+                        <div class="displayer" id="displayer">
                             <span class="display-layer-prog" id="_prog-layer"></span>
                         </div>
-                        <input class="descr" id="file-desc" placeholder="  Enter description"></input>
+                        <input class="descr" id="file-desc" placeholder="Enter description" readonly></input>
                         <div class="prog-cont">
                             <span class="prog-bg">
                                 <span class="prog-bar" id="_prog-bar"></span>
                             </span>
                         </div>
-                        <span class="cancel-btn" id="cancel-btn">
+                        <span class="cancel-btn tippy-tip" id="cancel-btn" data-tippy-content="Cancel">
                             <img src="/src/icons/cancel.svg" />
                         </span>
                     </div>
-                    <div class="image-picker-error" id="img-picker-error">
-                        <div class="picker-wrapper">
-                            <div class="picker-cont">
-                                <label for="image-file" class="picker">
-                                    <img src="/src/icons/retry.svg" />
-                                </label>
-                                <input type="file" id="image-file" hidden accept="image/png, image/jpeg"/>
-                            </div>
-                            <span>Something went wrong!</span>
-                        </div>
-                    </div>
-                    <span class="spinn" id="spin">
-                        <img src="/src/assets/spinner-1.svg" />
-                    </span>
                 </div>
             </div>
         `;
@@ -1928,237 +1904,283 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
 
         let chat_input = document.querySelector('#msg-input');
 
+        const c_id = location.hash.split('?')[2].split('=')[1].split('.')[1];
+        const f_id = location.hash.split('?')[2].split('=')[1].split('.')[0];
 
-        ((function(){
-            $('.back-btn').on('click', () =>{
-                history.back();
+        media_picker();
+        emoji_picker_toggle();
+        render_f_data(f_id);
+        render_members_list(f_id);
+        render_messages(c_id, f_id);
+        on_send_message(c_id, f_id);
+
+        $('.back-btn').on('click', () =>{
+            history.back();
+        });
+        document.addEventListener('keydown', (e)=>{
+            let key = e.key;
+            if (/^[a-zA-Z0-9]$/.test(key)) {
+                chat_input.focus();
+            }
+        });
+
+        function media_picker(){
+            clear();
+
+            let image_picker_cont = document.getElementById('image-picker-cont'),
+                img_displayer = document.getElementById('img-displayer'),
+                img_input = document.getElementById('me'),
+                displayer = document.getElementById('displayer'),
+                cancel_btn = document.getElementById('cancel-btn');
+
+            // img_toggler.addEventListener('click', (e) => {
+            //     e.preventDefault();
+            //     // if(image_picker_cont.style.display !== 'flex'){
+            //     //     image_picker_cont.style.display = 'flex';
+            //     //     setTimeout(() => {
+            //     //         picker_spinner.style.display = 'none';
+            //     //         if(img_displayer.style.display != 'flex'){
+            //     //             img_picker.style.display = 'flex';
+            //     //         }
+            //     //     }, 300)
+            //     //     if(image_picker_cont.style.display !== 'none'){
+            //     //         if(img_displayer.style.display != 'flex'){
+            //     //             events.onElementClose(() => {
+            //     //                 if(img_picker.style.display != 'none'){
+            //     //                     img_picker.style.display = 'none';
+            //     //                     image_picker_cont.style.display = 'none';
+            //     //                     picker_spinner.style.display = 'flex';
+            //     //                 }else{
+            //     //                     return;
+            //     //                 }
+            //     //             })
+            //     //             events.outClick(image_picker_cont.id, () => {
+            //     //                 if(img_picker.style.display != 'none'){
+            //     //                     img_picker.style.display = 'none';
+            //     //                     image_picker_cont.style.display = 'none';
+            //     //                     picker_spinner.style.display = 'flex';
+            //     //                 }else{
+            //     //                     return;
+            //     //                 }
+            //     //             })
+            //     //         }else{
+            //     //             return;
+            //     //         }
+            //     //     }
+            //     // }
+            // })
+
+            cancel_btn.addEventListener('click', (e) =>{
+                image_picker_cont.style.display = 'none';
+                clear();
+                e.preventDefault();
             })
-            // toggleImgPicker();
-            toggleMoji();
-            function toggleImgPicker(){
-                let img_toggler = document.getElementById('img-toggle'),
-                    image_picker_cont = document.getElementById('image-picker-cont'),
-                    picker_spinner = document.getElementById('spin'),
-                    img_picker = document.getElementById('img-picker'),
-                    img_displayer = document.getElementById('img-displayer'),
-                    img_input = document.getElementById('image-file'),
-                    displayer = document.getElementById('displayer'),
-                    picker_error = document.getElementById('img-picker-error'),
-                    cancel_btn = document.getElementById('cancel-btn');
 
-                img_toggler.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if(image_picker_cont.style.display !== 'flex'){
-                        image_picker_cont.style.display = 'flex';
-                        setTimeout(() => {
-                            picker_spinner.style.display = 'none';
-                            if(imgdisplayer.style.display != 'flex'){
-                                img_picker.style.display = 'flex';
-                            }
-                        }, 300)
-                        if(image_picker_cont.style.display !== 'none'){
-                            if(imgdisplayer.style.display != 'flex'){
-                                events.onElementClose(() => {
-                                    if(img_picker.style.display != 'none'){
-                                        img_picker.style.display = 'none';
-                                        image_picker_cont.style.display = 'none';
-                                        picker_spinner.style.display = 'flex';
-                                    }else{
-                                        return;
-                                    }
-                                })
-                                events.outClick(image_picker_cont.id, () => {
-                                    if(img_picker.style.display != 'none'){
-                                        img_picker.style.display = 'none';
-                                        image_picker_cont.style.display = 'none';
-                                        picker_spinner.style.display = 'flex';
-                                    }else{
-                                        return;
-                                    }
-                                })
-                            }else{
-                                return;
-                            }
-                        }
-                    }
-                })
+            img_input.addEventListener('change', function(e){
+                image_picker_cont.style.display = 'flex';
+                get_media();
+                e.preventDefault();
+            })
 
-                cancel_btn.addEventListener('click', (e) =>{
-                    e.preventDefault();
+            async function get_media(){
+                img_displayer.style.display = 'flex';
+                
+                const files = img_input.files[0];
 
-                    if(imgdisplayer.style.display != 'none'){
-                        imgdisplayer.style.display = 'none';
-                        img_picker.style.display = 'flex';
-                        picker_error.style.display = 'none';
-                    }
-                    lsDB.removeItem('attachment');
-                    lsDB.removeItem('hasAttachment');
-                    lsDB.removeItem('desc');
-                })
+                let media_description = document.getElementById('file-desc');
 
-                let _uid = lsDB.getItem('deamon');
+                   
+                // console.log("FileName", files)
+                // const uploadTask = _fstrg.ref(`client/${_uid}`).child(files.name).put(files);
 
-                img_input.addEventListener('change', () => {
-                    _gImgData();
-                })
-
-                function _gImgData(){
-                    picker_error.style.display = 'none';
-                    img_picker.style.display = 'none';
-                    imgdisplayer.style.display = 'flex';
-                    
-                    const files = img_input.files[0];
-
-                    let _progLayer = document.getElementById('_prog-layer'),
-                        _progBar = document.getElementById('_prog-bar'),
-                        _fileDesc = document.getElementById('file-desc');
-
-                    console.log("FileName", files)
-                    const uploadTask = _fstrg.ref(`client/${_uid}`).child(files.name).put(files);
-
-                    uploadTask.on('state_changed', (snapshot) => {
-                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            
-                            let _height_ = (Math.floor(progress) * 70) / 100;
-                            let _cheight = Math.floor(70 - (Math.floor(progress) * 70) / 100)
-
-                            _progLayer.style.height = `${_cheight}px`;
-                            _progBar.style.width = `${Math.floor(progress)}%`;
-                            if(Math.floor(progress) == 100){
-                                _progBar.classList.add('loading');
-                            }
-                        },
-                        (error) => {
-                            if(imgdisplayer.style == 'flex'){
-                                imgdisplayer.style.display = 'none';
-                                picker_error.style.display = 'flex';
-                            }
-                            worker._sn._Err('Couldn\'t upload the image, please try again later!', _errH);
-                            console.log("error:-", error)
-                        },
-                        () => {
-                            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                                 document.querySelector('.prog-bg').style.display = 'none';
-                                 _progBar.classList.remove('loading')
-                                console.log('File available at', downloadURL);
-                                let attachment = downloadURL.toString(),
-                                    hasAttachment = true,
-                                    desc =  _fileDesc.value;
-
-                                lsDB.setItem('hasAttachment', hasAttachment);
-                                lsDB.setItem('attachment', attachment);
-                                lsDB.setItem('description', files.name);
-                            });
-                        }
-                    )
-                    if(files){
-                        const _fReader = new FileReader();
-                        _fReader.readAsDataURL(files);
-                        _fileDesc.value = files.name
-                        _fReader.addEventListener('load', function(){
-                            displayer.style.backgroundImage = `url('${this.result}')`;
-                            displayer.style.backgroundSize = 'cover';
-                            displayer.style.backgroundPosition = 'center';
-                        })
-                        // _fileDesc.innerText = utilities.trimFileName(files.name)
+                // uploadTask.on('state_changed', (snapshot) => {
+                //         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         
-                        _fileDesc.addEventListener('input', () => {
-                            lsDB.setItem('desc', _fileDesc.value);
-                            console.log(_fileDesc.value)
-                        }) 
+                //         let _height_ = (Math.floor(progress) * 70) / 100;
+                //         let _cheight = Math.floor(70 - (Math.floor(progress) * 70) / 100)
+
+                //         _progLayer.style.height = `${_cheight}px`;
+                //         _progBar.style.width = `${Math.floor(progress)}%`;
+                //         if(Math.floor(progress) == 100){
+                //             _progBar.classList.add('loading');
+                //         }
+                //     },
+                //     (error) => {
+                //         if(imgdisplayer.style == 'flex'){
+                //             imgdisplayer.style.display = 'none';
+                //             picker_error.style.display = 'flex';
+                //         }
+                //         worker._sn._Err('Couldn\'t upload the image, please try again later!', _errH);
+                //         console.log("error:-", error)
+                //     },
+                //     () => {
+                //         uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                //              document.querySelector('.prog-bg').style.display = 'none';
+                //              _progBar.classList.remove('loading')
+                //             console.log('File available at', downloadURL);
+                //             let attachment = downloadURL.toString(),
+                //                 hasAttachment = true,
+                //                 desc =  media_description.value;
+
+                //             lsDB.setItem('hasAttachment', hasAttachment);
+                //             lsDB.setItem('attachment', attachment);
+                //             lsDB.setItem('description', files.name);
+                //         });
+                //     }
+                // )
+                if(files){
+                    const file_reader = new FileReader();
+                    file_reader.readAsDataURL(files);
+                    media_description.value = files.name;
+
+                    const file_size = utilities.bytesToMb(files.size);
+
+
+                    log(file_size+'mbs');
+
+                    if(file_size > 3){
+                        log('oii the file too big for our server to handle');
+
+                        utilities.alert(
+                            'File is too large, file should only be less than 3 Megabytes.',
+                            'info',
+                            () => {
+                            }
+                        )
+                        image_picker_cont.style.display = 'none';
+                    }else{
+                        file_reader.addEventListener('load', function(){
+                            const is_media_image = utilities.isImageMedia(this.result);
+                            
+                            let isImage = is_media_image;
+                            if(is_media_image){
+                                utilities.getImageRes(this.result)
+                                .then(resolution => {
+                                    let attachment = this.result,
+                                        width = is_media_image ? resolution.width : null,
+                                        height = is_media_image ? resolution.height : null,
+                                        description = media_description.value;
+        
+                                        try {
+                                            lsDB.setItem('attachment', attachment);
+                                            lsDB.setItem('has_attachment', true);
+                                            lsDB.setItem('width', width);
+                                            lsDB.setItem('height', height);
+                                            lsDB.setItem('is_image', isImage);
+                                            lsDB.setItem('description', description);
+                                        } catch (error) {
+                                            clear();
+                                            image_picker_cont.style.display = 'none';
+                                        }
+                                }).catch(err => {
+                                    log('stuff happend..')
+                                });
+                            }else{
+                                try {
+                                    lsDB.setItem('attachment', this.result);
+                                    lsDB.setItem('has_attachment', true);
+                                    lsDB.setItem('is_image', isImage);
+                                    lsDB.setItem('description', media_description.value);
+                                } catch (error) {
+                                    clear();
+                                    image_picker_cont.style.display = 'none';
+                                }
+                            }
+    
+                            if(is_media_image){
+                                displayer.style.backgroundImage = `url('${this.result}')`;
+                            }else{
+                                displayer.style.backgroundImage = `url('/src/assets/file.svg')`;
+                            }
+                            log(this.result)
+                        })
+                        // media_description.innerText = utilities.trimFileName(files.name)
+                        
+                        media_description.addEventListener('input', () => {
+                            lsDB.setItem('description', media_description.value);
+                        });
+                        log('hmmm piece \'o cake')
                     }
                 }
             }
-            function toggleMoji(){
-                let emoji_cont  = document.querySelector('#san-moji-snippet');
-                $('#moji-btn').on('click', () => {
-                    $("#san-moji-snippet").disMojiPicker();
-                    twemoji.parse(document.getElementById('san-moji-snippet'));
-                    log(document.body);
-                    $('#san-moji-snippet').picker   (
-                        emoji => {
-                            chat_input.value += `${emoji}`;
-                            chat_input.focus();
-                        }
-                    )
+            
+            function clear(){
+                lsDB.removeItem('attachment');
+                lsDB.removeItem('has_attachment');
+                lsDB.removeItem('description');
+                lsDB.removeItem('is_image');
+                lsDB.removeItem('width');
+                lsDB.removeItem('height');
+            }
+        }
+        function emoji_picker_toggle(){
+            let emoji_cont  = document.querySelector('#san-moji-snippet');
+            $('#moji-btn').on('click', () => {
+                $("#san-moji-snippet").disMojiPicker();
+                twemoji.parse(document.getElementById('san-moji-snippet'));
+                log(document.body);
+                $('#san-moji-snippet').picker   (
+                    emoji => {
+                        chat_input.value += `${emoji}`;
+                        chat_input.focus();
+                    }
+                )
 
-                    let _width = document.documentElement.clientWidth,
-                        _height = document.documentElement.clientHeight;
-                    
-                    emoji_cont.style.display = emoji_cont.style.display != 'flex' ? 'flex' : 'none';
-                    
-                    let mojiPicker = document.querySelector('.emoji-picker');
-                    let pos = mojiPicker.getBoundingClientRect();
+                let _width = document.documentElement.clientWidth,
+                    _height = document.documentElement.clientHeight;
+                
+                emoji_cont.style.display = emoji_cont.style.display != 'flex' ? 'flex' : 'none';
+                
+                let mojiPicker = document.querySelector('.emoji-picker');
+                let pos = mojiPicker.getBoundingClientRect();
 
-                    emoji_cont.style.top = `${_height - pos.height - 60}px`;
-                    emoji_cont.style.left = `${_width - (350 * 2) + 75}px`;
+                emoji_cont.style.top = `${_height - pos.height - 60}px`;
+                emoji_cont.style.left = `${_width - (350 * 2) + 75}px`;
 
-                    if(pos.height + pos.y >= _height){
-                        emoji_cont.style.top = `${_height - pos.height - 68}px`;
-                        console.log('greater than height with', _height+pos.height);
-                    };
+                if(pos.height + pos.y >= _height){
+                    emoji_cont.style.top = `${_height - pos.height - 68}px`;
+                    console.log('greater than height with', _height+pos.height);
+                };
 
-                    document.addEventListener("mouseup", function(event) {
-                        if (!emoji_cont.contains(event.target)) {
-                            emoji_cont.style.display = 'none';
-                            emoji_cont.innerHTML = '';
-                        }
-                    });
-                    chat_input.addEventListener('keyup', ()=> {
+                document.addEventListener("mouseup", function(event) {
+                    if (!emoji_cont.contains(event.target)) {
                         emoji_cont.style.display = 'none';
                         emoji_cont.innerHTML = '';
-                    });
-                    
+                    }
                 });
-                // document.querySelector('#moji-btn')
-                // .addEventListener('click', ()=> {
-                //     let _width = document.documentElement.clientWidth,
-                //         _height = document.documentElement.clientHeight;
-                    
-                //     emoji_cont.style.display = 'flex';
-                    
-                //     let mojiPicker = document.querySelector('.emoji-picker');
-                //     let pos = mojiPicker.getBoundingClientRect();
-                //     // emoji_cont.style.top = `${(_height - 400)}px`
-                //     emoji_cont.style.top = `${_height - pos.height - 68}px`;
-                //     emoji_cont.style.left = `${_width - pos.width - 38}px`;
+                chat_input.addEventListener('keyup', ()=> {
+                    emoji_cont.style.display = 'none';
+                    emoji_cont.innerHTML = '';
+                });
+                
+            });
+            // document.querySelector('#moji-btn')
+            // .addEventListener('click', ()=> {
+            //     let _width = document.documentElement.clientWidth,
+            //         _height = document.documentElement.clientHeight;
+                
+            //     emoji_cont.style.display = 'flex';
+                
+            //     let mojiPicker = document.querySelector('.emoji-picker');
+            //     let pos = mojiPicker.getBoundingClientRect();
+            //     // emoji_cont.style.top = `${(_height - 400)}px`
+            //     emoji_cont.style.top = `${_height - pos.height - 68}px`;
+            //     emoji_cont.style.left = `${_width - pos.width - 38}px`;
 
-                //     // events.onElementClose(emoji_cont);
-                //     // events.outClick(emoji_cont.id);
+            //     // events.onElementClose(emoji_cont);
+            //     // events.outClick(emoji_cont.id);
 
-                //     if(pos.height + pos.y >= _height){
-                //         emoji_cont.style.top = `${_height - pos.height - 68}px`;
-                //         console.log('greater than height with', _height+pos.height);
-                //     }
-                // })
-                // $("#san-moji-snippet").disMojiPicker();
-                // // twemoji.parse(document.body);
-                // $('#san-moji-snippet').picker(
-                //     emoji => document.getElementById('msg_input').value += `${emoji} `
-                // )
-            };
-
-            document.addEventListener('keydown', (e)=>{
-                let key = e.key;
-                if (/^[a-zA-Z0-9]$/.test(key)) {
-                    chat_input.focus();
-                }
-                if (key == ' ' || key == 'Enter') {
-                    chat_input.focus();
-                }
-            })
-        }()));
-        (function(){
-            const c_id = location.hash.split('?')[2].split('=')[1].split('.')[1];
-            const f_id = location.hash.split('?')[2].split('=')[1].split('.')[0];
-
-            log(c_id + " = " + f_id);
-            render_f_data(f_id);
-            render_members_list(f_id);
-            render_messages(c_id, f_id);
-            on_send_message(c_id, f_id);
-        }());
-
+            //     if(pos.height + pos.y >= _height){
+            //         emoji_cont.style.top = `${_height - pos.height - 68}px`;
+            //         console.log('greater than height with', _height+pos.height);
+            //     }
+            // })
+            // $("#san-moji-snippet").disMojiPicker();
+            // // twemoji.parse(document.body);
+            // $('#san-moji-snippet').picker(
+            //     emoji => document.getElementById('msg_input').value += `${emoji} `
+            // )
+        }
         function render_f_data(id){
             log('getting user profile data... from :'+id)
 
@@ -2333,6 +2355,8 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                             data.maskID === uid && lsDB.getItem('switch_ray') === null ? lsDB.setItem('switch_ray', 1) : lsDB.setItem('switch_ray', 1);
 
                             let time_stamp = data.date;
+
+                            let img_aspect_ratio = data.attachment.hasAttachment ? data.attachment.width / data.attachment.height : null;
                             let msg_card = `
                                 <div class="msg-card-component ${data.mention.includes(`@${lsDB.getItem('client')}`) ? 'mention' : 'hello'} ${data.reply.replyUserID == uid && data.maskID != uid ? 'res-reply' : 'normal'}" id="msg-card-${data.rayId}"
                                     style="margin: ${data.switchRay==0?'0px':'5px'} 0px ${data.switchRay==0?'2px':'5px'} 0px;padding: ${data.switchRay==0?'3px':'8px'} 8px ${data.switchRay==0?'2px':'4px'} 8px;"
@@ -2365,9 +2389,12 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                                             <span class="time-stamp time" id="msg-time-stamp-${data.rayId}" style="visibility: hidden">${utilities.formatDate(time_stamp.toDate()).split(' @ ')[1]}</span>
                                             <span class="msg-body" id="msg-body-${data.rayId}">${utilities.linkify(utilities.getmention(data.message.content))}</span>
                                         </span>
-                                        <div class="attachment" style="display:${data.attachment.hasAttachment?'flex':'none'}">
-                                            <span class="attachment-img" style="background-image: url(${data.attachment.attachment});" id="attachment-${data.rayId}"></span>
-                                            <!-- <span class="desc" style="display: ${data.attachment.description != '' ? 'flex' : 'none'}">${data.attachment.description}</span> -->
+                                        <div class="attachment ${img_aspect_ratio === 19/6 ? 'aspect-ratio-19-6' : img_aspect_ratio === 1 ? 'aspect-ratio-1-1' : 'aspect-ratio-4-4'}" style="display:${data.attachment.hasAttachment?'flex':'none'}" id="attachment-${data.rayId}">
+                                            <img class="attachment-img" src="${data.attachment.hasAttachment === null ? '' : data.attachment.attachment}" alt="Image" style="display:${data.attachment.isImage === 'true' ? 'flex' : 'none'}" id="attachment-image-${data.rayId}"/>
+                                            <span class="attachment-file" style="background-image: url('/src/assets/media.svg');display:${data.attachment.isImage === 'true' ? 'none' : 'flex'}" id="attachment-file-${data.rayId}">
+                                                <span class="desc" style="display: ${data.attachment.description != '' ? 'flex' : 'none'}">${data.attachment.description}</span>
+                                            </span>
+                                            <span class="download-btn fade-in" id="download-btn-${data.rayId}"><img src="/src/icons/download.svg" /></span>
                                         </div>
                                     </div>  
                                 </div>
@@ -2386,7 +2413,10 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                                 copy_btn = document.getElementById(`copy-btn-${data.rayId}`),
                                 delete_btn = document.getElementById(`del-btn-${data.rayId}`),
                                 attachment = document.getElementById(`attachment-${data.rayId}`),
-                                msg_time_stamp_comp = document.getElementById(`msg-time-stamp-${data.rayId}`);
+                                attachment_file = document.getElementById(`attachment-file-${data.rayId}`),
+                                attachment_image = document.getElementById(`attachment-image-${data.rayId}`),
+                                msg_time_stamp_comp = document.getElementById(`msg-time-stamp-${data.rayId}`),
+                                media_download_btn = document.getElementById(`download-btn-${data.rayId}`);
     
                             // log(data.message.content);
                             utilities.isOnlyEmojis(data.message.content) ? twemoji.parse(msg_body) : log('');
@@ -2411,6 +2441,7 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                             //     }
                             // }
                             (function(){
+                                setTip();
                                 document.addEventListener('keyup', (e) => {
                                     if(e.key === 'Shift'){
                                         is_left_shift = false;
@@ -2508,7 +2539,7 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                                                     }else{
                                                         lsDB.setItem('switch_ray', 0);
                                                     }
-                                                }());
+                                                }())
                                             })
                                         }
                                     })
@@ -2555,12 +2586,21 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                                     })
                                 }
                                 if(attachment != null){
-                                    attachment.addEventListener('click', (e)=> {
+                                    attachment.addEventListener('mouseenter', (e) => {
+                                        media_download_btn.style.display = 'flex';
+
                                         e.preventDefault();
+                                    })
+                                    attachment.addEventListener('mouseleave', (e) => {
+                                        media_download_btn.style.display = 'none';
+
+                                        e.preventDefault();
+                                    })
+                                    attachment_image.addEventListener('click', (e)=> {
                                         let focusCont = document.getElementById('focus-cont'),
-                                        focus = document.getElementById('focus-img'),
-                                        focusCap = document.getElementById('caption'),
-                                        focusSaveBtn = document.getElementById('save-img-btn');
+                                            focus = document.getElementById('focus-img'),
+                                            focusCap = document.getElementById('caption'),
+                                            focusSaveBtn = document.getElementById('save-img-btn');
     
                                         if(focusCont != null){
                                             focusCont.style.display = 'flex';
@@ -2569,7 +2609,22 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
     
                                             focusSaveBtn.addEventListener('click', ()=> {
                                                 console.log(data.attachment.attachment)
+                                            });
+
+                                            document.addEventListener('mouseup', e => {
+                                                if(!focus.contains(e.target)){
+                                                    focusCont.style.display = 'none';
+                                                }
                                             })
+                                        }
+
+                                        e.preventDefault();
+                                    })
+                                    media_download_btn.addEventListener('click', e => {
+                                        log(data.attachment.attachment);
+                                        if(data.attachment.hasAttachment){
+                                            const media_file = data.attachment.attachment;
+                                            utilities.downloadMedia(media_file, data.attachment.description);
                                         }
                                     })
                                 }
@@ -2589,22 +2644,28 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
         }
         function on_send_message(cid, fid){
             let reply_component = document.getElementById('reply-handle');
+            let can_send = false;
 
             document.addEventListener('keyup', function(e){
                 e.preventDefault();
+                
+                
                 if(e.key == 'Enter' || e.keyCode === 13){
                     let input_value = chat_input.value.trim().trimStart();
 
-                    if(input_value.length > 0 || lsDB.getItem('has_attachement') != null){
-                        log(input_value);
-                        log('valid')
-                        
+                    can_send = lsDB.getItem('has_attachment') ? true : input_value.length > 0 ? true : false;
+
+                    if(can_send){
+                        send();
+                    }
+                  
+                    function send(){
                         let msg = chat_input.value,
-                            date = new Date(),
-                            cache = lsDB.getItem('cache'),
-                            cache_data = cache.split('?'),
-                            daemon = lsDB.getItem('deamon'),
-                            desc = lsDB.getItem('description');
+                        date = new Date(),
+                        cache = lsDB.getItem('cache'),
+                        cache_data = cache.split('?'),
+                        daemon = lsDB.getItem('deamon'),
+                        desc = lsDB.getItem('description');
 
                         const ray_id = utilities.rayId();
                         fsDB.collection('client').doc('meta_index').collection(cid).doc(ray_id)
@@ -2619,8 +2680,11 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                                 date: date,
                                 mention: utilities.hasMention(msg),
                                 attachment: {
-                                    hasAttachment: lsDB.getItem('has_attachement') || false,
+                                    hasAttachment: lsDB.getItem('has_attachment') || null,
                                     attachment: lsDB.getItem('attachment') || 'none',
+                                    height: lsDB.getItem('height'),
+                                    width: lsDB.getItem('width'),
+                                    isImage: lsDB.getItem('is_image'),
                                     description: desc || '',
                                 },
                                 reply: {
@@ -2643,39 +2707,35 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                             log('sent 📩')
                             lsDB.getItem('switch_ray') == null ? lsDB.setItem('switch_ray', 1) : lsDB.setItem('switch_ray', 0);
                         }).catch(error => {
-                            log('something went wrong try again later');
+                            return;
                         });
-                        chat_input.value = '';
+
                         clear_cache();
+                    }
+                    function clear_cache(){
+                        chat_input.value = '';
 
-                        function clear_cache(){
-                            if(document.querySelector('.reply') != null){
-                                document.querySelector('.reply').classList.remove('reply')
-                            }
-                            lsDB.removeItem('is_reply');
-                            lsDB.removeItem('reply_id');
-                            lsDB.removeItem('reply_msg');
-                            lsDB.removeItem('reply_username');
-                            lsDB.removeItem('reply_avatar');
-                            lsDB.removeItem('reply_user_id');
-                            lsDB.removeItem('has_attachement');
-                            lsDB.removeItem('attachment');
-                            lsDB.removeItem('description');
-
-                            if(document.getElementById('image-picker-cont') != null){
-                                document.getElementById('image-picker-cont').style.display = 'none';
-                                document.getElementById('img-picker').style.display = 'none';
-                                document.getElementById('img-displayer').style.display = 'none';
-                                document.getElementById('spin').style.display = 'flex'
-                            }
-                            if(reply_component != null){
-                                reply_component.style.display = 'none';
-                                reply_component.innerHTML = '';
-                            }
+                        if(document.querySelector('.reply') != null){
+                            document.querySelector('.reply').classList.remove('reply')
                         }
-                    }else{
-                        log(input_value);
-                        log('invalid')
+
+                        lsDB.removeItem('is_reply');
+                        lsDB.removeItem('reply_id');
+                        lsDB.removeItem('reply_msg');
+                        lsDB.removeItem('reply_username');
+                        lsDB.removeItem('reply_avatar');
+                        lsDB.removeItem('reply_user_id');
+                        lsDB.removeItem('has_attachment');
+                        lsDB.removeItem('attachment');
+                        lsDB.removeItem('description');
+
+                        if(document.getElementById('image-picker-cont') != null){
+                            document.getElementById('image-picker-cont').style.display = 'none';
+                        }
+                        if(reply_component != null){
+                            reply_component.style.display = 'none';
+                            reply_component.innerHTML = '';
+                        }
                     }
                 }
             });

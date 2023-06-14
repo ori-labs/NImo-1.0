@@ -4407,7 +4407,10 @@ body{
                                 padding-left: 0px;
                                 padding-right: 50px;
                                 font-family: inherit;
+                                // background-color: rgba(159, 150, 173, 0.11);
                                 font-size: 15px;
+                                display: flex;
+                                flex-direction: row;
                                 .message-content{
                                     word-break: break;
                                     display: flex;
@@ -4422,7 +4425,7 @@ body{
                                         // background-color: #e7e3da42;
                                         min-width: 45px;
                                         max-width: 45px !important;
-                                        font-size: 13px;
+                                        font-size: 12px;
                                         text-align: center;
                                         padding: 4px 0px 0px 0px !important;
                                     }
@@ -4440,12 +4443,13 @@ body{
                                     }
                                 }
                                 .attachment{
-                                    margin-top: 4px;
-                                    // height: 300px;
-                                    width: 250px;
+                                    // margin-top: 4px;
+                                    margin: 0px 0px 0px 0px !important;
+                                    height: 300px;
+                                    max-width: 300px !important;
                                     // width: fit-content;
-                                    background-color: $lureDark;
-                                    display: flex;
+                                    // background-color: rgba(255, 166, 0, 0.075);
+                                    display: block;
                                     flex-direction: column;
                                     overflow: hidden;
                                     position: relative;
@@ -4456,23 +4460,80 @@ body{
                                         background-repeat: no-repeat;
                                         background-size: contain;
                                         width: 100%;
+                                        height: 100%;
+                                        object-fit: contain;
                                         cursor: pointer;
-                                        height: 300px;
-                                        background-color: $lureDark;
+                                        background-color: transparent;
                                     }
-                                    .desc{
-                                        // height: 25px;
-                                        z-index: 4;
+                                    .attachment-file{
+                                        background-position: center !important;
+                                        background-repeat: no-repeat;
+                                        background-size: contain !important;
+                                        width: 300px;
+                                        height: 160px;
                                         display: flex;
+                                        justify-content: center;
                                         align-items: center;
-                                        padding: 4px;
-                                        word-break: break-all;
-                                        background-color: $compColor-1;
-                                        color: $lightColor;
-                                        font-weight: lighter;
-                                        font-size: 14px;
-                                        // margin-bottom: 3px;
+                                        padding: 0 !important;
+                                        background-color: $lureDark;
+                                        position: relative;
+                                        border-radius: 5px;
+                                        overflow: hidden;
+                                        
+                                        
+                                        .desc{
+                                            position: absolute;
+                                            // height: 25px;
+                                            bottom: 25px;
+                                            z-index: 4;
+                                            display: flex;
+                                            align-items: center;
+                                            padding: 4px;
+                                            word-break: break-all;
+                                            background-color: $compColor-1;
+                                            color: $lightColor;
+                                            font-weight: lighter;
+                                            font-size: 14px;
+                                        }
                                     }
+                                    .download-btn{
+                                        position: absolute;
+                                        top: 10px;
+                                        right: 10px !important;
+                                        width: 30px;
+                                        height: 30px;
+                                        display: none;
+                                        justify-content: center;
+                                        align-items: center;
+                                        background-color: $compColor-1;
+                                        transition: .1s;
+                                        border-radius: 4px;
+                                        cursor: pointer;
+
+                                        img{
+                                            width: 20px;
+                                        }
+
+                                        &:hover{
+                                            opacity: .7;
+                                        }
+                                        &:active{
+                                            opacity: .9;
+                                            transform: scale(.8);
+                                        }
+                                    }
+                                }
+                                .aspect-ratio-19-6 {
+                                    width: calc(100% * 19 / 6);
+                                    height: 100%;
+                                }
+                                .aspect-ratio-4-4 {
+                                    width: 50%;
+                                    height: 50%;
+                                }
+                                .aspect-ratio-1-1 {
+                                    width: 50%;
+                                    height: 50%;
                                 }
                                 .name-mention{
                                     background-color: #9568a66b;
@@ -4505,25 +4566,25 @@ body{
                         .mention{
                             border-left: 2px $resReply solid;
                             background-color:rgba($color: $resReply, $alpha: .3);
-                            padding-bottom: 10px;
+                            padding-bottom: 3px !important;
                             transition: .2s ease-in;
                         }
                         .reply{
                             border-left: 2px $primaryColor solid;
                             background-color: #b37bc71e;
-                            padding-bottom: 10px;
+                            padding-bottom: 3px !important;
                             transition: .1s ease-in;
                         }
                         .res-reply{
                             border-left: 2px $resReply solid;
                             background-color:rgba($color: $resReply, $alpha: .2);
-                            padding-bottom: 10px;
+                            padding-bottom: 3px !important;
                             transition: .1s ease-in;
                         }
                         .msg-redir{
                             border-left: 2px $redirColor solid;
                             background-color:rgba($color: $redirColor, $alpha: .2);
-                            padding-bottom: 10px;
+                            padding-bottom: 3px !important;
                             animation: 1s ease-out blick alternate;
                             transition: .1s ease-in;
 
@@ -4770,10 +4831,10 @@ body{
                 border-radius: 4px;
                 box-shadow: 4px 4px 15px $boxShadow;
                 position: absolute;
-                bottom: calc(50px + 30px);
+                bottom: calc(50px + 10px);
                 padding: 5px;
                 z-index: 99;
-                left: 45px;
+                left: 20px;
                 .image-picker{
                     display: none;
                     align-items: center;
@@ -4849,10 +4910,10 @@ body{
 
                     .displayer{
                         width: 100%;
-                        height: 80px;
+                        height: 120px;
                         border-radius: 3px;
                         overflow: hidden;
-                        background-size: contain;
+                        // background-size: contain;
                         background-color: $moodDark;
                         background-position: center;
                         background-repeat: no-repeat;
@@ -4860,6 +4921,7 @@ body{
                         justify-content: center;
                         // align-items: center;
                         position: relative;
+                        background-size: cover !important;
 
                         .display-layer-prog{
                             width: 100%;
@@ -4867,6 +4929,7 @@ body{
                             background-color: rgba($color: $primaryColor, $alpha: .3);
                             position: absolute;
                             bottom: 0px;
+                            display: none !important;
                             backdrop-filter: blur(3px);
                         }
                     }
@@ -4894,7 +4957,7 @@ body{
                     }
                     .prog-cont{
                         width: 100%;
-                        display: flex;
+                        display: none;
                         flex-direction: row;
                         align-items: center;
                         column-gap: 10px;
@@ -4962,6 +5025,7 @@ body{
                         justify-content: center;
                         align-items: center;
                         background-color: $compColor-1;
+                        transition: .1s ease-in;
                         cursor: pointer;
 
                         img{

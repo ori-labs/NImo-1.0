@@ -316,6 +316,50 @@ const utilities = {
     isOnlyEmojis: (text)=>{
         const emojiRegex = /^[\u{1F600}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{1F1E0}-\u{1F1FF}\u{1F191}-\u{1F251}\u{1F680}-\u{1F6FF}\u{1F1E6}-\u{1F1FF}]+$/u;
         return emojiRegex.test(text);
+    },
+    fileToBlob: async (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const blob = new Blob([reader.result], { type: file.type });
+              resolve(blob);
+            };
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(file);
+        });
+    },
+    isImageMedia: (base64String) => {
+        const mimeTypeRegex = /^data:image\/(jpeg|jpg|png|gif|bmp);base64,/i;
+        return mimeTypeRegex.test(base64String);
+    },
+    getImageRes: (base64String)=>{
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = function () {
+              resolve({ width: img.width, height: img.height });
+            };
+            img.onerror = function () {
+              reject(new Error('Failed to load image'));
+            };
+            img.src = base64String;
+        });
+    },
+    getFileSize: (base64String) => {
+        const decodedData = atob(base64String);
+        const fileSizeInBytes = decodedData.length;
+        const fileSizeInMegabytes = fileSizeInBytes / (1024 * 1024); // 1 megabyte = 1024 bytes * 1024 bytes
+
+        return fileSizeInMegabytes;
+    },
+    bytesToMb: (bytes) => {
+        const toMb = bytes / (1024 * 1024);
+        return toMb.toFixed(2);
+    },
+    downloadMedia: (file, name) => {
+        const link = document.createElement('a');
+        link.href = file;
+        link.download = name;
+        link.click();
     }
 }
 
