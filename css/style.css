@@ -3962,8 +3962,8 @@ body .root .chat-wrapper .chat-container .wrapper .msg-container .msg-card-compo
 body .root .chat-wrapper .chat-container .wrapper .msg-container .msg-card-component .msg-pf .name-ts .name {
   color: rgba(217, 217, 217, 0.6);
   cursor: pointer;
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   padding: 0px 10px 3px 0px;
 }
 body .root .chat-wrapper .chat-container .wrapper .msg-container .msg-card-component .msg-pf .name-ts .name:hover {

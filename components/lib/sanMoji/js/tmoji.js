@@ -192,7 +192,6 @@ var twemoji = (function () {
     if (!how || typeof how === "function") {
       how = { callback: how };
     }
-    console.log('hmmmm guessing the moji sizee')
     return (typeof what === "string" ? parseString : parseNode)(what, {
       callback: how.callback || defaultImageSrcGenerator,
       attributes:

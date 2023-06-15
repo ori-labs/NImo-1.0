@@ -680,7 +680,6 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                             'error'
                         )
                     }else{
-                        log('hmmm,,'+uid)
                         fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
                         .get()
                         .then(sn => {
@@ -1123,7 +1122,7 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
         }
     }
     function render_explore_rooms(){
-        let preloader = `<div class="skeleton fade-in">
+        let preloader = `<div class="skeleton fade-in exp-skel">
             <div class="room-info-wrapper">
                 <div class="room-icon-cont">
                     <span class="icon"></span>
@@ -1152,12 +1151,12 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                                 </div>
                             </div>
                             <div class="right-box">
-                                <div class="search-cont">
+                                <!-- <div class="search-cont">
                                     <input type="text" name="rooom-search-input" id="room-search-input" placeholder="Enter Room id">
                                     <button class="btn-primary room-search-btn">
                                         <span class="search-label">Search</span>
                                     </button>
-                                </div>
+                                </div> -->
                                 <div class="close-btn-cont tippy-tip" id="explore-room-close-btn" data-tippy-content="Close">
                                     <img src="/src/icons/close-white.svg" alt="">
                                 </div>
@@ -1212,13 +1211,14 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                     room_meta.forEach(async data => {
                         let meta_ID = data.id;
                         if(!my_rooms.includes(meta_ID)){
-                            explore_room_container_wrapper.innerHTML = '';
                             log('I don\'t have '+meta_ID+" in my room list yet");
                             fsDB.collection('client').doc('rooms').collection('room_meta').doc(meta_ID).get()
                             .then(async data => {
                                 const room_data = data.data();
                                 fsDB.collection('client').doc('rooms').collection('room_meta').doc(meta_ID).collection('members').doc('list').collection('all').get().then(size_data =>{
                                     if(room_data.type == 'true'){
+                                        clear_skel('.exp-skel', explore_room_container_wrapper);
+
                                         let room_card = `
                                             <div class="room-card-cont fade-in" style="background-image: url(${room_data.icon=='default'?'../src/imgs/room.svg':room_data.icon})">
                                                 <div class="room-info-wrapper">
@@ -1917,12 +1917,12 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                         </div>
                         <span class="hr-spike"></span>
                         <div class="participant-skeleton participant_list_container" id="members_list_container">
-                            <div class="participants-prof-cont fade-in">
+                            <div class="participants-prof-cont fade-in participant-skel-cont">
                                 <span class="pfp skeleton-bg">
                                 </span>
                                 <span class="label participants-name skeleton-bg"></span>
                             </div>
-                            <div class="participants-prof-cont fade-in">
+                            <div class="participants-prof-cont fade-in participant-skel-cont">
                                 <span class="pfp skeleton-bg">
                                 </span>
                                 <span class="label participants-name skeleton-bg"></span>
@@ -1958,8 +1958,8 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
         media_picker();
         emoji_picker_toggle();
         render_f_data(f_id);
-        // render_members_list(f_id);
-        // render_messages(c_id, f_id);
+        render_members_list(f_id);
+        render_messages(c_id, f_id);
         on_send_message(c_id, f_id);
 
         $('.back-btn').on('click', () =>{
@@ -2083,12 +2083,7 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
 
                     const file_size = utilities.bytesToMb(files.size);
 
-
-                    log(file_size+'mbs');
-
                     if(file_size > 3){
-                        log('oii the file too big for our server to handle');
-
                         utilities.alert(
                             'File is too large, file should only be less than 3 Megabytes.',
                             'info',
@@ -2140,14 +2135,12 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                             }else{
                                 displayer.style.backgroundImage = `url('/src/assets/file.svg')`;
                             }
-                            log(this.result)
                         })
                         // media_description.innerText = utilities.trimFileName(files.name)
                         
                         media_description.addEventListener('input', () => {
                             lsDB.setItem('description', media_description.value);
                         });
-                        log('hmmm piece \'o cake')
                     }
                 }
             }
@@ -2291,15 +2284,13 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
         }
         function render_members_list(fid){            
             let member_list_container = document.getElementById('members_list_container');
-            
-            member_list_container.innerHTML = '';
-
             let members = [fid, uid];
-
+            
             for(let a in members){
                 fsDB.collection('client').doc('meta').collection(members[a]).doc('meta_data').get()
                 .then(meta => {
                     const meta_data = meta.data();
+                    clear_skel('.participant-skel-cont', member_list_container);
 
                     let member_card = `
                         <div class="participants-prof-cont fade-in"  id="mem-${meta_data.id}" style="opacity: ${meta_data.id === uid ? '1' : '.6'}">
@@ -2396,18 +2387,13 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
             .then(meta_data => {
                 let friend_meta_data = meta_data.data();
 
-                let date_collection = [];
-                let message_collection = [];
-         
-                const MESSAGES_PER_PAGE = 20; // Number of messages to load per page
-                let lastVisibleMessage;
-                let isLoadingMessages = false;
-
                 fsDB.collection('client').doc('meta_index').collection(remote_id)
                 .orderBy("timestamp", "asc").onSnapshot(async function(sn){
                     sn.docChanges().forEach(function(ch){
                         let data = ch.doc.data();
                         
+                        clear_skel('.skel', msg_container);
+
                         if(ch.type == 'added'){
                             data.maskID === uid && lsDB.getItem('switch_ray') === null ? lsDB.setItem('switch_ray', 1) : lsDB.setItem('switch_ray', 1);
 
@@ -2474,8 +2460,10 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                                 attachment_image = document.getElementById(`attachment-image-${data.rayId}`),
                                 msg_time_stamp_comp = document.getElementById(`msg-time-stamp-${data.rayId}`),
                                 media_download_btn = document.getElementById(`download-btn-${data.rayId}`);
-    
-                            utilities.isOnlyEmojis(data.message.content) ? twemoji.parse(msg_body) : log('');
+                            
+                            if(utilities.isOnlyEmojis(data.message.content)){
+                                twemoji.parse(msg_body);
+                            }
                            
                             const observer = new IntersectionObserver((entries) => {
                                 entries.forEach((entry) => {
@@ -2819,7 +2807,14 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
     function log(text){
         return console.log(text);
     };
-
+    
+    function clear_skel(el_class, parentNode){
+        let skel_el = parentNode.querySelectorAll(el_class);
+        const skel_arr = Array.from(skel_el);
+        skel_el.forEach(el => {
+            el.remove();
+        })
+    }
     function setTip(){
         tippy('.tippy-tip', {
             placement: 'bottom',
