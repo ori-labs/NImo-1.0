@@ -174,3 +174,9 @@ $backdrop: rgba($color: #000000, $alpha: .6);
         transform: scale(.94) !important;
     }
 }
+.skeleton-bg{
+    mask-repeat:no-repeat;
+    background:linear-gradient(90deg,#ccca 40%,#fffa ,#ccca 60%) right/300% 100%;
+    animation: skeleton 2s linear infinite;
+    opacity: .3;
+}

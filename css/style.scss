@@ -4207,7 +4207,35 @@ body{
                         display: flex;
                         flex-direction: column;
                         // background-color: rgba(255, 0, 43, 0.178);
+                        position: relative;
 
+                        .message-date-cont{
+                            position: relative;
+                            width: 100%;
+                            // background-color: rgba(255, 166, 0, 0.096);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin: 10px 0px 10px 0px;
+                            .liner{
+                                width: 70%;
+                                height: 1px;
+                                background-color: rgba($color: $lightColor, $alpha: .05);
+                                border-radius: 4px;
+                            }    
+                            .date-tag{
+                                position: absolute;
+                                background-color: $compColor-2;
+                                font-size: 11px;
+                                font-weight: 400;
+                                padding: 0px 15px 0px 15px;
+                                color: rgba($color: $lightColor, $alpha: .6);
+                            }
+                        }
+                        .visible{
+                            display: block;
+                            flex-direction: column;
+                        }
                         .msg-card-component{
                             margin: 5px 0px 0px 0px !important;
                             // display: flex;
@@ -4560,6 +4588,42 @@ body{
                                 }
                             }
                         }
+                        .skel{
+                            .msg-skel-pfp{
+                                width: 40px;
+                                height: 40px;
+                                border-radius: 100px;
+                            }
+                            .msg{
+                                display: flex;
+                                flex-direction: column;
+                                row-gap: 15px;
+                            }
+                            .msg-skel-name-ts{
+                                width: 100px;
+                                height: 15px;
+                                border-radius: 3px;
+                            }
+                            .skel-msg-body{
+                                display: flex;
+                                flex-direction: column;
+                                row-gap: 10px;
+                                .msg-skel-msg-body{
+                                    width: 200px;
+                                    height: 10px;
+                                    border-radius: 2px;
+                                }
+                                .short{
+                                    width: 150px;
+                                }
+                            }
+                            .skel-attachment{
+                                width: 240px;
+                                height: 130px;
+                                margin-left: 50px;
+                                border-radius: 3px;
+                            }
+                        }
                         .msg-hover{
                             background-color: rgba($color: $originBg, $alpha: .4) !important;
                         }
@@ -4603,21 +4667,21 @@ body{
                         }
 
                         &::-webkit-scrollbar {
-                            width: 4px;
-                            background-color: $compColor-2;
+                            width: 5px !important;
+                            background-color: $compColor-2 !important;
                         }
                         &::-webkit-scrollbar-track {
-                            width: 4px;
-                            background-color: $compColor-2;
+                            width: 5px !important;
+                            background-color: $compColor-2 !important;
                         }
                         &::-webkit-scrollbar-thumb {
-                            width: 4px;
-                            background-color: rgba($color: $primaryColor, $alpha: .1);
-                            transition: .2s ease-in;
-                            border-radius: 5px;
+                            width: 5px !important;
+                            background-color: rgba($color: $primaryColor, $alpha: .1) !important;
+                            transition: .2s ease-in !important;
+                            border-radius: 5px !important;
 
                             &:active{
-                                opacity: .6;
+                                opacity: .6 !important;
                             }
                         }
                     }
@@ -4820,6 +4884,21 @@ body{
                                 opacity: .7;
                             }
                         }
+                    }
+                }
+                .participant-skeleton{
+                    // background-color: orange !important;
+
+                    .pfp{
+                        // background-color: rgba;
+                        width: 35px;
+                        height: 35px;
+                        border-radius: 100px;
+                    }
+                    .label{
+                        width: 130px;
+                        height: 15px;
+                        border-radius: 4px;
                     }
                 }
             }

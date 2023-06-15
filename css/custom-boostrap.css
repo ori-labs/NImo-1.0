@@ -149,4 +149,12 @@
 }
 .btn:active {
   transform: scale(0.94) !important;
+}
+
+.skeleton-bg {
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  background: linear-gradient(90deg, rgba(204, 204, 204, 0.6666666667) 40%, rgba(255, 255, 255, 0.6666666667), rgba(204, 204, 204, 0.6666666667) 60%) right/300% 100%;
+  animation: skeleton 2s linear infinite;
+  opacity: 0.3;
 }/*# sourceMappingURL=custom-boostrap.css.map */

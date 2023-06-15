@@ -360,6 +360,25 @@ const utilities = {
         link.href = file;
         link.download = name;
         link.click();
+    },
+    getDay: (date) => {
+        const today = new Date();
+        const yesterday = new Date(today);
+        
+        yesterday.setDate(today.getDate() - 1);
+        
+        if (date.toDateString() === today.toDateString()) {
+            return 'Today';
+        } else if (date.toDateString() === yesterday.toDateString()) {
+            return 'Yesterday';
+        } else if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth()) {
+            const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayOfWeek = daysOfWeek[date.getDay()];
+            return dayOfWeek;
+        } else {
+            const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+            return formattedDate;
+        }
     }
 }
 

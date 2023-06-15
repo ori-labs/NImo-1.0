@@ -1846,6 +1846,54 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                             </div> -->
                         </div>
                         <div class="msg-container" id="msg-container">
+                            <div class="msg-card-component skel">
+                                <div class="msg-pf">
+                                    <span class="msg-skel-pfp skeleton-bg" ></span>
+                                    <span class="msg-skel-name-ts skeleton-bg"><span class="name"></span>
+                                </div>
+                                <div class="msg">
+                                    <span class="message-content">
+                                        <span class="time-stamp time"></span>
+                                        <div class="skel-msg-body">
+                                            <span class="msg-skel-msg-body skeleton-bg"></span>     
+                                            <span class="msg-skel-msg-body skeleton-bg"></span>     
+                                            <span class="msg-skel-msg-body short skeleton-bg"></span>     
+                                        </div>
+                                    </span>
+                                    <div class="skel-attachment skeleton-bg">
+                                    </div>
+                                </div>  
+                            </div>
+                            <div class="msg-card-component skel">
+                                <div class="msg-pf">
+                                    <span class="msg-skel-pfp skeleton-bg" ></span>
+                                    <span class="msg-skel-name-ts skeleton-bg"><span class="name"></span>
+                                </div>
+                                <div class="msg">
+                                    <span class="message-content">
+                                        <span class="time-stamp time"></span>
+                                        <div class="skel-msg-body">
+                                           <span class="msg-skel-msg-body short skeleton-bg"></span>     
+                                        </div>
+                                    </span>
+                                    <div class="skel-attachment skeleton-bg">
+                                    </div>
+                                </div>  
+                            </div>
+                            <div class="msg-card-component skel">
+                                <div class="msg-pf">
+                                    <span class="msg-skel-pfp skeleton-bg" ></span>
+                                    <span class="msg-skel-name-ts skeleton-bg"><span class="name"></span>
+                                </div>
+                                <div class="msg">
+                                    <span class="message-content">
+                                        <span class="time-stamp time"></span>
+                                        <div class="skel-msg-body">
+                                           <span class="msg-skel-msg-body short skeleton-bg"></span>     
+                                        </div>
+                                    </span>
+                                </div>  
+                            </div>
                         </div>
                         <div class="reply-handle" style="display:none" id="reply-handle">
                         </div>
@@ -1868,17 +1916,17 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                             <span class="title">Members</span>
                         </div>
                         <span class="hr-spike"></span>
-                        <div class="participant_list_container" id="members_list_container">
-                            <!--<div class="participants-prof-cont"  id="">
-                                <span class="participants-pfp" style="background-image: url('/src/imgs/avatar.svg');">
+                        <div class="participant-skeleton participant_list_container" id="members_list_container">
+                            <div class="participants-prof-cont fade-in">
+                                <span class="pfp skeleton-bg">
                                 </span>
-                                <span class="participants-name">Blee<span class="id">#434</span></span>
+                                <span class="label participants-name skeleton-bg"></span>
                             </div>
-                            <div class="participants-prof-cont"  id="">
-                                <span class="participants-pfp" style="background-image: url('/src/imgs/avatar.svg');">
+                            <div class="participants-prof-cont fade-in">
+                                <span class="pfp skeleton-bg">
                                 </span>
-                                <span class="participants-name">Konisa<span class="id">#228</span></span>
-                            </div> -->
+                                <span class="label participants-name skeleton-bg"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1910,8 +1958,8 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
         media_picker();
         emoji_picker_toggle();
         render_f_data(f_id);
-        render_members_list(f_id);
-        render_messages(c_id, f_id);
+        // render_members_list(f_id);
+        // render_messages(c_id, f_id);
         on_send_message(c_id, f_id);
 
         $('.back-btn').on('click', () =>{
@@ -2343,14 +2391,23 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
             let is_left_shift = false;
             
             let switch_ray = 0;
+
             fsDB.collection('client').doc('meta').collection(fid).doc('meta_data').get()
             .then(meta_data => {
                 let friend_meta_data = meta_data.data();
+
+                let date_collection = [];
+                let message_collection = [];
+         
+                const MESSAGES_PER_PAGE = 20; // Number of messages to load per page
+                let lastVisibleMessage;
+                let isLoadingMessages = false;
+
                 fsDB.collection('client').doc('meta_index').collection(remote_id)
-                .orderBy("timestamp", "asc").onSnapshot(function(sn){
+                .orderBy("timestamp", "asc").onSnapshot(async function(sn){
                     sn.docChanges().forEach(function(ch){
                         let data = ch.doc.data();
-                        log(data);
+                        
                         if(ch.type == 'added'){
                             data.maskID === uid && lsDB.getItem('switch_ray') === null ? lsDB.setItem('switch_ray', 1) : lsDB.setItem('switch_ray', 1);
 
@@ -2365,7 +2422,7 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                                         <span class="btn share tippy-tip" id="reply-btn-${data.rayId}" data-tippy-content="Reply">
                                             <img src="/src/icons/share.svg" /> 
                                         </span>
-                                        <span class="btn copy tippy-tip" id="copy-btn-${data.rayId}" data-tippy-content="Copy">
+                                        <span class="btn copy tippy-tip" id="copy-btn-${data.rayId}" data-tippy-content="Copy" style="display:${data.attachment.hasAttachment ? 'none' : 'flex'}">
                                             <img src="/src/icons/copy.svg" /> 
                                         </span>
                                         <span class="btn delete tippy-tip" style="display:${data.maskID==uid?'block':'none'}" id="del-btn-${data.rayId}" data-tippy-content="Delete">
@@ -2418,28 +2475,23 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                                 msg_time_stamp_comp = document.getElementById(`msg-time-stamp-${data.rayId}`),
                                 media_download_btn = document.getElementById(`download-btn-${data.rayId}`);
     
-                            // log(data.message.content);
                             utilities.isOnlyEmojis(data.message.content) ? twemoji.parse(msg_body) : log('');
-                            // if (typeof document.hidden !== "undefined") {
-                            // // Add a listener for visibility change
-                            //     document.addEventListener("visibilitychange", handleVisibilityChange);
-                            // }
-                            // // Function to handle visibility change
-                            // function handleVisibilityChange() {
-                            //     if (document.visibilityState === "visible") {
-                            //         // The window is active
-                            //         console.log("Window is active");
-                                    
-                            //     } else {
-                            //         utilities.createNotification(
-                            //             data.user,
-                            //             data.message.content,
-                            //             data.message.authorAvatar || '/src/imgs/avatar.svg'
-                            //         )
-                            //         // The window is inactive
-                            //         console.log("Window is inactive");
-                            //     }
-                            // }
+                           
+                            const observer = new IntersectionObserver((entries) => {
+                                entries.forEach((entry) => {
+                                    if (entry.isIntersecting) {
+                                        renderMessage(entry.target);
+                                    }
+                                }, { threshold: 0.5 });
+                            });
+                            const messages = msg_container.querySelectorAll('.msg-card-component');
+                            messages.forEach((message) => {
+                                observer.observe(message);
+                            });
+                            
+                            function renderMessage(message) {
+                                message.classList.add('visible');
+                            }
                             (function(){
                                 setTip();
                                 document.addEventListener('keyup', (e) => {
@@ -2580,8 +2632,8 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                                     copy_btn.addEventListener('click', (e) => {
                                         e.preventDefault();
                                         const cpMsg = document.getElementById(`msg-card-${data.rayId}`);
-                                        log(cpMsg.innerText)
-                                        navigator.clipboard.writeText(cpMsg.querySelector('.message-content').innerText)
+                                        // log(cpMsg.innerText)
+                                        navigator.clipboard.writeText(msg_body.innerText)
                                         .then(()=> {log('coppied')}).catch((err) =>{})
                                     })
                                 }
@@ -2599,17 +2651,12 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                                     attachment_image.addEventListener('click', (e)=> {
                                         let focusCont = document.getElementById('focus-cont'),
                                             focus = document.getElementById('focus-img'),
-                                            focusCap = document.getElementById('caption'),
-                                            focusSaveBtn = document.getElementById('save-img-btn');
+                                            focusCap = document.getElementById('caption');
     
                                         if(focusCont != null){
                                             focusCont.style.display = 'flex';
                                             focus.style.backgroundImage = `url('${data.attachment.attachment}')`;
                                             focusCap.innerHTML = data.attachment.description || 'Unknown';
-    
-                                            focusSaveBtn.addEventListener('click', ()=> {
-                                                console.log(data.attachment.attachment)
-                                            });
 
                                             document.addEventListener('mouseup', e => {
                                                 if(!focus.contains(e.target)){
@@ -2638,9 +2685,10 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                                 document.getElementById(`msg-card-${data.rayId}`).remove();
                             }
                         }
-                    })
-                })
-            })
+                    });
+                });
+            });
+
         }
         function on_send_message(cid, fid){
             let reply_component = document.getElementById('reply-handle');
