@@ -428,10 +428,10 @@ import config from "../components/lib/sanMoji/js/config.js";
                     switch(state){
                         case 'setup':
                             console.log('rerolling user setup..')
-                            location.href = `../pages/setup.html?uid=${__usr__.uid}`;
+                            location.href = `./pages/setup.html?uid=${__usr__.uid}`;
                         case 'user':
                             lsDB.clear();
-                            location.href = '../index.html';
+                            location.href = './index.html';
                         case 'cancel':
                             console.log('%cState: Canceled', 'color: #44321d')
                         default:
