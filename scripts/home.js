@@ -273,10 +273,10 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                 const state = meta_data[0];
                 if(state != null){
                     if(state === 'setup'){
-                        location.href = `NImo-app/pages/setup.html?uid=${__usr__.uid}`;
+                        location.href = `pages/setup.html?uid=${__usr__.uid}`;
                         console.log('rewinding setup ..')
                     }else if(state === 'cancel'){
-                        location.href = 'NImo-app/pages/login.html';
+                        location.href = 'pages/login.html';
                     }else if(state === 'user'){
                         console.log('%cUSER STATE : USER', 'color: #23e34d');
                         render_homepage();
@@ -284,11 +284,11 @@ import fromNow from "../components/lib/sanMoji/js/timeSince.js";
                 }else{
                     console.log('state : '+state);
                     console.log('user not registered yet');
-                    location.href = 'NImo-app/pages/login.html';
+                    location.href = 'pages/login.html';
                 }
             }else{
                 console.log('not registered yet as a user');
-                location.href = 'NImo-app/pages/login.html';
+                location.href = 'pages/login.html';
             }
         })
         async function get_user_meta(_usr_) {
