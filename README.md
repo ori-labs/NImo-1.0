@@ -1,4 +1,5 @@
-<img src="https://github.com/yasVan645/NImo-app/assets/64766541/448f8c7b-829b-4378-ac07-8b7596eeaac2" style="width:100%" />
+
+<img src="https://github.com/yasVan645/NImo-app/assets/64766541/96c8f6f9-c553-47ca-9de1-5c630a532805" style="width:100%" />
 <br>
 <br>
 NIMO Chat App is a real-time messaging application that allows users to connect and communicate with each other. It provides a seamless and intuitive interface for sending and receiving messages in real-time.
@@ -55,10 +56,13 @@ Feel free to explore the NIMO Chat App, and let us know your feedback and sugges
 Please note that the NIMO Chat App is currently under development, and some features might not work as expected. We are continuously working on improving and adding new functionalities to enhance your messaging experience. Your feedback and suggestions are highly appreciated as they help us make the app better.
 
 ## UI Showcase
-![image](https://github.com/yasVan645/NImo-app/assets/64766541/daf49b21-1443-4b63-b0b0-c237d802f19a)
-![image](https://github.com/yasVan645/NImo-app/assets/64766541/b70dc5ef-273c-4e2e-93b2-1fa3564c7e2e)
-![image](https://github.com/yasVan645/NImo-app/assets/64766541/2cdf0d82-754c-4203-b0a8-efc1534b1ef4)
-![image](https://github.com/yasVan645/NImo-app/assets/64766541/b1c0cb0a-7212-4086-857e-77fe68cac8a8)
-![image](https://github.com/yasVan645/NImo-app/assets/64766541/dc21152a-0d49-4960-9b94-a8b0fdb06643)
+| Image | Description |
+|-------|-------------|
+| ![image](https://github.com/yasVan645/NImo-app/assets/64766541/d4dc5023-b87e-44c9-85c9-3dd250e53376) | Login page |
+| ![image](https://github.com/yasVan645/NImo-app/assets/64766541/474c61c3-f406-4fba-aa45-dc04f8b6a21e) | Sign up page |
+| ![image](https://github.com/yasVan645/NImo-app/assets/64766541/05d564fa-59a1-48fe-ab38-08d9a48ebcf1) | Home page |
+| ![image](https://github.com/yasVan645/NImo-app/assets/64766541/2fa9f036-0f7f-4094-b8d7-a6deb7fe199e) | Explore rooms |
+| ![image](https://github.com/yasVan645/NImo-app/assets/64766541/4fb34e07-3588-4bc7-b719-2e349c54b39e) | Chats page |
+| ![image](https://github.com/yasVan645/NImo-app/assets/64766541/5f3d56eb-6644-45b6-9a06-7d3a62b20950) | User vault |
 
 Thank you for your understanding and support as we work towards delivering a high-quality and fully functional NIMO Chat App.
