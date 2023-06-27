@@ -1,5 +1,5 @@
 
-<img src="https://github.com/yasVan645/NImo-app/assets/64766541/96c8f6f9-c553-47ca-9de1-5c630a532805" style="width:100%" />
+<img src="https://github.com/vanny-y/NImo-app/assets/64766541/b331e3ae-c735-4517-a707-cfe428bc944f" style="width:100%" />
 <br>
 <br>
 NIMO Chat App is a real-time messaging application that allows users to connect and communicate with each other. It provides a seamless and intuitive interface for sending and receiving messages in real-time.
