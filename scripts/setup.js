@@ -384,16 +384,16 @@ import utilities from "../components/utilities/utilities.js";
                             hide_preloader();
                         }, 2000);
                     } else if (state === "cancel") {
-                        location.href = "/pages/login.html";
+                        location.href = "NImo-app/pages/login.html";
                     } else if (state === "user") {
-                        location.href = "/index.html";
+                        location.href = "NImo-app/index.html";
                     }
                 } else {
                     console.log("user not registered yet");
                 }
             } else {
                 console.log("not registered yet as a user");
-                location.href = '/pages/login.html';
+                location.href = 'NImo-app/pages/login.html';
             }
         });
 
