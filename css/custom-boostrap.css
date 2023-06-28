@@ -55,17 +55,19 @@
 }
 
 .error-msg {
-  width: 100%;
-  background-color: rgba(32, 32, 36, 0.6588235294);
+  background-color: #923050;
+  padding: 2px;
+  border-radius: 5px;
   display: flex;
   color: #F7F7F8;
   font-size: 14px;
+  overflow: hidden;
 }
 .error-msg .msg {
-  border-left: 3px #923050 solid;
   padding: 5px;
   background-color: inherit;
   width: 100%;
+  text-align: center;
 }
 
 .hide {
@@ -127,7 +129,7 @@
   background: #9568A6;
   background: linear-gradient(138deg, #9568A6 0%, #AC4ECF 100%);
   cursor: pointer;
-  transition: 0.2s ease-in;
+  transition: 0.1s ease-in !important;
 }
 .btn-primary:active {
   opacity: 0.9;

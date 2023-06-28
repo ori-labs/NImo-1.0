@@ -115,6 +115,11 @@ body{
                     margin-bottom: 0;
                 }
             }
+            ._create_account{
+                .wrapper{
+                    align-items: flex-end !important;
+                }
+            }
             .cred-cont{
                 // background-color: #2F2F37;
                 display: flex;
@@ -122,21 +127,15 @@ body{
                 flex-direction: column;
                 row-gap: 10px;
                 // width: 100%;
-                
                 .wrapper{
-                    // width: 100%;
                     background-color: $compColor-1;
-                    // padding: 35px 20px 30px 30px;
                     display: flex;
                     flex-direction: column;
                     padding: 20px;
                     row-gap: 10px;
                     border-radius: 10px;
                     font-family: inherit;
-
-                    align-items: flex-end;
-                    // justify-content: end;
-                    // align-items: center;
+                    align-items: flex-start;
 
                     .inputs{
                         width: 100%;
@@ -349,11 +348,12 @@ body{
                             }
                         }
                     }
-                    .forgot-password-btn{
-                        width: 100%;
+                    .pass-reset-btn{
+                        // width: 100%;
                         text-decoration: underline;
                         margin-bottom: 0px;
                         color: $primaryColor;
+                        float: left;
                         cursor: pointer;
 
                         &:hover{

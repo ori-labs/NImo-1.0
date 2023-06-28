@@ -75,6 +75,9 @@ body ._auth .wrapper .logo-wrapper .desc {
   padding-bottom: 0;
   margin-bottom: 0;
 }
+body ._auth .wrapper ._create_account .wrapper {
+  align-items: flex-end !important;
+}
 body ._auth .wrapper .cred-cont {
   display: flex;
   flex-direction: column;
@@ -88,7 +91,7 @@ body ._auth .wrapper .cred-cont .wrapper {
   row-gap: 10px;
   border-radius: 10px;
   font-family: inherit;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 body ._auth .wrapper .cred-cont .wrapper .inputs {
   width: 100%;
@@ -285,17 +288,17 @@ body ._auth .wrapper .cred-cont .wrapper .login-provider-cont .info-cont .footer
   text-align: right;
   color: #7D7D7D;
 }
-body ._auth .wrapper .cred-cont .wrapper .forgot-password-btn {
-  width: 100%;
+body ._auth .wrapper .cred-cont .wrapper .pass-reset-btn {
   text-decoration: underline;
   margin-bottom: 0px;
   color: #86509A;
+  float: left;
   cursor: pointer;
 }
-body ._auth .wrapper .cred-cont .wrapper .forgot-password-btn:hover {
+body ._auth .wrapper .cred-cont .wrapper .pass-reset-btn:hover {
   opacity: 0.7;
 }
-body ._auth .wrapper .cred-cont .wrapper .forgot-password-btn:active {
+body ._auth .wrapper .cred-cont .wrapper .pass-reset-btn:active {
   opacity: 0.9;
 }
 body ._auth .wrapper .cred-cont .wrapper .success-cont {

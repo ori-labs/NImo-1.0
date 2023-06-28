@@ -379,6 +379,31 @@ const utilities = {
             const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
             return formattedDate;
         }
+    },
+    manage_preloader: () => {
+        $('#progress').removeClass('load');
+        $('#progress').addClass('loaded');
+        setTimeout(() => {
+            utilities.hide_preloader();
+        }, 2000);
+    },
+    hide_preloader: () => {
+        $('#spinnerx').removeClass('load');
+        if($('#spinnerx').length > 0){
+            $('#spinnerx').removeClass('show');
+        }
+    },
+    log: (msg)=>{
+        console.log(msg)
+    },
+    simple_error: (msg, el) => {
+        el.classList.remove('hide');
+        el.classList.add('show');
+        el.querySelector('.msg').innerText = msg;
+        setTimeout(() => {
+            el.classList.remove('show');
+            el.classList.add('hide');
+        }, 2000);
     }
 }
 

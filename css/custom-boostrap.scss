@@ -77,19 +77,18 @@ $backdrop: rgba($color: #000000, $alpha: .6);
     box-shadow: 0px 0px 5px $error;
 }
 .error-msg{
-    width: 100%;
-    background-color: #202024a8;
-    // padding: 5px;
+    background-color: $error;
+    padding: 2px;
+    border-radius: 5px;
     display: flex;
     color: $lightColor;
     font-size: 14px;
-    
+    overflow: hidden;
     .msg{
-        border-left: 3px #923050 solid;
         padding: 5px;
-        // height: 100%;
         background-color: inherit;
         width: 100%;
+        text-align: center;
     }
 }
 .hide{
@@ -151,7 +150,7 @@ $backdrop: rgba($color: #000000, $alpha: .6);
     background: $primaryColor;
     background: linear-gradient(138deg, $primaryColor 0%, $secondaryColor 100%);
     cursor: pointer;
-    transition: .2s ease-in;
+    transition: .1s ease-in !important;
 
     &:active{
         opacity: .9;
