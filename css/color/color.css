@@ -1,10 +1,16 @@
+.picker_wrapper{
+  background-origin: blue !important;
+  display: flex;
+  right: 10px !important;
+}
 .picker_wrapper.popup {
-  margin-right: 10px !important;
+  background-color: orange !important;
+
   background-color: none !important;
   box-shadow: none !important;
-  padding-right: 10px !important;
-  height: 100% !important;
+  height: 300px !important;
   transition: .2s ease;
+  display: flex
   /* font-size: 14px !important; */
 }
 
@@ -362,8 +368,8 @@
 }
 
 .popup.popup_right {
-  top: 0;
-  left: 100%;
+  top: 10px;
+  /* left: 100%; */
 }
 
 .popup.popup_right .picker_arrow {

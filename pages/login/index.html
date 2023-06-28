@@ -4,48 +4,44 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nimo - Create new account</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/custom-boostrap.css">
+    <title>Nimo - Login</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/custom-boostrap.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../components/lib/sanMoji/css/emojis.css"> 
-    <link rel="stylesheet" href="../css/animation/animation.css">
-    <link rel="shortcut icon" href="../src/logo/nimo-primary.svg" type="image/x-icon">
-    <link rel="stylesheet" href="../css/color/color.css">
+    <link rel="stylesheet" href="../../components/lib/sanMoji/css/emojis.css"> 
+    <link rel="stylesheet" href="../../css/animation/animation.css">
+    <link rel="shortcut icon" href="../../src/logo/nimo-primary.svg" type="image/x-icon">
+    <link rel="stylesheet" href="../../css/color/color.css">
 </head>
 <body>
     <div class="_auth _sec" id="root">
         <div class="wrapper">
             <div class="logo-wrapper">
                 <span class="logo">
-                    <img src="../src/logo/nimo.svg" alt="NIMO" srcset="">
+                    <img src="../../src/logo/nimo.svg" alt="NIMO" srcset="">
                 </span>
-                <span class="desc">Create an account in just a few simple steps and start talking to friends and family.</span>
+                <span class="welcome">hello there! welcome.</span>
+                
             </div>
-            <div class="cred-cont _create_account">
+
+            <div class="cred-cont _lg-view _login">
                 <div class="wrapper">
                     <div class="inputs">
-                        <input type="email" class="" name="email" id="sn-email" autofocus placeholder="Email" required="">
-                
-                        <span class="hr"></span>
-                        <input type="password" name="pwd" id="sn-pwd" autofocus placeholder="Enter password" required="">
-                        <input type="password" name="c-pwd" id="sn-c-pwd" autofocus placeholder="Confirm" required="">
+                        <input type="email" name="email" id="lg_e" placeholder="Email" required="">
+                        <input type="password" name="pwd" id="lg_pwd" placeholder="Password" required="">
                     </div>
-                    <button class="btn" type="submit" id="next-btn">
-                        <span>next</span>
-                        <img src="../src/icons/arrow-right.svg" alt="">
-                    </button>
+                    <button class="btn" type="submit" id="lg_btn">login</button>
+                    <span class="pass-reset-btn" id="pass-reset-btn">Forgot your password?</span>
                 </div>
-                <span class="error-msg _phs1-err hide fade-in" id="error-el">
-                    <span class="msg ph1-err-msg">
-                    </span>
-                </span>
-                <span class="switch-action login-switch">
-                    Have an account? <u class="_login-btn">login</u>
+                <div class="error-msg fade-in hide" id="err_cont">
+                    <span class="msg"></span>
+                </div>
+                <span class="switch-action signup-switch">
+                    Don't have an account? <u class="c_btn">create one</u>
                 </span>
             </div>
         </div>
@@ -53,7 +49,7 @@
     <div id="spinnerx" class="show" >
         <div class="wrapper">
             <div class="preloader-logo">
-                <img src="../src/logo/nimo-primary.svg" alt="NIMO">
+                <img src="../../src/logo/nimo-primary.svg" alt="NIMO">
             </div>
             <div class="preloader-progress" id="progress">
                 <div class="progress-bar progress-bar-striped progress-bar-animated" ></div>
@@ -67,6 +63,6 @@
     <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <script defer src="../scripts/create-account.js" type="module"></script>
+    <script defer src="../../scripts/login.js" type="module"></script>
 </body>
 </html>

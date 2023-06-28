@@ -5,18 +5,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nimo - Account setup</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/custom-boostrap.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/custom-boostrap.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../components/lib/sanMoji/css/emojis.css"> 
-    <link rel="stylesheet" href="../css/animation/animation.css">
-    <link rel="shortcut icon" href="../src/logo/nimo-primary.svg" type="image/x-icon">
-    <link rel="stylesheet" href="../css/color/color.css">
-    <link rel="stylesheet" href="../css/cropper/croppie.css">
+    <link rel="stylesheet" href="../../components/lib/sanMoji/css/emojis.css"> 
+    <link rel="stylesheet" href="../../css/animation/animation.css">
+    <link rel="shortcut icon" href="../../src/logo/nimo-primary.svg" type="image/x-icon">
+    <link rel="stylesheet" href="../../css/color/color.css">
+    <link rel="stylesheet" href="../../css/cropper/croppie.css">
+    <link rel="stylesheet" href="../../components/lib/coloris/coloris.min.css">
 </head>
 <body>
     <div class="_auth _sec root" id="root">
@@ -25,9 +26,12 @@
                 <div class="wrapper">
                     <div class="banner">
                         <div class="banner-layer _banner_"></div>
-                        <span class="banner-picker _color-picker_" id="banner-picker">
-                            <img src="../src/icons/picker.svg" alt="">
-                        </span>
+                        <label for="color-picker-input" class="banner-picker _color-picker_" id="banner-picker">
+                            <img src="../../src/icons/picker.svg" alt="">
+                        </label>
+                        <div class="color-picker-cont" id="color-picker-cont">
+                            <input type="text" class="coloris instance1" id="color-picker-input" value="rgb(255, 0, 0)">
+                        </div>
                     </div>
                     <div class="profile-cont">
                         <div class="pfp-cont">
@@ -35,13 +39,13 @@
                                 <span class="progress hide" id="_prog"></span>
                             </span>
                             <label for="_pfp-file_" class="pfp-picker _pfp-picker_" id="pfp-picker" >
-                                <img src="../src/icons/editor.svg" alt="">
+                                <img src="../../src/icons/editor.svg" alt="">
                             </label>
                             <input type="file" accept="image/*" name="" id="_pfp-file_" hidden>
                         </div>
                         <div class="username-cont">
                             <input type="text" name="usrname" id="set-user-name" autofocus placeholder="Username" required="">
-                            <span class="usrid" id="_id_">@000000000</span>
+                            <span class="usrid tippy-tip" data-tippy-content="This is your unique ID and cannot be changed." id="_id_">@000000000</span>
                         </div>
                     </div>
                     <span class="hr"></span>
@@ -52,18 +56,18 @@
                     </div>
                     <div class="layer hide"></div>
                 </div>
-                <span class="error-msg hide _set-Err fade-in">
+                <span class="error-msg hide _set-Err fade-in" style="width: 100%;">
                     <span class="msg err-msg">
                     </span>
                 </span>
 
                 <div class="bottom-btn">
                     <div class="btn-cont">
-                        <button class="btn setup-skin-btn" type="submit" id="setup-skin-btn">
-                            <span>Skip setup</span>
+                        <button class="btn setup-skin-btn-cont fade-in" type="submit" id="setup-skin-btn-cont">
+                            <span class="btn-skip" id="btn-skip">Skip setup</span>
                         </button>
-                        <button class="btn" type="submit" id="setup-fin-btn">
-                            <span>Finish</span>
+                        <button class="btn fade-in" type="submit" id="setup-fin-btn-cont">
+                            <span id="btn-finish">Finish</span>
                         </button>
                     </div>
                 </div>
@@ -72,7 +76,7 @@
         <div class="cropper fade-in" id="cropper" data-cropper>
             <div class="wrapper">
                 <div class="header">
-                    <img src="../src/icons/crop.svg" alt="">                    
+                    <img src="../../src/icons/crop.svg" alt="">                    
                     <span>Crop profile picture</span>
                 </div>
                 <div class="cropper-wrapper" data-c-wrapper>
@@ -87,7 +91,7 @@
     <div id="spinnerx" class="show" >
         <div class="wrapper">
             <div class="preloader-logo">
-                <img src="../src/logo/nimo-primary.svg" alt="NIMO">
+                <img src="../../src/logo/nimo-primary.svg" alt="NIMO">
             </div>
             <div class="preloader-progress" id="progress">
                 <div class="progress-bar progress-bar-striped progress-bar-animated" ></div>
@@ -101,10 +105,35 @@
     <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <!-- <script src="https://unpkg.com/vanilla-picker@2"></script> -->
-    <script src="../components/lib/sanMoji/js/color-picker.min.js"></script>
-    <script src="../components/lib/sanMoji/js/cropper/croppie.js"></script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js" integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-    <script defer src="../scripts/setup.js" type="module"></script>
+    <script src="../../components/lib/sanMoji/js/color-picker.min.js"></script>
+    <script src="../../components/lib/sanMoji/js/cropper/croppie.js"></script>
+    <script src="../../components/lib/coloris/coloris.min.js"></script>
+    
+    <script type="text/javascript">
+         Coloris({
+            el: '.coloris',
+            swatches: [
+                '#264653','#2a9d8f',
+                '#e9c46a','#f4a261',
+                '#e76f51','#d62828',
+                '#023e8a','#0077b6',
+                '#0096c7','#00b4d8',
+                '#48cae4'
+            ]
+        });
+        Coloris.setInstance('.instance1', {
+            theme: 'pill',
+            themeMode: 'dark',
+            formatToggle: true,
+            closeButton: false,
+            clearButton: false,
+            swatches: [
+                '#067bc2','#84bcda',
+                '#80e377','#ecc30b',
+                '#f37748','#d56062'
+            ]
+        });
+    </script>
+    <script defer src="../../scripts/setup.js" type="module"></script>
 </body>
 </html>

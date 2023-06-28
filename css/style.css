@@ -389,7 +389,6 @@ body ._auth .wrapper .phase-2 {
 body ._auth .wrapper .phase-2 .wrapper {
   padding: 10px;
   position: relative;
-  overflow: hidden;
 }
 body ._auth .wrapper .phase-2 .wrapper .banner {
   width: 100%;
@@ -417,6 +416,7 @@ body ._auth .wrapper .phase-2 .wrapper .banner .banner-picker {
   border: 2px #3E3E45 solid;
   bottom: -16px;
   transition: 0.2s ease-in;
+  z-index: 10;
 }
 body ._auth .wrapper .phase-2 .wrapper .banner .banner-picker img {
   width: 16px;
@@ -426,6 +426,22 @@ body ._auth .wrapper .phase-2 .wrapper .banner .banner-picker:hover {
 }
 body ._auth .wrapper .phase-2 .wrapper .banner .banner-picker:active {
   background-color: #5B5C63;
+}
+body ._auth .wrapper .phase-2 .wrapper .banner .color-picker-cont {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  right: -15px;
+  bottom: -30px;
+}
+body ._auth .wrapper .phase-2 .wrapper .banner .color-picker-cont button:nth-of-type(1) {
+  border-radius: 10px;
+  height: 0px;
+  width: 0px;
+}
+body ._auth .wrapper .phase-2 .wrapper .banner .color-picker-cont #color-picker-input {
+  width: 4px;
+  visibility: hidden;
 }
 body ._auth .wrapper .phase-2 .wrapper .profile-cont {
   display: flex;
@@ -453,7 +469,7 @@ body ._auth .wrapper .phase-2 .wrapper .profile-cont .pfp-cont .pfp {
   border-radius: 100px;
   position: relative;
   overflow: hidden;
-  border: 2px #86509A solid;
+  border: 2px #5B5C63 solid;
 }
 body ._auth .wrapper .phase-2 .wrapper .profile-cont .pfp-cont .pfp .progress {
   width: 70px;
@@ -506,14 +522,14 @@ body ._auth .wrapper .phase-2 .wrapper .profile-cont .username-cont .usrid {
   justify-content: center;
   align-items: center;
   padding: 5px;
-  font-size: 16px;
+  font-size: 14px;
   cursor: not-allowed;
   padding-left: 10px;
   padding-right: 10px;
   margin-right: 5px;
   border-radius: 4px;
   color: #7D7D7D;
-  font-weight: bold;
+  font-weight: 500;
   background-color: #35353D;
 }
 body ._auth .wrapper .phase-2 .wrapper .profile-cont input {
@@ -615,13 +631,27 @@ body ._auth .wrapper .phase-2 .bottom-btn .btn-cont {
 body ._auth .wrapper .phase-2 .bottom-btn .btn-cont .btn {
   border: none;
   outline: none;
+  width: 100px;
+  height: 30px;
   border-radius: 5px;
+  overflow: hidden;
   background-color: #5B5C63;
-  padding: 10px 20px 10px 20px;
+  padding: 0px 0px 0px 0px;
   color: rgba(217, 217, 217, 0.87);
   cursor: pointer;
   font-family: inherit;
   font-size: 15px;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  transition: 0.1s ease-in;
+}
+body ._auth .wrapper .phase-2 .bottom-btn .btn-cont .btn span {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 body ._auth .wrapper .phase-2 .bottom-btn .btn-cont .btn .preload {
   display: flex;
@@ -639,7 +669,6 @@ body ._auth .wrapper .phase-2 .bottom-btn .btn-cont .btn:active {
   opacity: 0.9;
 }
 body ._auth .wrapper .phase-2 .bottom-btn .btn-cont .btn:nth-of-type(2) {
-  padding: 8px 25px 8px 25px;
   background-color: #86509A;
 }
 body ._auth::-webkit-scrollbar {

@@ -107,7 +107,7 @@ const utilities = {
                 <div class="wrapper scale-up-center" id="alert-wrapper">
                     <div class="content-cont">
                         <span class="icon">
-                            <img src="${type == 'info' ? '../src/icons/info.svg' : type ==  'warning' ? '../src/icons/warning.svg' : '../src/icons/warning.svg'}" id="alert-icon">
+                            <img src="${type == 'info' ? '../../src/icons/info.svg' : type ==  'warning' ? '../../src/icons/warning.svg' : '../../src/icons/warning.svg'}" id="alert-icon">
                         </span>
                         <span class="alert-message">
                             ${msg}
@@ -404,6 +404,12 @@ const utilities = {
             el.classList.remove('show');
             el.classList.add('hide');
         }, 2000);
+    },
+    set_tip: () => {    
+        tippy('.tippy-tip', {
+            placement: 'bottom',
+            arrow: true,
+        });
     }
 }
 

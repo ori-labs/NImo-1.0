@@ -5,9 +5,9 @@ import utilities from "../components/utilities/utilities.js";
 (function(){
     core.config_core();
     core.manage_state(
-        '/pages/setup.html',
-        '/index.html',
-        '/pages/create-account.html'
+        '/pages/setup/#user',
+        '/',
+        '/pages/create-account/#index?type=new'
     )    
 
     let root = document.querySelector('#root');

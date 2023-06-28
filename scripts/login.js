@@ -5,9 +5,9 @@ import utilities from "../components/utilities/utilities.js";
 (function(){
     core.config_core();
     core.manage_state(
-        '/pages/setup.html',
-        '/index.html',
-        '/pages/login.html'
+        '/pages/setup#user',
+        '/',
+        '/pages/login#index'
     )
     let auth = firebase.auth();
 
