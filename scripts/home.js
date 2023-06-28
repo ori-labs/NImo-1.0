@@ -3,11 +3,12 @@ import config from "../components/lib/sanMoji/js/config.js";
 import utilities from "../components/utilities/utilities.js";
 import Router from "../components/services/router/router.js";
 import fromNow from "../components/lib/sanMoji/js/timeSince.js";
+import core from "../components/core/core.js";
 
 
 (function(uid){
-    init_lib();
-
+    core.config_core();
+    
     let  lsDB = localStorage;
     let auth = firebase.auth(),
         fsDB = firebase.firestore();
