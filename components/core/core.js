@@ -9,14 +9,18 @@ const core = {
         const auth = firebase.auth();
         const fsdb = firebase.firestore();
 
+        if(page == 'home'){
+            utilities.preloader();
+        }
         auth.onAuthStateChanged( async __usr__ => {
             if(__usr__){
                 const meta_data = await getMeta(__usr__.uid);
-
                 lsdb.setItem("id", meta_data[1]);
                 lsdb.setItem("default_color", meta_data[2]);
 
                 const state = meta_data[0];
+
+                utilities.log(state)
                 if(state != 'null'){
                     if (state === "setup") {
                         if(page == 'setup'){
@@ -26,21 +30,24 @@ const core = {
                             location.href = `${setup}`;
                         }
                     }else if (state === "user") {
-                        location.href = `${user}`;
+                        if(page == 'home'){
+                            run();
+                        }else{
+                            location.href = `${user}`;
+                        }
                     }
-                    // switch(state){
-                    //     case 'setup':
-                    //         console.log('rerolling user setup..')
-                    //         // page == 'setup' ? console.log(':watchdog:deployed:') : location.href = `${setup}`;
-                    //     case 'user':
-                    //         lsdb.clear();
-                    //         location.href = `${user}`;
-                    // }
                 }else{
-                    location.href = `${login}`;
+                    if(page == 'login'){
+                        utilities.manage_preloader();
+                    }else{
+                        location.href = `${login}`;
+                    }
                 }
             }else{
-                utilities.hide_preloader();
+                utilities.log('no user')
+                page == 'login' ? utilities.manage_preloader() :
+                page == 'create-account' ? utilities.manage_preloader() : 
+                location.href = `${login}`
             }
         })
         async function getMeta(_usr_) {

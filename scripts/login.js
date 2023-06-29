@@ -7,7 +7,8 @@ import utilities from "../components/utilities/utilities.js";
     core.manage_state(
         '/pages/setup#user',
         '/',
-        '/pages/login#index'
+        '/pages/login#index',
+        'login'
     )
     let auth = firebase.auth();
 
@@ -28,7 +29,7 @@ import utilities from "../components/utilities/utilities.js";
 
         c_btn.addEventListener('click', (e)=> {
             e.preventDefault();
-            location.href = '../pages/create-account.html'
+            location.href = '../create-account'
         });
         pass_reset_btn.addEventListener('click', () => {
             location.href = '../pages/password-reset.html'

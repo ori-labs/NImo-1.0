@@ -7,7 +7,8 @@ import utilities from "../components/utilities/utilities.js";
     core.manage_state(
         '/pages/setup/#user',
         '/',
-        '/pages/create-account/#index?type=new'
+        '/pages/create-account/#index?type=new',
+        'create-account'
     )    
 
     let root = document.querySelector('#root');
@@ -23,11 +24,11 @@ import utilities from "../components/utilities/utilities.js";
 
         let preloader = `
             <span class="preload">
-                <img src="../src/assets/spinner-2.svg" alt="">
+                <img src="../../src/assets/spinner-2.svg" alt="">
             </span>`, 
         btn_prev_el = `
             <span>next</span>
-            <img src="../src/icons/arrow-right.svg" alt="">
+            <img src="../../src/icons/arrow-right.svg" alt="">
         `;
         
         let lg_btn = document.querySelector('._login-btn'),
@@ -43,7 +44,7 @@ import utilities from "../components/utilities/utilities.js";
         });
         lg_btn.addEventListener('click', (e)=> {
             e.preventDefault();
-            location.href = '../pages/login.html'
+            location.href = '../login'
         });
 
         on_key_enter();
@@ -96,7 +97,7 @@ import utilities from "../components/utilities/utilities.js";
                                         <div class="cap-wrapper">
                                             <div class="captcha"><s class="cap-h"></s></div>
                                             <span class="refresh cap-rf">
-                                                <img src="../src/icons/refresh.svg" alt="">
+                                                <img src="../../src/icons/refresh.svg" alt="">
                                             </span>
                                         </div>
                                         <input type="text"  autofocus name="captchainput" id="cap-input" class="cap-input cap-in" required="" placeholder="Enter the captcha">
@@ -125,38 +126,7 @@ import utilities from "../components/utilities/utilities.js";
                 captcha_input.value = '';
 
                 utilities.createCaptcha(captcha_h);
-        
-                const events = {
-                    esc: (el) => {
-                        document.onkeydown = function(evt) {
-                            evt = evt || window.event;
-                            let isEscape = false;
-                            if ("key" in evt) {
-                                isEscape = (evt.key === "Escape" || evt.key === "Esc");
-                            } else {
-                                isEscape = (evt.keyCode === 27);
-                            }
-                            if (isEscape) {
-                                if(el != null){
-                                    el.remove();
-                                }
-                            }
-                        };
-                    },
-                    outClick: (el, id) => {
-                        document.addEventListener("mouseup", function(event) {
-                            let obj = document.getElementById(id);
-                            if(obj != null){
-                                if (!obj.contains(event.target)) {
-                                    if(el != null){
-                                        el.remove();
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }
-        
+
                 captcha_refresh.addEventListener('click', () => {
                     setTimeout(() => {
                         utilities.createCaptcha(captcha_h);
@@ -174,7 +144,7 @@ import utilities from "../components/utilities/utilities.js";
 
                 function on_success() {
                     verify_btn.innerHTML = ` <span class="preload">
-                        <img src="../src/assets/spinner-2.svg" alt="">
+                        <img src="../../src/assets/spinner-2.svg" alt="">
                     </span>`;
 
                     verify_btn.innerText = 'SUCCESS!';

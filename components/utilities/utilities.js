@@ -387,6 +387,19 @@ const utilities = {
             utilities.hide_preloader();
         }, 2000);
     },
+    preloader: () => {
+        setTimeout(() => {
+            setTimeout(()=> {
+                $('#progress').addClass('reveal');
+            }, 500)
+            setTimeout(()=> {
+                $('#progress').addClass('load');
+            }, 1500)
+        });
+        window.oncontextmenu = function() {
+            return false;
+        }
+    },
     hide_preloader: () => {
         $('#spinnerx').removeClass('load');
         if($('#spinnerx').length > 0){
@@ -410,6 +423,68 @@ const utilities = {
             placement: 'bottom',
             arrow: true,
         });
+    },
+    eventlistener: {
+        listen: {
+            esc: (el, el2) => {
+                if(el != null){
+                    document.onkeydown = function(evt) {
+                        evt = evt || window.event;
+                        let isEscape = false;
+                        if ("key" in evt) {
+                            isEscape = (evt.key === "Escape" || evt.key === "Esc");
+                        } else {
+                            isEscape = (evt.keyCode === 27);
+                        }
+                        if (isEscape) {
+                            el2.classList.add('scale-out-center');
+                            setTimeout(() => {
+                                el2.classList.remove('scale-out-center');
+                                history.back();
+                            }, 100);
+                        }
+                    };
+                }else{
+                    return;
+                }
+                
+            },
+            outClick: (id) => {
+                document.addEventListener("mouseup", function(event) {
+                    let obj = document.getElementById(id);
+                    if(obj != null){
+                        if (!obj.contains(event.target)) {
+                            obj.classList.add('scale-out-center');
+                            setTimeout(() => {
+                                obj.classList.remove('scale-out-center');
+                                history.back();
+                            }, 100);
+                        }
+                    }else{
+                        return;
+                    }
+                });
+            }
+        }
+    },
+    simple_alert: {
+        alert: (msg, iconEl, msgEl, parent, type) =>{
+            msgEl.innerHTML = msg;
+            parent.style.display = 'flex';
+            if(type == 'error'){
+                parent.classList.add('msg-box-error');
+                parent.classList.remove('msg-box-success');
+                iconEl.src = '../src/icons/info-white.svg';
+            }else if(type == 'success'){
+                parent.classList.add('msg-box-success');
+                parent.classList.remove('msg-box-error');
+                iconEl.src = '../src/icons/success-white.svg';
+            }
+
+            setTimeout(() => {
+                parent.style.display = 'none';
+            }, 3000)
+        }
     }
 }
 

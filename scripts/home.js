@@ -8,10 +8,16 @@ import core from "../components/core/core.js";
 
 (function(uid){
     core.config_core();
-    
-    let  lsDB = localStorage;
-    let auth = firebase.auth(),
-        fsDB = firebase.firestore();
+    core.manage_state(
+        '/pages/setup#user',
+        '/',
+        '/pages/login#index',
+        'home',
+        render_homepage
+    )
+
+    let  lsdb = localStorage,
+        fsdb = firebase.firestore();
     let root = document.getElementById('root'),
         room_cont = document.querySelector('[data-room-container]'),
         chat_cont = document.querySelector('[data-chat-container]');
@@ -20,16 +26,10 @@ import core from "../components/core/core.js";
         mode: 'hash',
         root: '/'
     });
-    
-    try {
-        home_components();
-    } catch (error) {
-        location.reload();
-    }
+   
+    home_components();
 
     function home_components(){
-        listen_auth();
-        // render_homepage();
         manage_router();
     }
     function render_homepage(){
@@ -42,7 +42,7 @@ import core from "../components/core/core.js";
             explore_rooms_btn = document.getElementById('explore-rooms');
         
         try {
-            fsDB.collection('client').doc('meta').collection(uid).doc('meta_data').get()
+            fsdb.collection('client').doc('meta').collection(uid).doc('meta_data').get()
             .then((sn) => {
                 $('#spinnerx').removeClass('load');
                 if($('#spinnerx').length > 0){
@@ -58,9 +58,9 @@ import core from "../components/core/core.js";
                 document.querySelector('.h-prof-img').style.backgroundImage = `url(${data.userProfileAvatar === 'default' ? '../src/imgs/avatar.png' : data.userProfileAvatar})`;
                 document.querySelector('.h-prof-img').style.backgroundColor = `${data.userProfileBackDrop}`;
                 
-                lsDB.setItem('cache', `${data.user}?${data.userProfileAvatar}?${data.userProfileBackDrop}`);
-                lsDB.setItem('client', data.user);
-                lsDB.setItem('clientAvatar', data.userProfileAvatar);
+                lsdb.setItem('cache', `${data.user}?${data.userProfileAvatar}?${data.userProfileBackDrop}`);
+                lsdb.setItem('client', data.user);
+                lsdb.setItem('clientAvatar', data.userProfileAvatar);
     
                 update_friends_and_rooms();
                 get_profile_data();
@@ -120,7 +120,6 @@ import core from "../components/core/core.js";
                     let toggle = document.getElementById('profile-toggle'),
                         profile_card_container = document.getElementById('profile-card');
     
-    
                     toggle.addEventListener('click', function(){
                         log(profile_card_container.id);
                         if(profile_card_container.classList.contains('hide')){
@@ -133,216 +132,136 @@ import core from "../components/core/core.js";
                         }
                     });
                 }
-            }).catch((err) => {
-                console.log('something went wrong', err);
             });
-        } catch (error) {
-            location.reload();
-        }
 
-        document.querySelector('[data-user-container]').addEventListener('click', () => {
-            navigator.clipboard.writeText(`${user0}@${id0}`)
-            .then(() => {
-                utilities.popup('User id copied successfully!', root);
-            })
-            .catch((err) => {
-                console.error('%cNode error', 'color: #1299dc');
-            });
-        });
-
-        vault_btn.addEventListener('click', ()=> {
-            location.hash = '#?vault';
-        });
-        notification_btn.addEventListener('click', ()=> {
-            let inbox_ref = fsDB.collection('client').doc('meta').collection(uid).doc('notifications')
-            .collection('inboxes').doc('all').collection('updated');
-            
-            location.hash = '#?notifications';
-            deleteCollection(inbox_ref, 100)
-            .then(function() {
-            }).catch(function(error) {log(error)});
-            
-            function deleteCollection(inbox_ref, batchSize) {
-                var query = inbox_ref.orderBy('__name__').limit(batchSize);
-                
-                return new Promise(function(resolve, reject) {
-                    deleteQueryBatch(query, batchSize, resolve, reject);
-                });
-            }
-            function deleteQueryBatch(query, batchSize, resolve, reject) {
-                query.get().then(function(snapshot) {
-                    if (snapshot.size == 0) { return 0};
-                    var batch = inbox_ref.firestore.batch();
-                    snapshot.docs.forEach(function(doc) {
-                        batch.delete(doc.ref);
-                    });
-                    return batch.commit().then(function() {
-                        return snapshot.size;
-                    });
-                }).then(function(numDeleted) {
-                    if (numDeleted === 0) {
-                        resolve();
-                        return;
-                    }
-                }).catch(reject);
-            };
-        });
-        new_room_btn.addEventListener('click', ()=>{
-            location.hash = '#?new-room';
-        });
-        explore_rooms_btn.addEventListener('click', ()=>{
-            location.hash = '#?explore-rooms';
-        });
-
-        listen_to_request();
-        listen_to_notification();
-        setTip();
-
-        function listen_to_request(){
-            vault_btn.innerHTML = `<span>
-                                    <img class="frnd" src="../src/icons/friends.svg" alt="">
-                                </span>`
-            fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming').onSnapshot(function(sn){
-                sn.docChanges().forEach(function(ch){
-                    lsDB.setItem('vault_inbox_count', sn.size);
-                    
-                    if(sn.size <= 0){
-                        vault_btn.innerHTML = `<span>
-                            <img class="frnd" src="../src/icons/friends.svg" alt="">
-                        </span>`;
-                    }else{
-                        let bagde_card = `
-                            <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
-                        `;
-                        vault_btn.insertAdjacentHTML('beforeend', bagde_card);
-                        utilities.createNotification(
-                            'Friend Request', 
-                            'You have a new friend request.', 
-                            '../src/assets/notification/request-icon.png'
-                        );
-                    }
+            document.querySelector('[data-user-container]').addEventListener('click', () => {
+                navigator.clipboard.writeText(`${user0}@${id0}`)
+                .then(() => {
+                    utilities.popup('User id copied successfully!', root);
                 })
-            })
-        };
-        function listen_to_notification(){
-            notification_btn.innerHTML = `<span>
-                                    <img class="frnd" src="../src/icons/notification.svg" alt="">
-                                </span>`
-            fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('inboxes')
-            .doc('all').collection('updated').onSnapshot(function(sn){
-                sn.docChanges().forEach(function(ch){
-                    lsDB.setItem('inbox size', sn.size);
+                .catch((err) => {
+                    console.error('%cNode error', 'color: #1299dc');
+                });
+            });
+
+            vault_btn.addEventListener('click', ()=> {
+                location.hash = '#?vault';
+            });
+            notification_btn.addEventListener('click', ()=> {
+                let inbox_ref = fsdb.collection('client').doc('meta').collection(uid).doc('notifications')
+                .collection('inboxes').doc('all').collection('updated');
+                
+                location.hash = '#?notifications';
+                deleteCollection(inbox_ref, 100)
+                .then(function() {
+                }).catch(function(error) {log(error)});
+                
+                function deleteCollection(inbox_ref, batchSize) {
+                    var query = inbox_ref.orderBy('__name__').limit(batchSize);
                     
-                    if(sn.size <= 0){
-                        notification_btn.innerHTML = `<span>
-                            <img class="frnd" src="../src/icons/notification.svg" alt="">
-                        </span>`
-                    }else{
-                        if(ch.type == 'added'){
+                    return new Promise(function(resolve, reject) {
+                        deleteQueryBatch(query, batchSize, resolve, reject);
+                    });
+                }
+                function deleteQueryBatch(query, batchSize, resolve, reject) {
+                    query.get().then(function(snapshot) {
+                        if (snapshot.size == 0) { return 0};
+                        var batch = inbox_ref.firestore.batch();
+                        snapshot.docs.forEach(function(doc) {
+                            batch.delete(doc.ref);
+                        });
+                        return batch.commit().then(function() {
+                            return snapshot.size;
+                        });
+                    }).then(function(numDeleted) {
+                        if (numDeleted === 0) {
+                            resolve();
+                            return;
+                        }
+                    }).catch(reject);
+                };
+            });
+            new_room_btn.addEventListener('click', ()=>{
+                location.hash = '#?new-room';
+            });
+            explore_rooms_btn.addEventListener('click', ()=>{
+                location.hash = '#?explore-rooms';
+            });
+
+            listen_to_request();
+            listen_to_notification();
+            setTip();
+
+            function listen_to_request(){
+                vault_btn.innerHTML = `<span>
+                                        <img class="frnd" src="../src/icons/friends.svg" alt="">
+                                    </span>`
+                fsdb.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming').onSnapshot(function(sn){
+                    sn.docChanges().forEach(function(ch){
+                        lsdb.setItem('vault_inbox_count', sn.size);
+                        
+                        if(sn.size <= 0){
+                            vault_btn.innerHTML = `<span>
+                                <img class="frnd" src="../src/icons/friends.svg" alt="">
+                            </span>`;
+                        }else{
                             let bagde_card = `
                                 <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
                             `;
-                            notification_btn.insertAdjacentHTML('beforeend', bagde_card);
-                            sn.forEach(data => {
-                                log(data.data());
-                                let notification_id = data.data().notification_id;
-
-                                fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
-                                .doc(notification_id).get().then((item) => {
-                                    const item_data = item.data();
-                                    let type = item_data.type;
-                                    utilities.createNotification(
-                                        `${type === 'request' ? 'Friend request - Nimo' : type === 'security' ? item_data.title : type === 'community' ? item_data.title : 'Update'}`,
-                                        `${type === 'request' ? item_data.author + ' accepted your request.' : item_data.body}`,
-                                        `${type === 'request' ? '../src/assets/notification/request-icon.png' : type === 'security' ? '../src/assets/notification/security-icon.png' : '../src/assets/notification/community-icon.png'}`
-                                    )
-                                })
-                            })
+                            vault_btn.insertAdjacentHTML('beforeend', bagde_card);
+                            utilities.createNotification(
+                                'Friend Request', 
+                                'You have a new friend request.', 
+                                '../src/assets/notification/request-icon.png'
+                            );
                         }
-                    }
-                });
-            })
-        };
-    }
-
-    function listen_auth(){
-        preloader();
-        auth.onAuthStateChanged( async __usr__ => {
-            if(__usr__){
-                const meta_data = await get_user_meta(__usr__.uid);
-                lsDB.setItem('id', meta_data[1]);
-                const state = meta_data[0];
-                if(state != null){
-                    if(state === 'setup'){
-                        location.href = `pages/setup.html?uid=${__usr__.uid}`;
-                        console.log('rewinding setup ..')
-                    }else if(state === 'cancel'){
-                        location.href = 'pages/login.html';
-                    }else if(state === 'user'){
-                        console.log('%cUSER STATE : USER', 'color: #23e34d');
-                        render_homepage();
-                    }
-                }else{
-                    console.log('state : '+state);
-                    console.log('user not registered yet');
-                    location.href = 'pages/login.html';
-                }
-            }else{
-                console.log('not registered yet as a user');
-                location.href = 'pages/login.html';
-            }
-        })
-        async function get_user_meta(_usr_) {
-            let _state_ = [];
-
-            await fsDB
-                .collection("client")
-                .doc("meta_index")
-                .collection(_usr_)
-                .doc("meta_index")
-                .get()
-                .then(async (_doc_) => {
-                    if (_doc_.exists) {
-                        const id = _doc_.data().id;
-                        await fsDB
-                            .collection("client")
-                            .doc("meta")
-                            .collection(id)
-                            .doc("meta")
-                            .get()
-                            .then((meta) => {
-                                if (meta.exists) {
-                                    _state_.push(meta.data().state);
-                                    _state_.push(meta.data().id);
-                                    _state_.push(meta.data().default_color);
-                                } else {
-                                    _state_ = "null";
-                                    console.log("meta was not found");
-                                    hide_preloader();
-                                }
-                                return _state_;
-                            });
-                    } else {
-                        _state_ = "null";
-                        console.log("doc doesnt exist, sending you to login page");
-                        hide_preloader();
-                    }
-                    return _state_;
+                    })
                 })
-                .catch((err) => {
-                    console.log(
-                        "%cSomething went wrong!, retrying in 5 sec",
-                        utilities.consoleColor
-                    );
-                    hide_preloader();
-                    $("#spinnerx").addClass("show");
-                    setTimeout(() => {
-                        location.reload();
-                    }, 2000);
-                });
-            return _state_;
+            };
+            function listen_to_notification(){
+                notification_btn.innerHTML = `<span>
+                                        <img class="frnd" src="../src/icons/notification.svg" alt="">
+                                    </span>`
+                fsdb.collection('client').doc('meta').collection(uid).doc('notifications').collection('inboxes')
+                .doc('all').collection('updated').onSnapshot(function(sn){
+                    sn.docChanges().forEach(function(ch){
+                        lsdb.setItem('inbox size', sn.size);
+                        
+                        if(sn.size <= 0){
+                            notification_btn.innerHTML = `<span>
+                                <img class="frnd" src="../src/icons/notification.svg" alt="">
+                            </span>`
+                        }else{
+                            if(ch.type == 'added'){
+                                let bagde_card = `
+                                    <span class="bagde vault-bagde scale-up-center" id="vault-bagde">${sn.size}</span>
+                                `;
+                                notification_btn.insertAdjacentHTML('beforeend', bagde_card);
+                                sn.forEach(data => {
+                                    log(data.data());
+                                    let notification_id = data.data().notification_id;
+
+                                    fsdb.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
+                                    .doc(notification_id).get().then((item) => {
+                                        const item_data = item.data();
+                                        let type = item_data.type;
+                                        utilities.createNotification(
+                                            `${type === 'request' ? 'Friend request - Nimo' : type === 'security' ? item_data.title : type === 'community' ? item_data.title : 'Update'}`,
+                                            `${type === 'request' ? item_data.author + ' accepted your request.' : item_data.body}`,
+                                            `${type === 'request' ? '../src/assets/notification/request-icon.png' : type === 'security' ? '../src/assets/notification/security-icon.png' : '../src/assets/notification/community-icon.png'}`
+                                        )
+                                    })
+                                })
+                            }
+                        }
+                    });
+                })
+            };
+        } catch (error) {
+            location.reload();
         }
     }
+
     function manage_router(){
         router
         .add('', async ()=>{
@@ -350,7 +269,6 @@ import core from "../components/core/core.js";
             console.log(`%c${current_hash}`, 'color: #df3021');
     
             let main_hash = current_hash.split('?')[1];
-            // log(main_hash);
             main_hash === 'chat' ? render_chat() : destroy(document.getElementById('chat-container'));
             main_hash === 'room' ? render_room() : destroy(document.getElementById('room-container'));
             main_hash === 'vault' ? render_vault() : destroy(document.getElementById('vault'));
@@ -367,66 +285,50 @@ import core from "../components/core/core.js";
             }
         })
     }
-    function init_lib(){
-        firebase.initializeApp({
-            apiKey: config._napi,
-            authDomain: config._ndomain,
-            projectId: config._pid,
-            appId: config._aid,
-            storageBucket: config._stBck
-        });
-
-        new Croppie(document.querySelector('[data-c-wrapper]'), {
-            viewport: { width: 250, height: 250, type: "circle" },
-            showZoomer: false,
-            enableOrientation: true,
-        });   
-    }
-
-    const evenListener = {
-        listen: {
-            esc: (el, el2) => {
-                if(el != null){
-                    log('can go back');
-                    document.onkeydown = function(evt) {
-                        evt = evt || window.event;
-                        let isEscape = false;
-                        if ("key" in evt) {
-                            isEscape = (evt.key === "Escape" || evt.key === "Esc");
-                        } else {
-                            isEscape = (evt.keyCode === 27);
-                        }
-                        if (isEscape) {
-                            el2.classList.add('scale-out-center');
-                            setTimeout(() => {
-                                el2.classList.remove('scale-out-center');
-                                history.back();
-                            }, 100);
-                        }
-                    };
-                }else{
-                    return;
-                }
+    // const evenListener = {
+    //     listen: {
+    //         esc: (el, el2) => {
+    //             if(el != null){
+    //                 log('can go back');
+    //                 document.onkeydown = function(evt) {
+    //                     evt = evt || window.event;
+    //                     let isEscape = false;
+    //                     if ("key" in evt) {
+    //                         isEscape = (evt.key === "Escape" || evt.key === "Esc");
+    //                     } else {
+    //                         isEscape = (evt.keyCode === 27);
+    //                     }
+    //                     if (isEscape) {
+    //                         el2.classList.add('scale-out-center');
+    //                         setTimeout(() => {
+    //                             el2.classList.remove('scale-out-center');
+    //                             history.back();
+    //                         }, 100);
+    //                     }
+    //                 };
+    //             }else{
+    //                 return;
+    //             }
                 
-            },
-            outClick: (id) => {
-                document.addEventListener("mouseup", function(event) {
-                    let obj = document.getElementById(id);
-                    if(obj != null){
-                        if (!obj.contains(event.target)) {
-                            obj.classList.add('scale-out-center');
-                            setTimeout(() => {
-                                obj.classList.remove('scale-out-center');
-                                history.back();
-                            }, 100);
-                        }
-                    }else{
-                        return;
-                    }
-                });
-            }
-        },
-    };
+    //         },
+    //         outClick: (id) => {
+    //             document.addEventListener("mouseup", function(event) {
+    //                 let obj = document.getElementById(id);
+    //                 if(obj != null){
+    //                     if (!obj.contains(event.target)) {
+    //                         obj.classList.add('scale-out-center');
+    //                         setTimeout(() => {
+    //                             obj.classList.remove('scale-out-center');
+    //                             history.back();
+    //                         }, 100);
+    //                     }
+    //                 }else{
+    //                     return;
+    //                 }
+    //             });
+    //         }
+    //     },
+    // };
     const msgbox = {
         alert: (msg, iconEl, msgEl, parent, type) =>{
             msgEl.innerHTML = msg;
@@ -466,7 +368,7 @@ import core from "../components/core/core.js";
             </div>`;
         let friend_list_cont = document.getElementById('f_list');
         
-        fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
+        fsdb.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
         .get().then((sn) => {
             if(sn.docs.length > 0) {
                 sn.forEach((s) => {
@@ -488,7 +390,7 @@ import core from "../components/core/core.js";
 
         function  render_list(friend_id, chat_id){
             friend_list_cont.innerHTML = '';
-            fsDB.collection('client').doc('meta').collection(friend_id)
+            fsdb.collection('client').doc('meta').collection(friend_id)
             .doc('meta_data').get().then(async(data) => {
                 const friend_data = data.data();
                 let card = `
@@ -505,16 +407,16 @@ import core from "../components/core/core.js";
 
                 const f_btn = document.getElementById(`fid-${friend_id}`);
                 
-                fsDB.collection('client').doc('meta').collection(friend_id).doc('links').collection('remotes').get()
+                fsdb.collection('client').doc('meta').collection(friend_id).doc('links').collection('remotes').get()
                 .then(data => {
                     data.forEach(data_index => {
-                        fsDB.collection('client').doc('meta').collection(friend_id).doc('links')
+                        fsdb.collection('client').doc('meta').collection(friend_id).doc('links')
                         .collection('remotes').doc(data_index.id).get().then(remote_data => {
                             const remote_data_val = remote_data.data();
                             if(remote_data_val.friend_id === uid){
                                 f_btn.addEventListener('click', async (e)=> {
-                                    lsDB.setItem('remote_id', remote_data_val.remote_id);
-                                    location.hash = `#?chat?fid=${friend_id}.${lsDB.getItem('remote_id')}`;
+                                    lsdb.setItem('remote_id', remote_data_val.remote_id);
+                                    location.hash = `#?chat?fid=${friend_id}.${lsdb.getItem('remote_id')}`;
                                     e.preventDefault();
                                 });
                             }
@@ -536,7 +438,7 @@ import core from "../components/core/core.js";
             `;
         let room_list_cont = document.getElementById('room-list-cont');
 
-        fsDB.collection('client').doc('meta').collection(uid).doc('logs').collection('rooms')
+        fsdb.collection('client').doc('meta').collection(uid).doc('logs').collection('rooms')
         .get().then(room_data => {
             if(room_data.size <= 0){
                 log('no rooms');
@@ -553,7 +455,7 @@ import core from "../components/core/core.js";
                 room_data.forEach(data => {
                     const room_id_0 = data.data().id;
                     log(room_id_0);
-                    fsDB.collection('client').doc('rooms').collection('room_meta').doc(room_id_0)
+                    fsdb.collection('client').doc('rooms').collection('room_meta').doc(room_id_0)
                     .get().then(data => {
                         if(data.exists){
                             let r_data = data.data();
@@ -631,7 +533,6 @@ import core from "../components/core/core.js";
         input.oninput = function(e){
             e.preventDefault();
             value = this.value;
-            log(value);
         };
         input.addEventListener('keyup', (evt) => {
             if (evt.key === 'Enter' || evt.keyCode === 13) {
@@ -649,21 +550,20 @@ import core from "../components/core/core.js";
                 history.back();
             }, 100);
         });
-        evenListener.listen.esc(container, container_wrapper);
-        evenListener.listen.outClick('container-wrappper');
         
         function validate_request(){
             const regex = /^[\w]+@[0-9]{9}$/;
 
-            const _prld = `
+            const preloader = `
                 <span class="preload">
                     <img src="../src/assets/spinner-2.svg" alt="">
                 </span>`;
 
             if(input.value != ''){
-                let uid = lsDB.getItem('id');
+                let uid = lsdb.getItem('id');
+
                 if(!regex.test(value)){
-                    msgbox.alert(
+                    utilities.simple_alert.alert(
                         'Invalid or poorly formatted Username and ID!',
                         msgbox_icoonEl,
                         msgbox_msgEl,
@@ -673,7 +573,7 @@ import core from "../components/core/core.js";
                 }else{
                     let user_id = input.value.split('@')[1];
                     if(user_id == uid){
-                        msgbox.alert(
+                        utilities.simple_alert.alert(
                             'You can not send yourself friend request!',
                             msgbox_icoonEl,
                             msgbox_msgEl,
@@ -681,11 +581,11 @@ import core from "../components/core/core.js";
                             'error'
                         )
                     }else{
-                        fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
+                        fsdb.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
                         .get()
                         .then(sn => {
                             log(sn)
-                            send_btn.innerHTML = _prld;
+                            send_btn.innerHTML = preloader;
                             send_btn.disabled = true;
                             input.disabled = true;
                             if(sn.size <= 0){
@@ -709,10 +609,10 @@ import core from "../components/core/core.js";
                             }
                         });
                         function init_friend_req(){
-                            fsDB.collection('client')
+                            fsdb.collection('client')
                             .doc('meta').collection(user_id).get().then((d) => {
                                 if(d.size <= 0){
-                                    msgbox.alert(
+                                    utilities.simple_alert.alert(
                                         'There is no user of given username or id!',
                                         msgbox_icoonEl,
                                         msgbox_msgEl,
@@ -721,14 +621,14 @@ import core from "../components/core/core.js";
                                     );
                                     reset();
                                 }else{
-                                    fsDB.collection("client")
+                                    fsdb.collection("client")
                                     .doc("meta")
                                     .collection(user_id)
                                     .limit(1)
                                     .get()
                                     .then((user) => {
                                         if(user.size <= 0){
-                                            msgbox.alert(
+                                            utilities.simple_alert.alert(
                                                 `Opps! No user with '${input.value}' was found!`,
                                                 msgbox_icoonEl,
                                                 msgbox_msgEl,
@@ -738,20 +638,20 @@ import core from "../components/core/core.js";
                                             reset();
                                         }else{
                                             let date = new Date();
-                                            fsDB.collection('client').doc('meta').collection(user_id).doc('requests')
+                                            fsdb.collection('client').doc('meta').collection(user_id).doc('requests')
                                             .collection('incoming').doc(uid)
                                             .set({
                                                 id: uid,
                                                 date: date
                                             }).then(() => {
-                                                fsDB.collection('client').doc('meta').collection(uid).doc('requests')
+                                                fsdb.collection('client').doc('meta').collection(uid).doc('requests')
                                                 .collection('outgoing').doc(user_id)
                                                 .set({
                                                     id: user_id,
                                                     date: date
                                                 }).then(() => {
                                                     log('request sent to'+user_id);
-                                                    msgbox.alert(
+                                                    utilities.simple_alert.alert(
                                                         `Request was sent successfully!`,
                                                         msgbox_icoonEl,
                                                         msgbox_msgEl,
@@ -764,19 +664,10 @@ import core from "../components/core/core.js";
                                                 });
                                             });
                                         }
-                                    }).catch(error => {
-                                        msgbox.alert(
-                                            `Opps! Something went seriously wrong, try again later!`,
-                                            msgbox_icoonEl,
-                                            msgbox_msgEl,
-                                            msgbox_parent,
-                                            'error'
-                                        );
-                                        reset();
-                                    });
+                                    })
                                 }
-                            }).catch(err => {
-                                msgbox.alert(
+                            }).catch(() => {
+                                utilities.simple_alert.alert(
                                     'Request could not be sent, try again later!',
                                     msgbox_icoonEl,
                                     msgbox_msgEl,
@@ -805,6 +696,9 @@ import core from "../components/core/core.js";
             input.value = '';
             input.disabled = false;
         }
+
+        utilities.eventlistener.listen.esc(container, container_wrapper);
+        utilities.eventlistener.listen.outClick('container-wrappper');
         setTip();
     };
 
@@ -950,8 +844,8 @@ import core from "../components/core/core.js";
                 room_preview_icon_holder = document.getElementById('preview-icon');
 
                 
-            lsDB.setItem('selected_room_icon', 'default');
-            lsDB.setItem('is_room_visible', true);
+            lsdb.setItem('selected_room_icon', 'default');
+            lsdb.setItem('is_room_visible', true);
 
             on_create_room();
 
@@ -1015,7 +909,7 @@ import core from "../components/core/core.js";
                             reader.readAsDataURL(blob);
                             reader.onload = () => {
                                 let tobase64 = reader.result;
-                                lsDB.setItem("selected_room_icon", tobase64);
+                                lsdb.setItem("selected_room_icon", tobase64);
                                 cropper_container.style.display = "none";
                                 set_icon_preview();
                             };
@@ -1023,7 +917,7 @@ import core from "../components/core/core.js";
                     });
                 }
                 function set_icon_preview(){
-                    let selcted_icon = lsDB.getItem('selected_room_icon');
+                    let selcted_icon = lsdb.getItem('selected_room_icon');
 
                     room_icon_holder.style.backgroundImage = `url(${selcted_icon})`;
                     room_preview_icon_holder.style.backgroundImage = `url(${selcted_icon})`;
@@ -1040,7 +934,7 @@ import core from "../components/core/core.js";
                         this.classList.add('active-switch');
                         switch_component_private.classList.remove('active-switch');
                         is_public = true;
-                        lsDB.setItem('is_room_visible', is_public);
+                        lsdb.setItem('is_room_visible', is_public);
                         type_preview_holder.innerText = is_public ? 'Public' : 'Private'
                     });
                     switch_component_private
@@ -1048,7 +942,7 @@ import core from "../components/core/core.js";
                         this.classList.add('active-switch');
                         switch_component_public.classList.remove('active-switch');
                         is_public = false;
-                        lsDB.setItem('is_room_visible', is_public);
+                        lsdb.setItem('is_room_visible', is_public);
                         type_preview_holder.innerText = is_public ? 'Public' : 'Private'
                     });
                 }());
@@ -1069,17 +963,17 @@ import core from "../components/core/core.js";
 
                 function make_rooom(){
                     let room_id = utilities.genID(),
-                        room_icon = lsDB.getItem('selected_room_icon'),
+                        room_icon = lsdb.getItem('selected_room_icon'),
                         room_name = new_rooom_name_input.value,
-                        room_op = `${lsDB.getItem('client')}@${lsDB.getItem('id')}`,
-                        room_type = lsDB.getItem('is_room_visible'),
+                        room_op = `${lsdb.getItem('client')}@${lsdb.getItem('id')}`,
+                        room_type = lsdb.getItem('is_room_visible'),
                         description = description_input.value,
                         date_created = new Date();
-                    let client_id = lsDB.getItem('id');
+                    let client_id = lsdb.getItem('id');
 
                     console.table([room_id, room_name, room_op, room_type, description, date_created]);
 
-                    fsDB.collection('client').doc('rooms').collection('room_meta').doc(`${room_id}`)
+                    fsdb.collection('client').doc('rooms').collection('room_meta').doc(`${room_id}`)
                     .set({
                         id: `${room_id}`,
                         icon: room_icon,
@@ -1089,13 +983,13 @@ import core from "../components/core/core.js";
                         description: description,
                         date_created: date_created
                     }).then(() => {
-                        fsDB.collection('client').doc('meta').collection(client_id).doc('logs').collection('rooms').doc(`${room_id}`)
+                        fsdb.collection('client').doc('meta').collection(client_id).doc('logs').collection('rooms').doc(`${room_id}`)
                         .set({
                             id: `${room_id}`
                         }).then(() => {
-                            fsDB.collection('client').doc('rooms').collection('room_meta').doc(`${room_id}`).collection('members').doc('list')
+                            fsdb.collection('client').doc('rooms').collection('room_meta').doc(`${room_id}`).collection('members').doc('list')
                             .collection('all').doc(client_id).set({
-                                name: lsDB.getItem('client'),
+                                name: lsdb.getItem('client'),
                                 id: client_id
                             }).then(() => {
                                 history.back();
@@ -1207,16 +1101,16 @@ import core from "../components/core/core.js";
             get_rooms();
 
             function get_rooms(){
-                fsDB.collection('client').doc('rooms').collection('room_meta').get()
+                fsdb.collection('client').doc('rooms').collection('room_meta').get()
                 .then(room_meta => {
                     room_meta.forEach(async data => {
                         let meta_ID = data.id;
                         if(!my_rooms.includes(meta_ID)){
                             log('I don\'t have '+meta_ID+" in my room list yet");
-                            fsDB.collection('client').doc('rooms').collection('room_meta').doc(meta_ID).get()
+                            fsdb.collection('client').doc('rooms').collection('room_meta').doc(meta_ID).get()
                             .then(async data => {
                                 const room_data = data.data();
-                                fsDB.collection('client').doc('rooms').collection('room_meta').doc(meta_ID).collection('members').doc('list').collection('all').get().then(size_data =>{
+                                fsdb.collection('client').doc('rooms').collection('room_meta').doc(meta_ID).collection('members').doc('list').collection('all').get().then(size_data =>{
                                     if(room_data.type == 'true'){
                                         clear_skel('.exp-skel', explore_room_container_wrapper);
 
@@ -1249,7 +1143,7 @@ import core from "../components/core/core.js";
                 });
             };
             function get_my_rooms(){
-                fsDB.collection('client').doc('meta').collection(uid).doc('logs').collection('rooms').get()
+                fsdb.collection('client').doc('meta').collection(uid).doc('logs').collection('rooms').get()
                 .then(room_data => {
                     room_data.forEach(data => {
                         my_rooms.push(data.data().id);
@@ -1385,7 +1279,7 @@ import core from "../components/core/core.js";
                             <span class="label">No incoming request.</span>
                         </div>
                     </div>`;
-                fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
+                fsdb.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
                 .onSnapshot(function(sn){
                     sn.docChanges().forEach(function(req){
                         log(req.doc.data());
@@ -1403,7 +1297,7 @@ import core from "../components/core/core.js";
                                 </div>`;
                         }else{
                             vault_incoming_req_cont.innerHTML = '';
-                            fsDB.collection('client').doc('meta').collection(req_id).doc('meta_data')
+                            fsdb.collection('client').doc('meta').collection(req_id).doc('meta_data')
                             .get().then(data => {
                                 let user_data = data.data();
                                 let card = `
@@ -1458,16 +1352,16 @@ import core from "../components/core/core.js";
                                             remote_id = utilities.rayId(),
                                             date = new Date();
                                         log(remote_id);
-                                        let username = lsDB.getItem('client');
+                                        let username = lsdb.getItem('client');
 
-                                        fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
+                                        fsdb.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
                                         .doc(remote_id).set({
                                             link_id: link_id,
                                             remote_id: remote_id,
                                             friend_id: req_id,
                                             date: date
                                         }).then(() => {
-                                            fsDB.collection('client').doc('meta').collection(req_id).doc('links').collection('remotes')
+                                            fsdb.collection('client').doc('meta').collection(req_id).doc('links').collection('remotes')
                                             .doc(remote_id).set({
                                                 link_id: link_id,
                                                 remote_id: remote_id,
@@ -1476,18 +1370,18 @@ import core from "../components/core/core.js";
                                             }).then(() => {
                                                 const notification_id = utilities.rayId(),
                                                     date = new Date();
-                                                fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
+                                                fsdb.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
                                                 .doc(req_id).delete().then(() => {
-                                                    fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('outgoing')
+                                                    fsdb.collection('client').doc('meta').collection(req_id).doc('requests').collection('outgoing')
                                                     .doc(uid).delete().then(() => {
                                                         if(incoming_card != null){
                                                             incoming_card.remove();
                                                         };
-                                                        fsDB.collection('client').doc('meta').collection(req_id).doc('notifications').collection('inboxes')
+                                                        fsdb.collection('client').doc('meta').collection(req_id).doc('notifications').collection('inboxes')
                                                         .doc('all').collection('updated').doc(notification_id).set({
                                                             notification_id: notification_id,
                                                         }).then(() => {
-                                                            fsDB.collection('client').doc('meta').collection(req_id).doc('notifications').collection('history')
+                                                            fsdb.collection('client').doc('meta').collection(req_id).doc('notifications').collection('history')
                                                             .doc(notification_id).set({
                                                                 notification_id: notification_id,
                                                                 type: 'request',
@@ -1497,9 +1391,9 @@ import core from "../components/core/core.js";
                                                                 author: username,
                                                                 remote_id: remote_id
                                                             }).then(() => {
-                                                                fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('incoming')
+                                                                fsdb.collection('client').doc('meta').collection(req_id).doc('requests').collection('incoming')
                                                                 .doc(uid).delete().then(() => {
-                                                                    fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('outgoing')
+                                                                    fsdb.collection('client').doc('meta').collection(uid).doc('requests').collection('outgoing')
                                                                     .doc(req_id).delete().then(() => {
                                                                         let pending_card = document.getElementById(`outgoing-card-${req_id}`);
                                                                         if(pending_card != null){
@@ -1521,9 +1415,9 @@ import core from "../components/core/core.js";
                                         utilities.alert('Are you sure you want to decline this request?', 'alert', action);
         
                                         function action(){
-                                            fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
+                                            fsdb.collection('client').doc('meta').collection(uid).doc('requests').collection('incoming')
                                             .doc(req_id).delete().then(() =>{
-                                                fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('outgoing')
+                                                fsdb.collection('client').doc('meta').collection(req_id).doc('requests').collection('outgoing')
                                                 .doc(uid).delete().then(() => {
                                                     log('declined friend requests');
                                                 })
@@ -1548,7 +1442,7 @@ import core from "../components/core/core.js";
             setTip();
 
             function render_outgoing_list(){
-                fsDB.collection('client').doc('meta').collection(uid)
+                fsdb.collection('client').doc('meta').collection(uid)
                 .doc('requests').collection('outgoing')
                 .get().then((sn) => {
                     if(sn.size <= 0){
@@ -1568,7 +1462,7 @@ import core from "../components/core/core.js";
                             
                             console.log(utilities.formatDate(req_date));
     
-                            fsDB.collection('client').doc('meta').collection(req_id).doc('meta_data')
+                            fsdb.collection('client').doc('meta').collection(req_id).doc('meta_data')
                             .get().then(data => {
                                 let user_data = data.data();
                                 let card = `
@@ -1607,9 +1501,9 @@ import core from "../components/core/core.js";
                                     utilities.alert('Do you want to cancel this request?', 'alert', action);
     
                                     function action(){
-                                        fsDB.collection('client').doc('meta').collection(req_id).doc('requests').collection('incoming')
+                                        fsdb.collection('client').doc('meta').collection(req_id).doc('requests').collection('incoming')
                                         .doc(uid).delete().then(() => {
-                                             fsDB.collection('client').doc('meta').collection(uid).doc('requests').collection('outgoing')
+                                             fsdb.collection('client').doc('meta').collection(uid).doc('requests').collection('outgoing')
                                             .doc(req_id).delete().then(() => {
                                                 render_outgoing_list();
                                             }).catch(err => {
@@ -1638,14 +1532,14 @@ import core from "../components/core/core.js";
                         </div>
                     </div>`;
 
-                fsDB.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
+                fsdb.collection('client').doc('meta').collection(uid).doc('links').collection('remotes')
                 .get().then((link_data) => {
                     vault_friends_cont.innerHTML = '';
                     link_data.forEach(data => {
                         let friend_id = data.data().friend_id,
                             remote_id = data.data().remote_id;
 
-                        fsDB.collection('client').doc('meta').collection(friend_id).doc('meta_data')
+                        fsdb.collection('client').doc('meta').collection(friend_id).doc('meta_data')
                         .get().then((friend_data) => {
                             let fdata = friend_data.data();
                             let card = `
@@ -1685,9 +1579,9 @@ import core from "../components/core/core.js";
                             vault_friend_remove_btn.addEventListener('click', ()=> {
                                 utilities.alert(`Are you sure you want to remove <b>${fdata.user}</b> from your friend list?`, alert, action);
                                 function action(){
-                                    fsDB.collection('client').doc('meta').collection(uid).doc('links')
+                                    fsdb.collection('client').doc('meta').collection(uid).doc('links')
                                     .collection('remotes').doc(remote_id).delete().then(() => {
-                                        fsDB.collection('client').doc('meta').collection(friend_id).doc('links')
+                                        fsdb.collection('client').doc('meta').collection(friend_id).doc('links')
                                         .collection('remotes').doc(remote_id).delete().then(() => {
                                             render_friends_list();
                                             get_friend_list();
@@ -1762,7 +1656,7 @@ import core from "../components/core/core.js";
             function update_notification(){
                 notification_container_wrapper.innerHTML = '';
                 log(uid);
-                fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
+                fsdb.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
                 .get().then(data => {
                     if(data.size <= 0){
                         notification_container_wrapper.innerHTML = empty_notifications_holder;
@@ -1805,7 +1699,7 @@ import core from "../components/core/core.js";
                             location.href = `../pages/chat.html?rid=${remote_id}`;
                         });
                         notification_clear_btn.addEventListener('click', () => {
-                            fsDB.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
+                            fsdb.collection('client').doc('meta').collection(uid).doc('notifications').collection('history')
                             .doc(notification_id).delete().then(() => {
                                 if(notification_card != null){
                                     notification_card.remove();
@@ -1817,7 +1711,7 @@ import core from "../components/core/core.js";
                     });
                 }).catch(error => log(error));
             }
-        }(lsDB.getItem('id')));
+        }(lsdb.getItem('id')));
     };
 
     function render_chat(){
@@ -2071,9 +1965,9 @@ import core from "../components/core/core.js";
                 //                 hasAttachment = true,
                 //                 desc =  media_description.value;
 
-                //             lsDB.setItem('hasAttachment', hasAttachment);
-                //             lsDB.setItem('attachment', attachment);
-                //             lsDB.setItem('description', files.name);
+                //             lsdb.setItem('hasAttachment', hasAttachment);
+                //             lsdb.setItem('attachment', attachment);
+                //             lsdb.setItem('description', files.name);
                 //         });
                 //     }
                 // )
@@ -2106,12 +2000,12 @@ import core from "../components/core/core.js";
                                         description = media_description.value;
         
                                         try {
-                                            lsDB.setItem('attachment', attachment);
-                                            lsDB.setItem('has_attachment', true);
-                                            lsDB.setItem('width', width);
-                                            lsDB.setItem('height', height);
-                                            lsDB.setItem('is_image', isImage);
-                                            lsDB.setItem('description', description);
+                                            lsdb.setItem('attachment', attachment);
+                                            lsdb.setItem('has_attachment', true);
+                                            lsdb.setItem('width', width);
+                                            lsdb.setItem('height', height);
+                                            lsdb.setItem('is_image', isImage);
+                                            lsdb.setItem('description', description);
                                         } catch (error) {
                                             clear();
                                             image_picker_cont.style.display = 'none';
@@ -2121,10 +2015,10 @@ import core from "../components/core/core.js";
                                 });
                             }else{
                                 try {
-                                    lsDB.setItem('attachment', this.result);
-                                    lsDB.setItem('has_attachment', true);
-                                    lsDB.setItem('is_image', isImage);
-                                    lsDB.setItem('description', media_description.value);
+                                    lsdb.setItem('attachment', this.result);
+                                    lsdb.setItem('has_attachment', true);
+                                    lsdb.setItem('is_image', isImage);
+                                    lsdb.setItem('description', media_description.value);
                                 } catch (error) {
                                     clear();
                                     image_picker_cont.style.display = 'none';
@@ -2140,19 +2034,19 @@ import core from "../components/core/core.js";
                         // media_description.innerText = utilities.trimFileName(files.name)
                         
                         media_description.addEventListener('input', () => {
-                            lsDB.setItem('description', media_description.value);
+                            lsdb.setItem('description', media_description.value);
                         });
                     }
                 }
             }
             
             function clear(){
-                lsDB.removeItem('attachment');
-                lsDB.removeItem('has_attachment');
-                lsDB.removeItem('description');
-                lsDB.removeItem('is_image');
-                lsDB.removeItem('width');
-                lsDB.removeItem('height');
+                lsdb.removeItem('attachment');
+                lsdb.removeItem('has_attachment');
+                lsdb.removeItem('description');
+                lsdb.removeItem('is_image');
+                lsdb.removeItem('width');
+                lsdb.removeItem('height');
             }
         }
         function emoji_picker_toggle(){
@@ -2230,7 +2124,7 @@ import core from "../components/core/core.js";
                 f_name = document.getElementById('f-name'),
                 msg_input = document.getElementById('msg-input');
 
-            fsDB.collection('client').doc('meta').collection(id).doc('meta_data').get()
+            fsdb.collection('client').doc('meta').collection(id).doc('meta_data').get()
             .then(data => {
                 const f_data = data.data();
 
@@ -2288,7 +2182,7 @@ import core from "../components/core/core.js";
             let members = [fid, uid];
             
             for(let a in members){
-                fsDB.collection('client').doc('meta').collection(members[a]).doc('meta_data').get()
+                fsdb.collection('client').doc('meta').collection(members[a]).doc('meta_data').get()
                 .then(meta => {
                     const meta_data = meta.data();
                     clear_skel('.participant-skel-cont', member_list_container);
@@ -2379,16 +2273,16 @@ import core from "../components/core/core.js";
         }
         function render_messages(cid, fid){
             let msg_container = document.getElementById('msg-container');
-            const remote_id = lsDB.getItem('remote_id');
+            const remote_id = lsdb.getItem('remote_id');
             let is_left_shift = false;
             
             let switch_ray = 0;
 
-            fsDB.collection('client').doc('meta').collection(fid).doc('meta_data').get()
+            fsdb.collection('client').doc('meta').collection(fid).doc('meta_data').get()
             .then(meta_data => {
                 let friend_meta_data = meta_data.data();
 
-                fsDB.collection('client').doc('meta_index').collection(remote_id)
+                fsdb.collection('client').doc('meta_index').collection(remote_id)
                 .orderBy("timestamp", "asc").onSnapshot(async function(sn){
                     sn.docChanges().forEach(function(ch){
                         let data = ch.doc.data();
@@ -2396,13 +2290,13 @@ import core from "../components/core/core.js";
                         clear_skel('.skel', msg_container);
 
                         if(ch.type == 'added'){
-                            data.maskID === uid && lsDB.getItem('switch_ray') === null ? lsDB.setItem('switch_ray', 1) : lsDB.setItem('switch_ray', 1);
+                            data.maskID === uid && lsdb.getItem('switch_ray') === null ? lsdb.setItem('switch_ray', 1) : lsdb.setItem('switch_ray', 1);
 
                             let time_stamp = data.date;
 
                             let img_aspect_ratio = data.attachment.hasAttachment ? data.attachment.width / data.attachment.height : null;
                             let msg_card = `
-                                <div class="msg-card-component ${data.mention.includes(`@${lsDB.getItem('client')}`) ? 'mention' : 'hello'} ${data.reply.replyUserID == uid && data.maskID != uid ? 'res-reply' : 'normal'}" id="msg-card-${data.rayId}"
+                                <div class="msg-card-component ${data.mention.includes(`@${lsdb.getItem('client')}`) ? 'mention' : 'hello'} ${data.reply.replyUserID == uid && data.maskID != uid ? 'res-reply' : 'normal'}" id="msg-card-${data.rayId}"
                                     style="margin: ${data.switchRay==0?'0px':'5px'} 0px ${data.switchRay==0?'2px':'5px'} 0px;padding: ${data.switchRay==0?'3px':'8px'} 8px ${data.switchRay==0?'2px':'4px'} 8px;"
                                 >
                                     <div class="message-btn-cont" style="display:none" id="msg-btn-cont-${data.rayId}">
@@ -2425,7 +2319,7 @@ import core from "../components/core/core.js";
                                         <span class="link-node"></span>
                                     </div>
                                     <div class="msg-pf" style="display: ${data.switchRay == 0 ? 'none' : 'flex'}">
-                                        <span class="pfp" style="background-image: url(${data.maskID === uid ? (data.message.authorAvatar === 'default' ? '/src/imgs/avatar.svg' : lsDB.getItem('clientAvatar')) : (friend_meta_data.userProfileAvatar === 'default' ? '/src/imgs/avatar.svg' : friend_meta_data.userProfileAvatar)});"></span>
+                                        <span class="pfp" style="background-image: url(${data.maskID === uid ? (data.message.authorAvatar === 'default' ? '/src/imgs/avatar.svg' : lsdb.getItem('clientAvatar')) : (friend_meta_data.userProfileAvatar === 'default' ? '/src/imgs/avatar.svg' : friend_meta_data.userProfileAvatar)});"></span>
                                         <span class="name-ts"><span class="name" id="pf-name-${data.rayId}">${data.message.author}</span><span class="time-stamp time">&nbsp;&nbsp;${utilities.formatDate(time_stamp.toDate())}</span></span>
                                     </div>
                                     <div class="msg">
@@ -2514,7 +2408,7 @@ import core from "../components/core/core.js";
                                     });
 
                                     function delete_msg(){
-                                        fsDB.collection('client').doc('meta_index').collection(remote_id).doc(data.rayId).delete()
+                                        fsdb.collection('client').doc('meta_index').collection(remote_id).doc(data.rayId).delete()
                                         .then().catch(() => {
                                             utilities.alert(
                                                 'Opps! Couldn\'t perfom the action, try again later.',
@@ -2537,16 +2431,16 @@ import core from "../components/core/core.js";
                                         
                                         console.log(replyID,isReply,replyMsg,replyUserAvatar,replyUserName);
                                         
-                                        lsDB.setItem('reply_id', replyID);
-                                        lsDB.setItem('is_reply', isReply);
-                                        lsDB.setItem('reply_msg', data.attachment.hasAttachment ? 'Attachment' : replyMsg);
-                                        lsDB.setItem('reply_avatar', replyUserAvatar);
-                                        lsDB.setItem('reply_username', replyUserName);
-                                        lsDB.setItem('reply_user_id', replyUserID);
-                                        lsDB.setItem('_metaSwitch', lsDB.getItem('switch_ray'))
+                                        lsdb.setItem('reply_id', replyID);
+                                        lsdb.setItem('is_reply', isReply);
+                                        lsdb.setItem('reply_msg', data.attachment.hasAttachment ? 'Attachment' : replyMsg);
+                                        lsdb.setItem('reply_avatar', replyUserAvatar);
+                                        lsdb.setItem('reply_username', replyUserName);
+                                        lsdb.setItem('reply_user_id', replyUserID);
+                                        lsdb.setItem('_metaSwitch', lsdb.getItem('switch_ray'))
                                         
                                         setTimeout(() => {
-                                            lsDB.setItem('switch_ray', 1);
+                                            lsdb.setItem('switch_ray', 1);
                                         }, 100);
     
                                         if(reply_handle != null){
@@ -2568,17 +2462,17 @@ import core from "../components/core/core.js";
                                                     document.querySelector('.reply').classList.remove('reply')
                                                 }
                                                 (function(){
-                                                    lsDB.removeItem('reply_id');
-                                                    lsDB.removeItem('is_reply');
-                                                    lsDB.removeItem('reply_msg');
-                                                    lsDB.removeItem('reply_avatar');
-                                                    lsDB.removeItem('reply_username'),
-                                                    lsDB.removeItem('replyUserProfileBackDrop');
-                                                    lsDB.removeItem('reply_user_id');
-                                                    if(lsDB.getItem('_metaSwitch') == 1){
-                                                        lsDB.setItem('switch_ray', 1);
+                                                    lsdb.removeItem('reply_id');
+                                                    lsdb.removeItem('is_reply');
+                                                    lsdb.removeItem('reply_msg');
+                                                    lsdb.removeItem('reply_avatar');
+                                                    lsdb.removeItem('reply_username'),
+                                                    lsdb.removeItem('replyUserProfileBackDrop');
+                                                    lsdb.removeItem('reply_user_id');
+                                                    if(lsdb.getItem('_metaSwitch') == 1){
+                                                        lsdb.setItem('switch_ray', 1);
                                                     }else{
-                                                        lsDB.setItem('switch_ray', 0);
+                                                        lsdb.setItem('switch_ray', 0);
                                                     }
                                                 }())
                                             })
@@ -2690,7 +2584,7 @@ import core from "../components/core/core.js";
                 if(e.key == 'Enter' || e.keyCode === 13){
                     let input_value = chat_input.value.trim().trimStart();
 
-                    can_send = lsDB.getItem('has_attachment') ? true : input_value.length > 0 ? true : false;
+                    can_send = lsdb.getItem('has_attachment') ? true : input_value.length > 0 ? true : false;
 
                     if(can_send){
                         send();
@@ -2699,38 +2593,38 @@ import core from "../components/core/core.js";
                     function send(){
                         let msg = chat_input.value,
                         date = new Date(),
-                        cache = lsDB.getItem('cache'),
+                        cache = lsdb.getItem('cache'),
                         cache_data = cache.split('?'),
-                        daemon = lsDB.getItem('deamon'),
-                        desc = lsDB.getItem('description');
+                        daemon = lsdb.getItem('deamon'),
+                        desc = lsdb.getItem('description');
 
                         const ray_id = utilities.rayId();
-                        fsDB.collection('client').doc('meta_index').collection(cid).doc(ray_id)
+                        fsdb.collection('client').doc('meta_index').collection(cid).doc(ray_id)
                         .set(
                             {
                                 id: `${fid}.${cid}`,
                                 maskID: `${uid}`,
-                                switchRay: lsDB.getItem('switch_ray'),
+                                switchRay: lsdb.getItem('switch_ray'),
                                 rayId: `${ray_id}`,
                                 type: 'default',
                                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                                 date: date,
                                 mention: utilities.hasMention(msg),
                                 attachment: {
-                                    hasAttachment: lsDB.getItem('has_attachment') || null,
-                                    attachment: lsDB.getItem('attachment') || 'none',
-                                    height: lsDB.getItem('height'),
-                                    width: lsDB.getItem('width'),
-                                    isImage: lsDB.getItem('is_image'),
+                                    hasAttachment: lsdb.getItem('has_attachment') || null,
+                                    attachment: lsdb.getItem('attachment') || 'none',
+                                    height: lsdb.getItem('height'),
+                                    width: lsdb.getItem('width'),
+                                    isImage: lsdb.getItem('is_image'),
                                     description: desc || '',
                                 },
                                 reply: {
-                                    isReply: lsDB.getItem('is_reply') || false,
-                                    replyId: lsDB.getItem('reply_id') || '',
-                                    replyMsg: lsDB.getItem('reply_msg') == 'Attachment' ? 'Attachment' : lsDB.getItem('reply_msg'),
-                                    replyUserName: lsDB.getItem('reply_username') || '',
-                                    replyUserAvatar: lsDB.getItem('reply_avatar') || '',
-                                    replyUserID: lsDB.getItem('reply_user_id') || '',
+                                    isReply: lsdb.getItem('is_reply') || false,
+                                    replyId: lsdb.getItem('reply_id') || '',
+                                    replyMsg: lsdb.getItem('reply_msg') == 'Attachment' ? 'Attachment' : lsdb.getItem('reply_msg'),
+                                    replyUserName: lsdb.getItem('reply_username') || '',
+                                    replyUserAvatar: lsdb.getItem('reply_avatar') || '',
+                                    replyUserID: lsdb.getItem('reply_user_id') || '',
                                 },
                                 message: {
                                     author: `${cache_data[0]}`,
@@ -2742,7 +2636,7 @@ import core from "../components/core/core.js";
                             }
                         ).then(() => {
                             log('sent 📩')
-                            lsDB.getItem('switch_ray') == null ? lsDB.setItem('switch_ray', 1) : lsDB.setItem('switch_ray', 0);
+                            lsdb.getItem('switch_ray') == null ? lsdb.setItem('switch_ray', 1) : lsdb.setItem('switch_ray', 0);
                         }).catch(error => {
                             return;
                         });
@@ -2756,15 +2650,15 @@ import core from "../components/core/core.js";
                             document.querySelector('.reply').classList.remove('reply')
                         }
 
-                        lsDB.removeItem('is_reply');
-                        lsDB.removeItem('reply_id');
-                        lsDB.removeItem('reply_msg');
-                        lsDB.removeItem('reply_username');
-                        lsDB.removeItem('reply_avatar');
-                        lsDB.removeItem('reply_user_id');
-                        lsDB.removeItem('has_attachment');
-                        lsDB.removeItem('attachment');
-                        lsDB.removeItem('description');
+                        lsdb.removeItem('is_reply');
+                        lsdb.removeItem('reply_id');
+                        lsdb.removeItem('reply_msg');
+                        lsdb.removeItem('reply_username');
+                        lsdb.removeItem('reply_avatar');
+                        lsdb.removeItem('reply_user_id');
+                        lsdb.removeItem('has_attachment');
+                        lsdb.removeItem('attachment');
+                        lsdb.removeItem('description');
 
                         if(document.getElementById('image-picker-cont') != null){
                             document.getElementById('image-picker-cont').style.display = 'none';
@@ -2785,26 +2679,7 @@ import core from "../components/core/core.js";
             </div>`;
         root.insertAdjacentHTML('beforeend', room_wrapper);
     };
-
-    function preloader(){
-        setTimeout(() => {
-            setTimeout(()=> {
-                $('#progress').addClass('reveal');
-            }, 500)
-            setTimeout(()=> {
-                $('#progress').addClass('load');
-            }, 1500)
-        });
-        window.oncontextmenu = function() {
-            return false;
-        }
-    }
-    function hide_preloader(){
-        $('#spinnerx').removeClass('load');
-        if($('#spinnerx').length > 0){
-            $('#spinnerx').removeClass('show');
-        }
-    };
+    
     function log(text){
         return console.log(text);
     };
